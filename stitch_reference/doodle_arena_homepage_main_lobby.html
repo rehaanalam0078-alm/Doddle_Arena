@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doodle Arena - Multiplayer Drawing &amp; Guessing Game</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#5a00c6",
+            "background": "#fcf8ff",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#410006",
+            "secondary-fixed-dim": "#ffb3b0",
+            "secondary": "#ae2f34",
+            "on-secondary-fixed-variant": "#8c1520",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-surface-variant": "#4a4455",
+            "on-background": "#181445",
+            "on-tertiary-fixed-variant": "#004e5c",
+            "on-secondary-container": "#6d0010",
+            "secondary-fixed": "#ffdad8",
+            "on-secondary": "#ffffff",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#ede0ff",
+            "tertiary-container": "#007184",
+            "surface-container-highest": "#e3dfff",
+            "surface-container-low": "#f6f2ff",
+            "outline": "#7b7487",
+            "tertiary": "#005766",
+            "tertiary-fixed": "#acedff",
+            "surface-container-high": "#e9e5ff",
+            "surface-dim": "#dad6ff",
+            "outline-variant": "#ccc3d8",
+            "on-tertiary-fixed": "#001f26",
+            "error": "#ba1a1a",
+            "tertiary-fixed-dim": "#4cd7f6",
+            "surface-container": "#efebff",
+            "primary-fixed-dim": "#d2bbff",
+            "primary": "#630ed4",
+            "on-tertiary-container": "#b7efff",
+            "primary-container": "#7c3aed",
+            "surface-variant": "#e3dfff",
+            "on-surface": "#181445",
+            "on-error": "#ffffff",
+            "secondary-container": "#ff6b6b",
+            "inverse-surface": "#2d2a5b",
+            "inverse-on-surface": "#f3eeff",
+            "primary-fixed": "#eaddff",
+            "inverse-primary": "#d2bbff",
+            "surface-bright": "#fcf8ff",
+            "surface-tint": "#732ee4",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#25005a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "space-md": "0.75rem",
+            "margin": "1rem",
+            "margin-md": "1.5rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "margin-lg": "2rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Chunky 3D Physical Button Styles per design system */
+    .tactile-btn-primary {
+      background-color: #7c3aed;
+      border-bottom: 4px solid #5b21b6;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-primary:active {
+      transform: translateY(2px);
+      border-bottom: 2px solid #5b21b6;
+    }
+
+    .tactile-btn-secondary {
+      background-color: #ff6b6b;
+      border-bottom: 4px solid #dc2626;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-secondary:active {
+      transform: translateY(2px);
+      border-bottom: 2px solid #dc2626;
+    }
+
+    .tactile-btn-ghost {
+      background-color: #ffffff;
+      border: 1.5px solid #ccc3d8;
+      border-bottom: 3.5px solid #b8adc5;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-ghost:active {
+      transform: translateY(2px);
+      border-bottom: 1.5px solid #b8adc5;
+    }
+
+    .tactile-card {
+      border: 2px solid #ccc3d8;
+      box-shadow: 0 10px 24px -4px rgba(24, 20, 69, 0.06);
+    }
+
+    /* Tactile avatar ring */
+    .avatar-halo-active {
+      box-shadow: 0 0 0 4px #fcf8ff, 0 0 0 7px #7c3aed;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TOP APP BAR (Shared Component Anchor) -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm max-w-full bg-surface-container-lowest border-b-2 border-outline-variant shadow-sm z-40 sticky top-0">
+<!-- Brand & Live Presence -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2 group cursor-pointer">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm border-b-2 border-on-primary-fixed-variant group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="edit">edit</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-lg text-headline-lg font-black tracking-tight text-primary drop-shadow-sm leading-none">Doodle Arena</span>
+<span class="font-label-sm text-label-sm text-outline font-bold flex items-center gap-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            14,820 ARTISTS ONLINE
+          </span>
+</div>
+</div>
+</div>
+<!-- Center Navigation Links (Top Level Lobby active) -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-lg text-label-lg flex items-center gap-1.5" href="#lobby">
+<span class="material-symbols-outlined text-lg" data-icon="sports_esports">sports_esports</span>
+        Lobby
+      </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-lg text-label-lg flex items-center gap-1.5" href="#leaderboard">
+<span class="material-symbols-outlined text-lg" data-icon="leaderboard">leaderboard</span>
+        Leaderboard
+      </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-lg text-label-lg flex items-center gap-1.5" href="#rooms">
+<span class="material-symbols-outlined text-lg" data-icon="grid_view">grid_view</span>
+        Rooms
+      </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-lg text-label-lg flex items-center gap-1.5" href="#shop">
+<span class="material-symbols-outlined text-lg" data-icon="storefront">storefront</span>
+        Shop
+      </a>
+</nav>
+<!-- Trailing Icon Actions & Profile Level Badge -->
+<div class="flex items-center gap-space-sm sm:gap-space-md">
+<!-- Audio toggle -->
+<button aria-label="Toggle Sound" class="w-10 h-10 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center transition-colors active:translate-y-0.5" title="Mute/Unmute Music">
+<span class="material-symbols-outlined" data-icon="volume_up">volume_up</span>
+</button>
+<!-- Language selector dropdown button -->
+<button class="hidden sm:flex items-center gap-1 px-space-sm py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors active:translate-y-0.5">
+<span class="material-symbols-outlined text-base" data-icon="translate">translate</span>
+<span>EN</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Help/Tutorial -->
+<button class="w-10 h-10 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center transition-colors active:translate-y-0.5" title="Game Rules &amp; Help">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<!-- Player customized cartoon avatar with level XP indicator -->
+<div class="flex items-center gap-2 pl-space-xs sm:pl-space-sm sm:border-l-2 sm:border-outline-variant">
+<div class="relative cursor-pointer group">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed border-2 border-primary overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Playful cartoon avatar illustration with vibrant purple sunglasses, a tilted yellow beret, and a wide grinning expression against a soft lavender backdrop, adhering to high-energy party game aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDplzeAGhyu_qpuG89KnPboArsVZkWSakiuRF9Uw05JcVLsF7OPhbSvtSetnDiY6mheVpwGA2O02rRNu97IMuDOyYchjAwwVdxSQlb4r8xgf4YCNZfTRY3mJN5MfbTrHLdFB3e6eojKcNUT_URg-HPG-IPnsQa_a8R_okfFtqlNDIxMO8DdJv-_XfvAKoLlq5mZbZH2nhJltXxhvvtVlB4FdPWhPDR4_vxC_3UI4Cr"/>
+</div>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary text-[10px] font-black px-1.5 py-0.2 rounded-full border border-surface-container-lowest">
+            LV.24
+          </span>
+</div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="font-label-md text-label-md font-bold text-on-surface leading-tight">PixelPanda</span>
+<span class="font-label-sm text-label-sm text-outline font-semibold">1,420 XP</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN VIEWPORT CONTAINER -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-10">
+<!-- HERO SECTION: THE PLAY HUB & AVATAR WORKSHOP -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- HERO CARD 1: Character Lab & Customizer (5 Cols) -->
+<div class="lg:col-span-5 bg-surface-container-lowest rounded-3xl p-6 sm:p-8 tactile-card flex flex-col justify-between relative overflow-hidden">
+<!-- Playful Background Accents -->
+<div class="absolute -top-12 -right-12 w-40 h-40 bg-surface-container-high rounded-full blur-2xl pointer-events-none opacity-60"></div>
+<div class="absolute -bottom-10 -left-10 w-36 h-36 bg-primary-fixed-dim rounded-full blur-2xl pointer-events-none opacity-40"></div>
+<div>
+<!-- Title & Level Header -->
+<div class="flex items-center justify-between mb-6">
+<div>
+<span class="inline-block px-3 py-1 bg-surface-container-high text-primary font-label-sm text-label-sm rounded-full font-bold uppercase tracking-wider mb-1">Doodler Identity</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Your Battle Persona</h2>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-highest text-primary font-label-md text-label-md transition-all active:scale-95" id="btn-random-all" title="Randomize Everything">
+<span class="material-symbols-outlined text-base" data-icon="casino">casino</span>
+<span>Surprise Me</span>
+</button>
+</div>
+<!-- Avatar Stage Carousel -->
+<div class="flex flex-col items-center justify-center my-4 py-4 bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant relative">
+<!-- Stage Ring -->
+<div class="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full bg-surface-container-lowest avatar-halo-active flex items-center justify-center p-2 mb-4 group transition-transform duration-300 hover:scale-105">
+<img class="w-full h-full rounded-full object-cover bg-amber-100" data-alt="Chubby cartoon cat avatar wearing artist overalls, holding a chunky colored pencil, joyful expressive face, bright vector art toy game visual style on solid clean white studio surface." id="avatar-preview-img" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfhdm1Knz7x3csyhkVUYjJnHw0jMbS_P2aVzcm4fObPbOU1Q2LX8PI92OFGEEMgU1-wk-xuBxxcbyle_YO_2x1utvZ4Lo4t_itzvTSZ1GbvmVy8dh19wgIEE3eTHkzKlJxhvJyl257KfbnMP_Su7JGOVuSH0oJf9T0fWuCx6NTMRECL8mxpfnmFjKCCg7d-jl0qERBRyYcFJPoIV_J0Q2WbDOp-oCW0VRF59UOE2JJ"/>
+<!-- Active drawing pencil indicator badge -->
+<div class="absolute bottom-1 right-2 bg-primary text-on-primary w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-lg" data-icon="brush">brush</span>
+</div>
+</div>
+<!-- Avatar Part Selector Dots (Hats, Eyes, Colors) -->
+<div class="flex items-center gap-3 mt-1">
+<button class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all active:scale-90" title="Previous Hat">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<div class="flex items-center gap-1.5 bg-surface-container-lowest px-3 py-1 rounded-full border border-outline-variant">
+<span class="w-3 h-3 rounded-full bg-secondary-container"></span>
+<span class="w-3 h-3 rounded-full bg-primary-container ring-2 ring-primary"></span>
+<span class="w-3 h-3 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="w-3 h-3 rounded-full bg-amber-400"></span>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all active:scale-90" title="Next Hat">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Nickname Input with instant dice roll -->
+<div class="mt-6">
+<label class="block font-label-md text-label-md text-on-surface font-bold mb-2">Nickname / Tag</label>
+<div class="flex items-center gap-2">
+<div class="relative flex-1">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl" data-icon="badge">badge</span>
+</div>
+<input class="w-full pl-11 pr-10 py-3.5 bg-surface-container-low border-2 border-outline-variant focus:border-primary focus:bg-surface-container-lowest rounded-2xl font-headline-md text-headline-md tracking-tight text-on-surface transition-all outline-none font-bold" id="nickname-input" maxlength="16" placeholder="Your Doodler Name" type="text" value="SpeedyPencil_99"/>
+<div class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-emerald-600 font-bold">
+<span class="material-symbols-outlined text-xl" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<button class="h-[52px] w-[52px] tactile-btn-ghost rounded-2xl flex items-center justify-center text-primary hover:text-primary-container" id="btn-roll-name" title="Roll Random Nickname">
+<span class="material-symbols-outlined text-2xl" data-icon="restart_alt">restart_alt</span>
+</button>
+</div>
+<p class="font-label-sm text-label-sm text-outline mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-emerald-600" data-icon="verified_user">verified_user</span>
+              Valid family-friendly nickname. Visible to all players.
+            </p>
+</div>
+</div>
+<!-- Room Code Quick Pass -->
+<div class="mt-8 pt-5 border-t-2 border-outline-variant">
+<label class="block font-label-md text-label-md text-on-surface font-bold mb-2">Have a Private Invite Code?</label>
+<div class="flex items-center gap-2">
+<div class="relative flex-1">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-lg" data-icon="key">key</span>
+</div>
+<input class="w-full pl-9 pr-3 py-2.5 bg-surface-container-low border-2 border-outline-variant rounded-xl font-label-lg text-label-lg font-bold uppercase tracking-wider text-on-surface focus:border-primary outline-none" placeholder="e.g. #ROAR-409" type="text"/>
+</div>
+<button class="tactile-btn-ghost px-4 py-2.5 rounded-xl font-label-md text-label-md font-bold text-on-surface flex items-center gap-1 hover:bg-surface-container">
+<span class="material-symbols-outlined text-base" data-icon="content_paste">content_paste</span>
+<span>Paste</span>
+</button>
+<button class="tactile-btn-primary px-4 py-2.5 rounded-xl font-label-md text-label-md font-bold text-on-primary">
+              Join
+            </button>
+</div>
+</div>
+</div>
+<!-- HERO CARD 2: Arena Launch Deck & Modes (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col justify-between gap-6">
+<!-- Big Chunky Primary Action Deck -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 sm:p-8 tactile-card flex flex-col gap-6 relative overflow-hidden">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm rounded-full font-extrabold uppercase">
+<span class="material-symbols-outlined text-xs fill-icon" data-icon="bolt">bolt</span>
+                Instant Matchmaking v2.4
+              </span>
+<h1 class="font-headline-xl text-headline-xl sm:text-headline-xl text-on-surface mt-1 tracking-tight">Ready to Doodle?</h1>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-xl border border-outline-variant self-start sm:self-auto">
+<span class="material-symbols-outlined text-primary text-base" data-icon="speed">speed</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Avg. queue: 1.8s</span>
+</div>
+</div>
+<!-- PRIMARY 3D CTA BUTTON: CASUAL QUICK PLAY -->
+<button class="w-full group tactile-btn-primary py-5 px-8 rounded-2xl flex items-center justify-between text-on-primary shadow-[0_12px_28px_-4px_rgba(124,58,237,0.35)] hover:bg-[#6d28d9] transition-all">
+<div class="flex items-center gap-4 text-left">
+<div class="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="play_arrow">play_arrow</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-lg text-headline-lg tracking-tight font-black">PLAY CASUAL</span>
+<span class="bg-amber-300 text-on-background px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider">Pop</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-primary-container font-semibold">Drop instantly into an open table • 8 Players • No pressure</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-3xl group-hover:translate-x-1.5 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- SECONDARY DUAL BUTTONS: RANKED ARENA & PRIVATE ROOM -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- COMPETITIVE ARENA -->
+<button class="tactile-card bg-gradient-to-br from-surface-container-lowest to-surface-container-low p-5 rounded-2xl text-left flex flex-col justify-between group hover:border-primary transition-all active:translate-y-1">
+<div class="flex items-center justify-between mb-3">
+<div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-2xl fill-icon" data-icon="military_tech">military_tech</span>
+</div>
+<span class="font-label-sm text-label-sm font-extrabold px-2.5 py-1 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
+                  TIER GOLD II
+                </span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Competitive Arena</h3>
+<p class="font-body-sm text-body-sm text-outline mt-1">Stricter timers, anti-cheat masks, and Ranked ELO points.</p>
+</div>
+<div class="mt-4 flex items-center justify-between font-label-md text-label-md font-bold text-primary">
+<span>Enter Queue</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</div>
+</button>
+<!-- CREATE PRIVATE ROOM -->
+<button class="tactile-card bg-gradient-to-br from-surface-container-lowest to-surface-container-low p-5 rounded-2xl text-left flex flex-col justify-between group hover:border-secondary-container transition-all active:translate-y-1">
+<div class="flex items-center justify-between mb-3">
+<div class="w-10 h-10 rounded-xl bg-rose-100 text-secondary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-2xl" data-icon="meeting_room">meeting_room</span>
+</div>
+<span class="font-label-sm text-label-sm font-extrabold px-2.5 py-1 rounded-full bg-rose-200 text-secondary border border-rose-300">
+                  CUSTOM
+                </span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-secondary transition-colors">Create Private Room</h3>
+<p class="font-body-sm text-body-sm text-outline mt-1">Custom word packs, customized round clocks, host rules.</p>
+</div>
+<div class="mt-4 flex items-center justify-between font-label-md text-label-md font-bold text-secondary">
+<span>Setup Table</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</div>
+</button>
+</div>
+</div>
+<!-- LIVE PUBLIC ROOMS TICKER BANNER -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 tactile-card flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+<div>
+<p class="font-label-lg text-label-lg font-bold text-on-surface leading-tight">Featured Public Lobby: #PARTY-ANIMALS</p>
+<p class="font-body-sm text-body-sm text-outline">Custom Pack: 90s Cartoons • 6/8 Players Joined</p>
+</div>
+</div>
+<button class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-surface-container-high hover:bg-primary hover:text-on-primary text-primary font-label-md text-label-md font-bold transition-all active:translate-y-0.5">
+            Spectate / Jump In
+          </button>
+</div>
+</div>
+</section>
+<!-- SECTION: FEATURED GAME MODES (Bento Layout) -->
+<section>
+<div class="flex items-end justify-between mb-6">
+<div>
+<span class="font-label-sm text-label-sm font-black text-primary uppercase tracking-wider">Diverse Experiences</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Featured Game Modes</h2>
+</div>
+<a class="font-label-lg text-label-lg font-bold text-primary hover:underline flex items-center gap-1" href="#all-modes">
+<span>View All 8 Modes</span>
+<span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Mode 1: Classic Doodle -->
+<div class="tactile-card bg-surface-container-lowest rounded-3xl p-5 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-pointer group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-2xl" data-icon="palette">palette</span>
+</span>
+<span class="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-2.5 py-1 rounded-full font-bold">
+                6.4k Playing
+              </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Classic Doodle</h3>
+<p class="font-body-sm text-body-sm text-outline mt-2 leading-relaxed">
+              Standard 80s round timer. Pick 1 of 3 random curated words. Pure drawing intuition and quick guessing.
+            </p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>Round: 80s</span>
+<span class="text-primary font-bold">Play Now →</span>
+</div>
+</div>
+<!-- Mode 2: Speed Rush 45s -->
+<div class="tactile-card bg-surface-container-lowest rounded-3xl p-5 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-pointer group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="w-12 h-12 rounded-2xl bg-secondary-fixed text-secondary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-2xl" data-icon="alarm">alarm</span>
+</span>
+<span class="font-label-sm text-label-sm bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full font-bold">
+                FAST PACED
+              </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-secondary transition-colors">Speed Rush 45s</h3>
+<p class="font-body-sm text-body-sm text-outline mt-2 leading-relaxed">
+              Cut the time in half! Zero hesitation allowed. High tension, rapid fire guesses, double score multipliers.
+            </p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>Round: 45s</span>
+<span class="text-secondary font-bold">Play Now →</span>
+</div>
+</div>
+<!-- Mode 3: Custom Word Fiesta -->
+<div class="tactile-card bg-surface-container-lowest rounded-3xl p-5 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-pointer group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-2xl" data-icon="auto_stories">auto_stories</span>
+</span>
+<span class="font-label-sm text-label-sm bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full font-bold">
+                COMMUNITY
+              </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-amber-800 transition-colors">Word Fiesta</h3>
+<p class="font-body-sm text-body-sm text-outline mt-2 leading-relaxed">
+              Play with hilarious theme packs: Anime, Tech Memes, 90s Nostalgia, Video Games, or upload your own JSON.
+            </p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>Packs: 120+</span>
+<span class="text-amber-800 font-bold">Browse →</span>
+</div>
+</div>
+<!-- Mode 4: Team Sketch Duel -->
+<div class="tactile-card bg-surface-container-lowest rounded-3xl p-5 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-pointer group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-2xl" data-icon="diversity_3">diversity_3</span>
+</span>
+<span class="font-label-sm text-label-sm bg-teal-100 text-teal-900 px-2.5 py-1 rounded-full font-bold">
+                4 vs 4
+              </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-teal-800 transition-colors">Team Duel</h3>
+<p class="font-body-sm text-body-sm text-outline mt-2 leading-relaxed">
+              Two drawers simultaneously sketch complementary halves of a compound word. Pure chaotic teamwork.
+            </p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>Teams: Red vs Blue</span>
+<span class="text-teal-800 font-bold">Join Duel →</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: HOW TO PLAY IN 3 SIMPLE STEPS -->
+<section class="bg-surface-container-low rounded-3xl p-8 border-2 border-outline-variant">
+<div class="text-center max-w-xl mx-auto mb-10">
+<span class="font-label-sm text-label-sm font-extrabold text-primary uppercase tracking-widest">New to Doodle Arena?</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface mt-1">How It Works in 3 Steps</h2>
+<p class="font-body-md text-body-md text-outline mt-2">Zero software to install, no accounts required. Pure browser fun in seconds.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 tactile-card flex flex-col items-center text-center relative z-10">
+<div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center font-headline-lg text-headline-lg font-black mb-4 shadow-md">
+            1
+          </div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Pick a Secret Word</h3>
+<p class="font-body-sm text-body-sm text-outline">
+            When it's your turn in the spotlight, pick 1 of 3 mystery words ranging from Easy to Ultra-Hilarious.
+          </p>
+<div class="mt-4 px-3 py-1.5 rounded-lg bg-surface-container font-label-sm text-label-sm font-bold text-primary">
+            Example: "ASTRONAUT DANCING"
+          </div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 tactile-card flex flex-col items-center text-center relative z-10">
+<div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center font-headline-lg text-headline-lg font-black mb-4 shadow-md">
+            2
+          </div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Draw Like Crazy</h3>
+<p class="font-body-sm text-body-sm text-outline">
+            Unleash your inner artist with responsive brush sizes, bucket fills, color palettes, and quick undo gestures.
+          </p>
+<div class="mt-4 px-3 py-1.5 rounded-lg bg-surface-container font-label-sm text-label-sm font-bold text-secondary">
+            Strict Rule: No Letters or Digits!
+          </div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 tactile-card flex flex-col items-center text-center relative z-10">
+<div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center font-headline-lg text-headline-lg font-black mb-4 shadow-md">
+            3
+          </div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Guess &amp; Climb the Roster</h3>
+<p class="font-body-sm text-body-sm text-outline">
+            Type your wild guesses in the live chat log. The faster you solve it, the higher bonus points you bank!
+          </p>
+<div class="mt-4 px-3 py-1.5 rounded-lg bg-emerald-100 font-label-sm text-label-sm font-bold text-emerald-800">
+            Winner takes the Golden Crown!
+          </div>
+</div>
+</div>
+</section>
+<!-- SECTION: GLOBAL TOP DOODLERS MINI-LEADERBOARD & COMMUNITY TICKER -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-6">
+<!-- Mini Leaderboard (7 Cols) -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-3xl p-6 sm:p-7 tactile-card">
+<div class="flex items-center justify-between mb-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+<span class="material-symbols-outlined fill-icon text-2xl" data-icon="trophy">trophy</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Weekly Top Doodlers</h3>
+<p class="font-label-sm text-label-sm text-outline">Resets in 2 days, 14 hours</p>
+</div>
+</div>
+<button class="tactile-btn-ghost px-3.5 py-1.5 rounded-xl font-label-md text-label-md text-primary font-bold">
+            Full Leaderboard
+          </button>
+</div>
+<!-- Leaderboard Stack -->
+<div class="space-y-3">
+<!-- Rank 1: Gold -->
+<div class="flex items-center justify-between p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200">
+<div class="flex items-center gap-3.5">
+<div class="w-7 h-7 rounded-full bg-amber-400 text-on-background font-black font-label-sm text-label-sm flex items-center justify-center shadow-sm">
+                1
+              </div>
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest border-2 border-amber-400 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Cartoon avatar of a witty fox with thick black glasses and a paint-splattered beret, vibrant modern color palette, clean vectorized gamer profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz4Nk4wKxXadDTZ5slrTb-v8RFOdFDdsnBJlh8I75xEn5gSv_ctaJB7FPE8eUJuVKh8FPI5RC4zAmNpKfpdAhcjVTPkJzKdqvtFbt1eCpZtlRXuSjBymzuavl1r4Tg5ZwcisIQqYIW9bTWc8-TM79SfTEe_CnO0D63L5GJvJt-a6mjGnznUw1X-ChS5B6jpyAylk1cbJmLYTEzcmMx2NA57mGhRGpzCUixl7IF7htU"/>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">DoodleQueen</span>
+<span class="bg-amber-200 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded">CHAMPION</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">342 Wins • 98.4% Accuracy</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md font-extrabold text-amber-900">18,420</span>
+<span class="block font-label-sm text-label-sm text-outline">PTS</span>
+</div>
+</div>
+<!-- Rank 2: Silver -->
+<div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+<div class="flex items-center gap-3.5">
+<div class="w-7 h-7 rounded-full bg-slate-300 text-on-background font-black font-label-sm text-label-sm flex items-center justify-center shadow-sm">
+                2
+              </div>
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest border-2 border-slate-400 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Playful cartoon robot avatar with glowing neon cyan antennae and friendly pixel grin, toy design aesthetic on a light lavender backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHLP57fbnp6kykmlWb67R2xBYZnr-ndCE0gvfGWok1n7ZccHdTfOxN5QkHcyppOPFDvb-MJFWtiXN1GrZGJMLGSDfU-xwBu9oROCA7Kr0Riv9CJA0E4RvyhGK53xUVhpRfclekFr41D9HX_EPlJVbEmckK9yA3L8W4PDGeBH0oxOtzMMpNO-wOhF-NsZVIVl4GkWl_-aH_yyTHuFfKzN7KyTEDulTyk70ufP5RLo_9"/>
+</div>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">NeonSketcher</span>
+<span class="block font-label-sm text-label-sm text-outline">289 Wins • 96.1% Accuracy</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md font-extrabold text-slate-700">16,190</span>
+<span class="block font-label-sm text-label-sm text-outline">PTS</span>
+</div>
+</div>
+<!-- Rank 3: Bronze -->
+<div class="flex items-center justify-between p-3.5 rounded-2xl bg-orange-50/60 border border-orange-200">
+<div class="flex items-center gap-3.5">
+<div class="w-7 h-7 rounded-full bg-amber-700 text-on-primary font-black font-label-sm text-label-sm flex items-center justify-center shadow-sm">
+                3
+              </div>
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest border-2 border-amber-700 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Funky cartoon monkey avatar holding an oversized wooden paintbrush, cheerful grin, comic-style character art with soft warm studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5FcOKV_ec_lCvUB8yMe-YAadIlYJB7au69qY9P_0uFWy9XJtYVna5DrbHY8OTutGAs14bEn0Y7IH5iB6OuI31Nhp8T05966baOCczbe1jBO4UESPIFNBUfY7E36IMmES6hRTkNUBhXrtRQp2tRpqEwevNIOvbj1OAHGnDaCA30USmxX5VjFK1MWMSLTXm96bqPE7EjElx5C1C-jyYHSs6DlGrDmg0CCgPcfy_Y30P"/>
+</div>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">BananaCanvas</span>
+<span class="block font-label-sm text-label-sm text-outline">245 Wins • 94.8% Accuracy</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md font-extrabold text-amber-900">14,880</span>
+<span class="block font-label-sm text-label-sm text-outline">PTS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Community Shoutout & Tips Card (5 Cols) -->
+<div class="lg:col-span-5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-3xl p-6 sm:p-7 shadow-[0_12px_28px_-4px_rgba(124,58,237,0.25)] flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="bg-white/20 text-on-primary px-3 py-1 rounded-full font-label-sm text-label-sm font-bold uppercase tracking-wider">
+              Community Spotlight
+            </span>
+<span class="material-symbols-outlined text-2xl text-amber-300 fill-icon" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg font-black tracking-tight text-on-primary leading-tight">
+            Word of the Day: "Rollercoaster"
+          </h3>
+<p class="font-body-md text-body-md text-on-primary-container mt-2">
+            Drawers who pick today's featured mystery word earn <span class="text-amber-300 font-bold">+150 Bonus XP</span> and unlock the exclusive "Loop-de-Loop" pencil trail badge.
+          </p>
+<div class="mt-6 p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-300 text-2xl" data-icon="tips_and_updates">tips_and_updates</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-white">Pro Drawing Tip</p>
+<p class="font-body-sm text-body-sm text-white/80">Start with the silhouette context before drawing tiny facial details!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-5 border-t border-white/15 flex items-center justify-between">
+<span class="font-label-md text-label-md text-white/70 font-semibold">Join Discord Community</span>
+<button class="tactile-btn-ghost px-4 py-2 rounded-xl text-primary font-label-md text-label-md font-black bg-white hover:bg-slate-100">
+            Join 34k Doodlers
+          </button>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest border-t-2 border-outline-variant mt-auto py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-lg" data-icon="draw">draw</span>
+</div>
+<span class="font-headline-md text-headline-md font-black text-primary">Doodle Arena</span>
+<span class="text-outline font-label-sm text-label-sm ml-2">© 2025 All Rights Reserved.</span>
+</div>
+<div class="flex items-center gap-6 font-label-md text-label-md text-outline font-bold">
+<a class="hover:text-primary transition-colors" href="#rules">Game Rules</a>
+<a class="hover:text-primary transition-colors" href="#wordlist">Custom Wordlists</a>
+<a class="hover:text-primary transition-colors" href="#privacy">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#support">Support</a>
+</div>
+</div>
+</footer>
+<!-- Light interactive script for playful prototype feedback -->
+<script>
+    // Random Nickname Generator micro-interaction
+    const funAdjectives = ["Speedy", "Cosmic", "Glitchy", "Funky", "Bouncy", "Turbo", "Dizzy", "Snappy"];
+    const funNouns = ["Pencil", "Crayon", "Doodle", "Otter", "Waffle", "Sketcher", "Pixel", "Ninja"];
+    
+    const rollBtn = document.getElementById("btn-roll-name");
+    const randomAllBtn = document.getElementById("btn-random-all");
+    const nameInput = document.getElementById("nickname-input");
+    
+    function getRandomName() {
+      const adj = funAdjectives[Math.floor(Math.random() * funAdjectives.length)];
+      const noun = funNouns[Math.floor(Math.random() * funNouns.length)];
+      const num = Math.floor(Math.random() * 89 + 10);
+      return `${adj}${noun}_${num}`;
+    }
+
+    if (rollBtn && nameInput) {
+      rollBtn.addEventListener("click", () => {
+        nameInput.value = getRandomName();
+        nameInput.classList.add("ring-4", "ring-primary-fixed");
+        setTimeout(() => nameInput.classList.remove("ring-4", "ring-primary-fixed"), 300);
+      });
+    }
+
+    if (randomAllBtn && nameInput) {
+      randomAllBtn.addEventListener("click", () => {
+        nameInput.value = getRandomName();
+      });
+    }
+  </script>
+</body></html>

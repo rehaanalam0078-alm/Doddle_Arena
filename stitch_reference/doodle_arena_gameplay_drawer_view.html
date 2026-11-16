@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doodle Arena — Drawer View</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#5a00c6",
+            "background": "#fcf8ff",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#410006",
+            "secondary-fixed-dim": "#ffb3b0",
+            "secondary": "#ae2f34",
+            "on-secondary-fixed-variant": "#8c1520",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-surface-variant": "#4a4455",
+            "on-background": "#181445",
+            "on-tertiary-fixed-variant": "#004e5c",
+            "on-secondary-container": "#6d0010",
+            "secondary-fixed": "#ffdad8",
+            "on-secondary": "#ffffff",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#ede0ff",
+            "tertiary-container": "#007184",
+            "surface-container-highest": "#e3dfff",
+            "surface-container-low": "#f6f2ff",
+            "outline": "#7b7487",
+            "tertiary": "#005766",
+            "tertiary-fixed": "#acedff",
+            "surface-container-high": "#e9e5ff",
+            "surface-dim": "#dad6ff",
+            "outline-variant": "#ccc3d8",
+            "on-tertiary-fixed": "#001f26",
+            "error": "#ba1a1a",
+            "tertiary-fixed-dim": "#4cd7f6",
+            "surface-container": "#efebff",
+            "primary-fixed-dim": "#d2bbff",
+            "primary": "#630ed4",
+            "on-tertiary-container": "#b7efff",
+            "primary-container": "#7c3aed",
+            "surface-variant": "#e3dfff",
+            "on-surface": "#181445",
+            "on-error": "#ffffff",
+            "secondary-container": "#ff6b6b",
+            "inverse-surface": "#2d2a5b",
+            "inverse-on-surface": "#f3eeff",
+            "primary-fixed": "#eaddff",
+            "inverse-primary": "#d2bbff",
+            "surface-bright": "#fcf8ff",
+            "surface-tint": "#732ee4",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#25005a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "space-md": "0.75rem",
+            "margin": "1rem",
+            "margin-md": "1.5rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "margin-lg": "2rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .tactile-bevel {
+      box-shadow: 0 4px 0 #5b21b6;
+    }
+    .tactile-bevel:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #5b21b6;
+    }
+    .tactile-coral {
+      box-shadow: 0 4px 0 #dc2626;
+    }
+    .tactile-coral:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #dc2626;
+    }
+    .tactile-white {
+      box-shadow: 0 3px 0 #cbd5e1;
+    }
+    .tactile-white:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #cbd5e1;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.85; }
+    }
+    .timer-pulse {
+      animation: pulse-ring 1.8s ease-in-out infinite;
+    }
+    @keyframes draw-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .drawer-badge {
+      animation: draw-bob 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col select-none overflow-x-hidden">
+<!-- TopNavBar (Shared Component Anchor) -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm max-w-full bg-surface-container-lowest dark:bg-inverse-surface z-40 border-b-2 border-outline-variant dark:border-outline shadow-[0_4px_16px_-2px_rgba(24,20,69,0.06)] dark:shadow-none">
+<!-- Brand & Mini Room Info -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg font-black tracking-tight text-primary dark:text-primary-fixed-dim drop-shadow-sm">Doodle Arena</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary-container ml-1">ROOM #4092</span>
+</div>
+<!-- Live Match Pill -->
+<div class="hidden sm:flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-xl border border-outline-variant/60">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="sports_esports">sports_esports</span>
+<span class="text-label-md font-label-md text-on-surface font-extrabold">Round 3 of 5</span>
+</div>
+</div>
+<!-- Center Prompt Indicator -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-3 bg-surface-container-high px-space-md py-1.5 rounded-full border border-primary/20 shadow-sm">
+<div class="relative flex items-center justify-center w-9 h-9">
+<!-- Animated Radial Timer Ring -->
+<svg class="w-9 h-9 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-variant stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-secondary-container stroke-current timer-pulse" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-headline-md text-label-md font-extrabold text-on-surface">48s</span>
+</div>
+<div class="flex flex-col text-left">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping inline-block"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-primary font-black">You are Drawing!</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-black text-on-surface tracking-wide">WORD: <span class="bg-primary-fixed text-primary px-2 py-0.5 rounded-md font-extrabold tracking-widest text-primary-900 border border-primary/30">FLAMINGO</span></span>
+<span class="hidden md:inline-block text-label-sm font-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-bold">Animals</span>
+<span class="hidden md:inline-block text-label-sm font-label-sm text-on-surface-variant font-bold">+250 pts</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Trailing Action Icons & Avatar -->
+<div class="flex items-center gap-space-sm">
+<button class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors duration-150 tactile-white border border-outline-variant/50" title="Sound Effects">
+<span class="material-symbols-outlined text-xl" data-icon="volume_up">volume_up</span>
+</button>
+<button class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors duration-150 tactile-white border border-outline-variant/50" title="Settings">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+</button>
+<button class="hidden sm:flex w-10 h-10 rounded-xl bg-surface-container items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors duration-150 tactile-white border border-outline-variant/50" title="Help">
+<span class="material-symbols-outlined text-xl" data-icon="help">help</span>
+</button>
+<!-- Player Avatar Profile -->
+<div class="flex items-center gap-2 pl-2 border-l-2 border-outline-variant">
+<div class="relative w-10 h-10 rounded-xl bg-primary-container p-0.5 border-2 border-primary shadow-sm flex items-center justify-center">
+<img alt="Player customized cartoon avatar with level XP indicator" class="w-full h-full object-cover rounded-lg" data-alt="Vibrant cartoon 3D styled avatar portrait of a playful cat gamer wearing purple VR goggles and headphones, centered in a bright round icon frame with glowing pastel gradients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANIi3qOozgxtAQU7O6YfitenkJt8thlSKIgQYq3QtbCDFcHbHsnYiWPQMTXjcc3GS1C1sqNkWHA9Be_AUUmKte5dBxk6z7qRS9ItofiVDO9HFQG9qxJbp1FKR6MU9-Tv9Lz837FuqQVVGQa9zyIUBsKfwkUAJZT-m-J31d9lTyq2ZD4vjcBPHEknDEWHFwcO2CHeLcTOx4ogPJpdm4viOQviq9PYS6ZqfqI4uRYrK8"/>
+<span class="absolute -bottom-1 -right-1 bg-amber-400 text-on-surface text-[9px] font-black px-1 rounded border border-white">24</span>
+</div>
+</div>
+<!-- Secondary Coral Action: Leave Game -->
+<button class="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary-container text-on-secondary font-label-md text-label-md font-bold tactile-coral ml-1 transition-transform">
+<span class="material-symbols-outlined text-base" data-icon="logout">logout</span>
+<span>Leave Game</span>
+</button>
+</div>
+</header>
+<!-- Main 3-Column Arena Container -->
+<main class="flex-1 max-w-[1720px] w-full mx-auto p-3 lg:p-4 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 items-start">
+<!-- LEFT COLUMN: Player Scoreboard Roster (3 cols on desktop) -->
+<aside class="lg:col-span-3 w-full bg-surface-container-lowest rounded-2xl p-3.5 border-2 border-outline-variant/60 shadow-[0_8px_24px_-4px_rgba(30,27,75,0.06)] flex flex-col gap-2.5 h-[calc(100vh-100px)] min-h-[640px]">
+<!-- Column Header -->
+<div class="flex items-center justify-between px-1 pb-2 border-b-2 border-outline-variant/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="leaderboard">leaderboard</span>
+<h2 class="font-headline-md text-headline-md font-extrabold text-on-surface">Players</h2>
+</div>
+<span class="text-label-sm font-label-sm bg-surface-container-high px-2 py-0.5 rounded-full text-on-surface-variant font-black">6 / 8</span>
+</div>
+<!-- Live Roster List -->
+<div class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+<!-- Player #1: PixelCat -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40 hover:border-primary/40 transition-all">
+<div class="flex items-center gap-2.5">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-400 text-on-surface text-label-sm font-black shadow-sm">1</span>
+<div class="relative w-11 h-11 rounded-xl bg-surface-variant overflow-hidden border-2 border-amber-300">
+<img alt="PixelCat" class="w-full h-full object-cover" data-alt="Playful cartoon avatar portrait of a cool pixelated cyber cat with sunglasses, rendered in crisp vector 3D illustration style on a soft lavender background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmEfOVGYCvq7qFOa-_d1ytLBzOzaHkbEnCsO7AY7KpoKnKxRFKV7of6L2sGmf-hpmpJHNXqdXqqyg8UHkT8ebwI8PvZTSRC02q7vgL35Pj8sMT8xFfSVbHLjDysObgqtqoV4fmOqgYotMHPvbs_1mQw-5RP5-n12EcqWNxOnEcxE19ob2Coz6h1PoXkSENG7YbUsKTjsu9kOowu_C92N9bEhnFil0e-eJ1iGuu6eCn"/>
+<span class="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 text-[10px] leading-none flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]" data-icon="check">check</span>
+</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1">
+                PixelCat
+              </div>
+<div class="text-body-sm font-body-sm text-on-surface-variant font-bold">1,840 pts</div>
+</div>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-label-sm font-black border border-emerald-300">
+<span class="material-symbols-outlined text-[13px]" data-icon="timer">timer</span>
+              12s (+320)
+            </span>
+</div>
+</div>
+<!-- Player #2: DoodleMaster [YOU] (Active Drawer) -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-primary-fixed/30 border-2 border-primary shadow-[0_4px_16px_rgba(124,58,237,0.18)] relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="flex items-center gap-2.5 pl-1">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-slate-300 text-on-surface text-label-sm font-black">2</span>
+<div class="relative w-11 h-11 rounded-xl bg-primary-container p-0.5 border-2 border-primary shadow-sm flex items-center justify-center">
+<img alt="DoodleMaster" class="w-full h-full object-cover rounded-lg" data-alt="Stylized cartoon avatar of an energetic artistic character with paint splatters, holding a digital stylus, vibrant contemporary game character design with rich purple tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAqCTZzLP_5PK5crjioMIO_1ucKcKT6V3VdDJ_zrZeAyrSAvTHEudomTThU2gFz5ZM7o9BwyvetmIinaO6fxQE2-uLfxJiEpmzJGPyEGqTVsG9zlYUcvkpN-I9slW-CtShzbZHgyNvc_XdaNcLtfKcXl0Mm5Pqjrzglm44c5DDHsVdl2JT8ZdeA6dnHiR32qTRmHMq6dJIykkOnqX8feEB6um0YSiYkN0Q-dIwFy__"/>
+<span class="absolute -bottom-1 -right-1 bg-primary text-white rounded-full p-1 text-[11px] leading-none flex items-center justify-center drawer-badge">
+<span class="material-symbols-outlined text-[13px]" data-icon="edit">edit</span>
+</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-primary flex items-center gap-1">
+                DoodleMaster
+                <span class="bg-primary text-white text-[10px] font-black px-1.5 py-0.2 rounded-md">YOU</span>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant font-bold">1,620 pts</div>
+</div>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary text-white text-label-sm font-black shadow-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="brush">brush</span>
+              Drawing
+            </span>
+</div>
+</div>
+<!-- Player #3: NeonPanda -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40 hover:border-primary/40 transition-all">
+<div class="flex items-center gap-2.5">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-600/80 text-white text-label-sm font-black">3</span>
+<div class="relative w-11 h-11 rounded-xl bg-surface-variant overflow-hidden border-2 border-outline-variant">
+<img alt="NeonPanda" class="w-full h-full object-cover" data-alt="Playful cartoon portrait of a cheerful panda wearing a neon turquoise headband, playful gaming avatar icon with clean lines and soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPIiCSIOUnrO07dMcBFgdNltDWtgXPUdnWVAYA_cgeefWeFwqL9Vk9Lg6LDaJxH_9w8jQOu57aft_M_1nBs5408py4C0x14hvQ7B6qtGMylT4lLkxrN-Og2qD8-h0UKMqibWwVkricCq15upOEpBxQ3bGNZsHoiVdDtoCClorwcatr9_dwNjid5h_Th4C7pswc6AABrxOvU9l7EOKdMNRnZ01g-92ISzIF9Ydq2seE"/>
+<span class="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 text-[10px] leading-none flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]" data-icon="check">check</span>
+</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">NeonPanda</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant font-bold">1,410 pts</div>
+</div>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-label-sm font-black border border-emerald-300">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle">check_circle</span>
+              +280
+            </span>
+</div>
+</div>
+<!-- Player #4: AstroFox -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-center gap-2.5">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant text-label-sm font-black">4</span>
+<div class="relative w-11 h-11 rounded-xl bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="AstroFox" class="w-full h-full object-cover" data-alt="Cute cartoon portrait of an orange fox astronaut wearing a bubbly transparent helmet, soft pastel lighting, clean modern mobile game avatar design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3yemBkexd7S5sAOp6QbnJ-DxbFDd4mBC8VMxqwJk8rOMmRGj7YOU1mI1ZLAzxbLZx0Mki_8J06FR0RYwIej6YWJF5-xsgGBbIuU9B8oFjE5mtDUo4D-zwUvnNRQQAQ1gyt_i185q58ZGyxme0GcKiRN4L-o2zFftOIM6bbiUFxNHAhgIp_ShHizzzpeUD7MFAr3Lnb1QpIEDX_Y-oN5pz-GbI_d8hZLNzRFZmxI14"/>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">AstroFox</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant font-bold">980 pts</div>
+</div>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-100 text-amber-900 text-label-sm font-bold border border-amber-300">
+<span class="material-symbols-outlined text-[14px]" data-icon="psychology">psychology</span>
+              Thinking
+            </span>
+</div>
+</div>
+<!-- Player #5: TurboTurtle -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-center gap-2.5">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant text-label-sm font-black">5</span>
+<div class="relative w-11 h-11 rounded-xl bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="TurboTurtle" class="w-full h-full object-cover" data-alt="Whimsical cartoon portrait of a fast smiling green turtle with racing goggles, colorful cute game illustration with playful lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYE9tn5vlYFnMN6xdFpkANQ_ZaCJhqaUKFvUSFGIgaIutum-r1UqZm8lS58OgCJRv3x50Yr_I70XRtmD3PbC_aE3hzdiJoCJZhC7OVQQKlOfocOPsKKYIPF8zKmAsCiShnxU-RlND5NPhb-70_RLQTpsEo5Bon00OYUlUQO6-B32b5jL7oGcHNbP7PxHQKXO7BH5YuJN8tNKLQ8OlIq74cFoGGgz9v_gjJ6rWehkV8"/>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">TurboTurtle</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant font-bold">650 pts</div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-semibold italic">Guessing...</span>
+</div>
+</div>
+<!-- Player #6: CheerfulBee -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-center gap-2.5">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant text-label-sm font-black">6</span>
+<div class="relative w-11 h-11 rounded-xl bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="CheerfulBee" class="w-full h-full object-cover" data-alt="Charming cartoon bumblebee character smiling happily with tiny antennae and glowing wings, soft golden light on clean backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrps4ogx-fT88C5J8sK6SU2Fi4Yy6m3IlyYUvcsMcNXF2uFTSb0LBHjVxsLfeUPY-GguwhNZcMbLg850fa-8gw24eoZvR8YK0kAxboh6HYbdbJ4YHZLIVByjjUf1eTO45lXrf6HCxBR6GuVXgYAfsrJ13Ty_o-7WJWWaqWDnjvXs8YcZzhiei1HcZ5PPc73p-Cu41wl4BdxgclaxOrkbftMEE7maMEoZsUHx0wqNJv"/>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">CheerfulBee</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant font-bold">420 pts</div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-semibold italic">Guessing...</span>
+</div>
+</div>
+</div>
+<!-- Footer Room Status CTA -->
+<div class="pt-2 border-t-2 border-outline-variant/50 flex flex-col gap-2">
+<button class="w-full py-2.5 px-3 rounded-xl bg-surface-container hover:bg-surface-container-high font-label-md text-label-md font-extrabold text-primary flex items-center justify-center gap-2 tactile-white border border-outline-variant/70 transition-transform">
+<span class="material-symbols-outlined text-lg" data-icon="person_add">person_add</span>
+<span>Invite Friends</span>
+</button>
+</div>
+</aside>
+<!-- CENTER STAGE: Canvas & Toolbelt (6 cols on desktop) -->
+<section class="lg:col-span-6 w-full flex flex-col gap-3">
+<!-- Canvas Wrapper Card -->
+<div class="relative bg-white rounded-2xl border-2 border-outline-variant/70 shadow-[0_12px_28px_-4px_rgba(124,58,237,0.12)] overflow-hidden aspect-[4/3] w-full flex flex-col justify-between">
+<!-- Canvas Floating Watermark Overlay info -->
+<div class="absolute top-3 left-3 z-10 flex items-center gap-2 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1 rounded-xl border border-outline-variant/50 shadow-sm pointer-events-none">
+<span class="material-symbols-outlined text-primary text-base" data-icon="brush">brush</span>
+<span class="text-label-sm font-label-sm font-black text-on-surface">Canvas Size: 1024 × 768</span>
+</div>
+<div class="absolute top-3 right-3 z-10 flex items-center gap-2 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1 rounded-xl border border-outline-variant/50 shadow-sm pointer-events-none">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-label-sm font-label-sm font-black text-on-surface">Live Sync: 60 FPS</span>
+</div>
+<!-- The Canvas Drawing Graphic Area (Flamingo Sketch) -->
+<div class="w-full h-full relative cursor-crosshair bg-white flex items-center justify-center overflow-hidden">
+<svg class="w-full h-full max-h-[500px]" fill="none" viewbox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+<!-- Background Sun & Sky hints -->
+<circle cx="680" cy="120" fill="#FEF08A" opacity="0.6" r="60"></circle>
+<!-- Tropical Palm Leaves in Top Corner -->
+<path d="M720 0 C700 80 620 90 560 60 C640 120 720 90 800 50 Z" fill="#22C55E" stroke="#15803D" stroke-linejoin="round" stroke-width="4"></path>
+<path d="M800 20 C760 120 680 150 600 130 C700 170 780 130 820 80 Z" fill="#16A34A" stroke="#15803D" stroke-linejoin="round" stroke-width="4"></path>
+<path d="M780 0 C720 40 680 80 640 90" stroke="#15803D" stroke-linecap="round" stroke-width="4"></path>
+<!-- Soft Water Ripples Sketch -->
+<path d="M120 520 C 240 510, 360 535, 480 520 C 600 505, 680 530, 760 520" stroke="#38BDF8" stroke-linecap="round" stroke-width="5"></path>
+<path d="M180 550 C 300 540, 420 560, 560 548 C 660 538, 700 552, 730 550" stroke="#0284C7" stroke-linecap="round" stroke-width="4"></path>
+<path d="M300 575 C 380 570, 450 580, 540 575" stroke="#38BDF8" stroke-linecap="round" stroke-width="3"></path>
+<!-- Playful Flamingo Sketch -->
+<!-- Curved Standing Leg -->
+<path d="M430 360 L430 480 L425 540" stroke="#FB7185" stroke-linecap="round" stroke-width="7"></path>
+<!-- Flamingo Webbed Foot in water -->
+<path d="M425 540 L400 545 M425 540 L428 550 M425 540 L445 545" stroke="#F43F5E" stroke-linecap="round" stroke-width="5"></path>
+<!-- Tucked Bent Second Leg -->
+<path d="M410 370 L360 410 L415 425" stroke="#FB7185" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path>
+<!-- Flamingo Fluffy Body -->
+<ellipse cx="420" cy="330" fill="#FDA4AF" rx="90" ry="60" stroke="#F43F5E" stroke-width="7"></ellipse>
+<!-- Tail Feathers -->
+<path d="M490 320 C540 310 550 340 505 355 C535 365 520 380 480 370" fill="#FB7185" stroke="#E11D48" stroke-linejoin="round" stroke-width="5"></path>
+<!-- Wing Detail with Cute Doodle Swirl -->
+<path d="M390 320 Q440 290 460 340 T400 360" fill="#F43F5E" stroke="#BE123C" stroke-linecap="round" stroke-width="5"></path>
+<!-- Elegant S-Curve Neck -->
+<path d="M350 330 C300 300 290 200 330 160 C350 140 375 145 375 170 C375 220 335 250 370 290" fill="none" stroke="#F43F5E" stroke-linecap="round" stroke-width="22"></path>
+<!-- Flamingo Head -->
+<circle cx="340" cy="155" fill="#FDA4AF" r="28" stroke="#F43F5E" stroke-width="6"></circle>
+<!-- Beak: Pink Base + Bold Black Hook Tip -->
+<path d="M320 155 L260 170 C250 190 260 215 275 210 L320 175 Z" fill="#FCE7F3" stroke="#F43F5E" stroke-linejoin="round" stroke-width="4"></path>
+<path d="M285 178 L260 170 C250 190 260 215 275 210 L285 190 Z" fill="#0F172A" stroke="#0F172A" stroke-linejoin="round" stroke-width="2"></path>
+<!-- Cartoon Eye -->
+<circle cx="332" cy="148" fill="#0F172A" r="5"></circle>
+<circle cx="334" cy="146" fill="#FFFFFF" r="1.5"></circle>
+<!-- Dynamic Pencil Cursor Drawing Effect Overlay -->
+<g transform="translate(425, 540)">
+<polygon fill="#F59E0B" points="0,0 -8,-24 8,-24" stroke="#B45309" stroke-width="2"></polygon>
+<polygon fill="#181445" points="0,0 -4,-8 4,-8"></polygon>
+<rect fill="#7C3AED" height="30" stroke="#5B21B6" stroke-width="2" width="16" x="-8" y="-54"></rect>
+<rect fill="#F43F5E" height="8" rx="2" width="16" x="-8" y="-62"></rect>
+</g>
+</svg>
+</div>
+</div>
+<!-- DOCKED DRAWING TOOLKIT BAR -->
+<div class="bg-surface-container-lowest rounded-2xl p-3 border-2 border-outline-variant/60 shadow-[0_8px_24px_-4px_rgba(30,27,75,0.06)] flex flex-col gap-3">
+<!-- Upper Row: Tools + Brush Diameters + Undo/Redo/Clear -->
+<div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-outline-variant/40 pb-2.5">
+<!-- Tool Selection Modes -->
+<div class="flex items-center gap-1.5 bg-surface-container p-1 rounded-xl">
+<!-- Brush (Active) -->
+<button class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary text-white shadow-sm border-b-2 border-purple-900" title="Brush Tool">
+<span class="material-symbols-outlined text-xl" data-icon="brush">brush</span>
+</button>
+<!-- Eraser -->
+<button class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors" title="Eraser">
+<span class="material-symbols-outlined text-xl" data-icon="ink_eraser">ink_eraser</span>
+</button>
+<!-- Paint Bucket -->
+<button class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors" title="Fill Bucket">
+<span class="material-symbols-outlined text-xl" data-icon="format_color_fill">format_color_fill</span>
+</button>
+<!-- Color Picker Eyedropper -->
+<button class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors" title="Color Eyedropper">
+<span class="material-symbols-outlined text-xl" data-icon="colorize">colorize</span>
+</button>
+<!-- Shape Tool (Circle / Rect) -->
+<button class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors" title="Geometric Shapes">
+<span class="material-symbols-outlined text-xl" data-icon="category">category</span>
+</button>
+</div>
+<!-- Brush Size Step Trigger Dots -->
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-xl">
+<span class="text-label-sm font-label-sm font-bold text-on-surface-variant uppercase tracking-wider mr-1">Size:</span>
+<!-- 4px -->
+<button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-surface-container-highest transition-colors" title="Small (4px)">
+<div class="w-1.5 h-1.5 rounded-full bg-on-surface"></div>
+</button>
+<!-- 8px (Active) -->
+<button class="w-7 h-7 rounded-lg bg-primary-fixed flex items-center justify-center border-2 border-primary" title="Medium (8px)">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</button>
+<!-- 16px -->
+<button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-surface-container-highest transition-colors" title="Large (16px)">
+<div class="w-4 h-4 rounded-full bg-on-surface"></div>
+</button>
+<!-- 32px -->
+<button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-surface-container-highest transition-colors" title="Extra Large (32px)">
+<div class="w-5 h-5 rounded-full bg-on-surface"></div>
+</button>
+</div>
+<!-- Actions: Undo, Redo, Clear All -->
+<div class="flex items-center gap-1.5 ml-auto">
+<button class="flex items-center justify-center w-9 h-9 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface tactile-white border border-outline-variant/60" title="Undo (Ctrl+Z)">
+<span class="material-symbols-outlined text-lg" data-icon="undo">undo</span>
+</button>
+<button class="flex items-center justify-center w-9 h-9 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface tactile-white border border-outline-variant/60" title="Redo (Ctrl+Y)">
+<span class="material-symbols-outlined text-lg" data-icon="redo">redo</span>
+</button>
+<!-- Secondary Action Coral: Clear Canvas -->
+<button class="flex items-center gap-1 px-3 h-9 rounded-xl bg-secondary-container hover:bg-secondary text-white font-label-sm text-label-sm font-black tactile-coral transition-transform" title="Clear Entire Canvas">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+<span>Clear</span>
+</button>
+</div>
+</div>
+<!-- Lower Row: 18-Color Swatch Palette & Hex Wheel -->
+<div class="flex items-center gap-3">
+<!-- Current Active Color Preview -->
+<div class="flex flex-col items-center justify-center px-2 border-r-2 border-outline-variant/50">
+<div class="w-9 h-9 rounded-xl bg-[#F43F5E] shadow-sm border-2 border-white ring-2 ring-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-base" data-icon="palette">palette</span>
+</div>
+<span class="text-[10px] font-black text-on-surface-variant mt-0.5">#F43F5E</span>
+</div>
+<!-- Dual-Row 18 Swatches Grid -->
+<div class="flex-1 grid grid-rows-2 grid-flow-col gap-1.5 overflow-x-auto py-1">
+<!-- Row 1 Colors -->
+<button class="w-7 h-7 rounded-full bg-[#000000] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Black"></button>
+<button class="w-7 h-7 rounded-full bg-[#64748B] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Slate Grey"></button>
+<button class="w-7 h-7 rounded-full bg-[#DC2626] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Crimson Red"></button>
+<button class="w-7 h-7 rounded-full bg-[#EA580C] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Orange"></button>
+<button class="w-7 h-7 rounded-full bg-[#CA8A04] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Gold Yellow"></button>
+<button class="w-7 h-7 rounded-full bg-[#16A34A] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Emerald Green"></button>
+<button class="w-7 h-7 rounded-full bg-[#0D9488] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Teal"></button>
+<button class="w-7 h-7 rounded-full bg-[#2563EB] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Royal Blue"></button>
+<button class="w-7 h-7 rounded-full bg-[#7C3AED] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Deep Purple"></button>
+<!-- Row 2 Colors -->
+<button class="w-7 h-7 rounded-full bg-[#FFFFFF] border-2 border-slate-300 shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Pure White"></button>
+<button class="w-7 h-7 rounded-full bg-[#CBD5E1] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Light Grey"></button>
+<!-- Selected Flamingo Pink Swatch with halo -->
+<button class="w-7 h-7 rounded-full bg-[#F43F5E] border-2 border-white shadow-sm ring-2 ring-primary ring-offset-1 scale-110" title="Flamingo Coral"></button>
+<button class="w-7 h-7 rounded-full bg-[#F97316] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Vibrant Tangerine"></button>
+<button class="w-7 h-7 rounded-full bg-[#FACC15] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Sunshine Yellow"></button>
+<button class="w-7 h-7 rounded-full bg-[#4ADE80] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Lime"></button>
+<button class="w-7 h-7 rounded-full bg-[#38BDF8] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Sky Blue"></button>
+<button class="w-7 h-7 rounded-full bg-[#F472B6] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Bubblegum Pink"></button>
+<button class="w-7 h-7 rounded-full bg-[#854D0E] border-2 border-white shadow-sm hover:scale-110 active:scale-95 transition-transform" title="Warm Earth Brown"></button>
+</div>
+<!-- Custom Color Picker Wheel Button -->
+<button class="flex flex-col items-center justify-center w-11 h-11 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface tactile-white border border-outline-variant/60" title="Custom Hex Color Picker">
+<span class="material-symbols-outlined text-xl" data-icon="colorize">colorize</span>
+</button>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Real-Time Live Chat & Guess Feed (3 cols on desktop) -->
+<aside class="lg:col-span-3 w-full bg-surface-container-lowest rounded-2xl p-3.5 border-2 border-outline-variant/60 shadow-[0_8px_24px_-4px_rgba(30,27,75,0.06)] flex flex-col gap-2.5 h-[calc(100vh-100px)] min-h-[640px]">
+<!-- Chat Header -->
+<div class="flex items-center justify-between px-1 pb-2 border-b-2 border-outline-variant/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="chat">chat</span>
+<h2 class="font-headline-md text-headline-md font-extrabold text-on-surface">Live Guesses</h2>
+</div>
+<span class="inline-flex items-center gap-1 text-label-sm font-label-sm text-emerald-600 font-extrabold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          Active
+        </span>
+</div>
+<!-- Live Chat & Guesses Stream -->
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar flex flex-col justify-end">
+<!-- Guess 1: Regular incorrect -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-baseline justify-between mb-0.5">
+<span class="font-label-md text-label-md font-extrabold text-on-surface">TurboTurtle</span>
+<span class="text-[10px] text-on-surface-variant">42s</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">is it a bird?</p>
+</div>
+<!-- Alert 1: PixelCat Guessed (Turquoise/Green Celebratory Card) -->
+<div class="p-2.5 rounded-xl bg-emerald-50 border-2 border-emerald-400 shadow-[0_4px_12px_rgba(16,185,129,0.15)]">
+<div class="flex items-center gap-1.5 text-emerald-800 font-label-md text-label-md font-black">
+<span class="material-symbols-outlined text-lg text-emerald-600" data-icon="stars">stars</span>
+<span>PixelCat guessed the word!</span>
+</div>
+<div class="text-[11px] text-emerald-700 font-bold mt-0.5 flex justify-between">
+<span>Fast guess bonus</span>
+<span>+320 pts</span>
+</div>
+</div>
+<!-- Guess 2: Close guess (Amber Warning Pill Banner) -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-baseline justify-between mb-0.5">
+<span class="font-label-md text-label-md font-extrabold text-on-surface">AstroFox</span>
+<span class="text-[10px] text-on-surface-variant">36s</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">ostrich?</p>
+</div>
+<!-- System Alert: Close Guess Badge -->
+<div class="p-2 rounded-xl bg-amber-50 border-2 border-amber-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-600 text-lg" data-icon="bolt">bolt</span>
+<span class="font-label-sm text-label-sm font-black text-amber-900">AstroFox is close!</span>
+</div>
+<!-- Guess 3: CheerfulBee -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-baseline justify-between mb-0.5">
+<span class="font-label-md text-label-md font-extrabold text-on-surface">CheerfulBee</span>
+<span class="text-[10px] text-on-surface-variant">28s</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">crane or stork?</p>
+</div>
+<!-- Alert 2: NeonPanda Guessed (Green Celebratory Card) -->
+<div class="p-2.5 rounded-xl bg-emerald-50 border-2 border-emerald-400 shadow-[0_4px_12px_rgba(16,185,129,0.15)]">
+<div class="flex items-center gap-1.5 text-emerald-800 font-label-md text-label-md font-black">
+<span class="material-symbols-outlined text-lg text-emerald-600" data-icon="stars">stars</span>
+<span>NeonPanda guessed the word!</span>
+</div>
+<div class="text-[11px] text-emerald-700 font-bold mt-0.5 flex justify-between">
+<span>Guessed correctly</span>
+<span>+280 pts</span>
+</div>
+</div>
+</div>
+<!-- Drawer Chat Control (Disabled Input + Quick Reaction Stickers) -->
+<div class="pt-2 border-t-2 border-outline-variant/50 flex flex-col gap-2">
+<!-- Drawer Notification Banner -->
+<div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-fixed/40 border border-primary/30">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="lock">lock</span>
+<span class="text-label-sm font-label-sm font-bold text-on-surface">You are the drawer — shhh, no spoiling!</span>
+</div>
+<!-- Quick Reaction Stickers Row -->
+<div class="flex items-center justify-between gap-1.5 px-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-bold">React:</span>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm font-extrabold tactile-white border border-outline-variant/60" title="Give Thumbs Up">
+<span>👍</span>
+<span class="text-[11px] font-bold">Close</span>
+</button>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm font-extrabold tactile-white border border-outline-variant/60" title="Laugh">
+<span>😂</span>
+<span class="text-[11px] font-bold">Funny</span>
+</button>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm font-extrabold tactile-white border border-outline-variant/60" title="Fire">
+<span>🔥</span>
+<span class="text-[11px] font-bold">Hot</span>
+</button>
+</div>
+<!-- Disabled Input Field -->
+<div class="relative w-full">
+<input class="w-full bg-surface-container border-2 border-outline-variant/70 text-on-surface-variant text-body-sm font-body-sm rounded-xl px-3 py-2.5 cursor-not-allowed opacity-75" disabled="" placeholder="Chat is locked while you draw..." type="text"/>
+<button class="absolute right-2 top-2 p-1.5 rounded-lg bg-outline text-white opacity-40 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-base" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Interactive Lightweight Feedback Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Swatch selection interaction
+      const swatches = document.querySelectorAll('.grid-flow-col button');
+      swatches.forEach(btn => {
+        btn.addEventListener('click', () => {
+          swatches.forEach(s => s.classList.remove('ring-2', 'ring-primary', 'ring-offset-1', 'scale-110'));
+          btn.classList.add('ring-2', 'ring-primary', 'ring-offset-1', 'scale-110');
+        });
+      });
+      
+      // Brush size selector interaction
+      const sizeButtons = document.querySelectorAll('button[title*="px)"]');
+      sizeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          sizeButtons.forEach(b => {
+            b.classList.remove('bg-primary-fixed', 'border-2', 'border-primary');
+            const dot = b.querySelector('div');
+            if (dot) dot.classList.replace('bg-primary', 'bg-on-surface');
+          });
+          btn.classList.add('bg-primary-fixed', 'border-2', 'border-primary');
+          const activeDot = btn.querySelector('div');
+          if (activeDot) activeDot.classList.replace('bg-on-surface', 'bg-primary');
+        });
+      });
+    });
+  </script>
+</body></html>

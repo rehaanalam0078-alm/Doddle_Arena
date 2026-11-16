@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doodle Arena — Spectator Live View &amp; Stream</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Script with Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#181445",
+            "outline": "#7b7487",
+            "tertiary-fixed-dim": "#4cd7f6",
+            "inverse-surface": "#2d2a5b",
+            "surface-tint": "#732ee4",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#e3dfff",
+            "primary-container": "#7c3aed",
+            "primary-fixed": "#eaddff",
+            "on-tertiary-fixed": "#001f26",
+            "surface-container": "#efebff",
+            "on-surface-variant": "#4a4455",
+            "on-tertiary-fixed-variant": "#004e5c",
+            "on-secondary-fixed-variant": "#8c1520",
+            "on-secondary-fixed": "#410006",
+            "secondary-fixed-dim": "#ffb3b0",
+            "inverse-primary": "#d2bbff",
+            "tertiary": "#005766",
+            "surface-dim": "#dad6ff",
+            "primary-fixed-dim": "#d2bbff",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#e9e5ff",
+            "surface-variant": "#e3dfff",
+            "on-primary-fixed-variant": "#5a00c6",
+            "on-error-container": "#93000a",
+            "inverse-on-surface": "#f3eeff",
+            "secondary-fixed": "#ffdad8",
+            "on-secondary-container": "#6d0010",
+            "on-tertiary-container": "#b7efff",
+            "secondary": "#ae2f34",
+            "outline-variant": "#ccc3d8",
+            "tertiary-fixed": "#acedff",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#fcf8ff",
+            "secondary-container": "#ff6b6b",
+            "surface-container-low": "#f6f2ff",
+            "error": "#ba1a1a",
+            "primary": "#630ed4",
+            "background": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "tertiary-container": "#007184",
+            "surface": "#fcf8ff",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#25005a",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#ede0ff",
+            "on-background": "#181445"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "margin-md": "1.5rem",
+            "space-md": "0.75rem",
+            "gutter-lg": "1.5rem",
+            "margin": "1rem",
+            "space-lg": "1.25rem",
+            "space-xl": "2rem",
+            "gutter": "1rem",
+            "margin-lg": "2rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "800" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Chunky Tactile Physics */
+    .tactile-btn-primary {
+      background-color: #7c3aed;
+      border-bottom: 4px solid #5b21b6;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-primary:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .tactile-btn-secondary {
+      background-color: #ff6b6b;
+      border-bottom: 4px solid #dc2626;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-secondary:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .tactile-card {
+      box-shadow: 0 8px 24px -4px rgba(30, 27, 75, 0.06);
+      border: 1.5px solid #e2e8f0;
+    }
+
+    .tactile-card-active {
+      box-shadow: 0 12px 28px -4px rgba(124, 58, 237, 0.16);
+      border: 1.5px solid #7c3aed;
+    }
+
+    /* Floating Reactions CSS Animation */
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.6) rotate(-5deg);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(0px) scale(1.1) rotate(4deg);
+      }
+      80% {
+        opacity: 0.9;
+        transform: translateY(-80px) scale(1) rotate(-3deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-130px) scale(0.8) rotate(6deg);
+      }
+    }
+
+    .emoji-float {
+      animation: floatUp 3.2s ease-out infinite;
+    }
+    .emoji-float-delayed {
+      animation: floatUp 3.6s ease-out 1.2s infinite;
+    }
+    .emoji-float-fast {
+      animation: floatUp 2.8s ease-out 0.6s infinite;
+    }
+
+    /* Pulse Glow for Countdown */
+    @keyframes timerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    .timer-alert {
+      animation: timerPulse 1s ease-in-out infinite;
+    }
+
+    /* Custom Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1edfa;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ccc3d8;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #7b7487;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary selection:text-white antialiased overflow-x-hidden">
+<!-- TOP BROADCAST BAR (TopAppBar Shared Component Anchored) -->
+<header class="w-full bg-surface-container-lowest border-b-2 border-outline-variant shadow-[0_4px_16px_-2px_rgba(24,20,69,0.06)] px-space-lg py-space-sm z-40 sticky top-0">
+<div class="max-w-[1920px] mx-auto flex items-center justify-between gap-4">
+<!-- Brand & Live Indicator -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-lg text-headline-lg font-black tracking-tight text-primary drop-shadow-sm flex items-center gap-1.5 cursor-pointer">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">draw</span>
+            Doodle Arena
+          </span>
+<span class="bg-secondary-container text-on-secondary px-2.5 py-0.5 rounded-full font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1.5 border-b-2 border-secondary font-black shadow-sm">
+<span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+            LIVE SPECTATOR
+          </span>
+</div>
+<!-- Esports Tournament Context Capsule -->
+<div class="hidden xl:flex items-center bg-surface-container px-3.5 py-1.5 rounded-xl border border-outline-variant/60 gap-2">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="font-label-md text-label-md text-on-surface">WEEKEND MASTERS CUP #14</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-label-sm text-label-sm text-primary font-black uppercase tracking-wider bg-surface-container-lowest px-2 py-0.5 rounded-md border border-outline-variant/40">SEMIFINALS (BO3)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-bold">MATCH 1 DECIDER</span>
+</div>
+</div>
+<!-- Center Viewer Badge & Live Sync -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center bg-surface-container-high px-3 py-1 rounded-full text-on-surface gap-2 border border-outline-variant/70 shadow-sm">
+<span class="flex h-2.5 w-2.5 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
+</span>
+<span class="font-label-md text-label-md tracking-normal text-on-surface font-extrabold">2,840 Spectators</span>
+</div>
+<div class="hidden lg:flex items-center gap-1.5 bg-tertiary-fixed text-on-tertiary-fixed px-2.5 py-1 rounded-full font-label-sm text-label-sm border border-tertiary-container/30">
+<span class="material-symbols-outlined text-base">sensors</span>
+<span>1080p60 • Ultra-Low Latency (12ms)</span>
+</div>
+</div>
+<!-- Actions & Profile Info (TopNavBar shared actions) -->
+<div class="flex items-center gap-space-md">
+<!-- Quick Audio / Help Toggles -->
+<div class="flex items-center gap-1 text-on-surface-variant">
+<button class="p-2 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface flex items-center justify-center active:translate-y-0.5" title="Stream Audio: Unmuted">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</button>
+<button class="p-2 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface flex items-center justify-center active:translate-y-0.5" title="Broadcast Settings">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+<button class="p-2 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface flex items-center justify-center active:translate-y-0.5" title="Rules &amp; Telemetry">
+<span class="material-symbols-outlined text-xl">help</span>
+</button>
+</div>
+<div class="h-6 w-px bg-outline-variant"></div>
+<!-- Exit Spectate / Return Button -->
+<button class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md border-b-2 border-outline-variant active:translate-y-0.5 transition-all">
+<span class="material-symbols-outlined text-base">emoji_symbols</span>
+<span>Bracket</span>
+</button>
+<button class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-secondary-container text-on-secondary font-label-md text-label-md border-b-4 border-secondary active:translate-y-0.5 active:border-b-2 transition-all shadow-sm">
+<span class="material-symbols-outlined text-base">logout</span>
+<span>Leave Game</span>
+</button>
+<!-- Current Spectator Avatar -->
+<div class="flex items-center gap-2 pl-1 border-l border-outline-variant/60">
+<div class="relative">
+<div class="w-9 h-9 rounded-full bg-primary-fixed border-2 border-primary flex items-center justify-center overflow-hidden shadow-sm">
+<span class="font-headline-md text-headline-md text-primary font-black">🐧</span>
+</div>
+<span class="absolute -bottom-1 -right-1 bg-surface-container-lowest text-primary text-[10px] font-black px-1 rounded-full border border-primary">M2</span>
+</div>
+<div class="hidden 2xl:flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface leading-tight font-extrabold">PixelPenguin</span>
+<span class="text-[10px] text-primary font-bold">Master II Spectator</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- BROADCAST ARENA MAIN WORKSPACE -->
+<main class="flex-1 w-full max-w-[1920px] mx-auto p-3 lg:p-4 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+<!-- ========================================================================= -->
+<!-- LEFT COLUMN: Competitor Duel Stats, Round Details & Telemetry (3 Cols) -->
+<!-- ========================================================================= -->
+<aside class="lg:col-span-3 flex flex-col gap-3 h-full overflow-y-auto pr-0.5">
+<!-- Head-to-Head Duel Card -->
+<section class="tactile-card bg-surface-container-lowest rounded-2xl p-4 flex flex-col gap-3.5">
+<div class="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">swords</span>
+<span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wide">Grand Arena Matchup</span>
+</div>
+<span class="bg-surface-container px-2 py-0.5 rounded-md font-label-sm text-label-sm text-primary font-bold">BO3 Series</span>
+</div>
+<!-- Duel Competitor 1 (Current Drawer) -->
+<div class="relative bg-surface-container-low rounded-xl p-3 border-2 border-primary shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<!-- Avatar with Golden Crown & Active Brush Animation Ring -->
+<div class="relative">
+<div class="w-12 h-12 rounded-2xl bg-amber-100 border-2 border-amber-500 flex items-center justify-center text-2xl shadow-inner">
+                🦊
+              </div>
+<span class="absolute -top-2 -left-1 text-base">👑</span>
+<span class="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-black px-1.5 py-0.2 rounded-full border border-white">
+                #1
+              </span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-base text-on-surface font-extrabold leading-none">SpeedyFox</span>
+<span class="bg-primary/10 text-primary text-[10px] font-black px-1.5 py-0.5 rounded">3,420 RP</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-xs text-primary font-bold">
+<span class="material-symbols-outlined text-xs animate-bounce" style="font-variation-settings: 'FILL' 1;">brush</span>
+<span>Drawing Now</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-2xl font-black text-on-surface font-headline-md">1</span>
+<span class="text-[10px] font-bold text-outline uppercase tracking-wider">Game Won</span>
+</div>
+</div>
+<!-- VS Divider Pill with Match Score -->
+<div class="flex items-center justify-center -my-1 relative z-10">
+<div class="bg-surface-container-lowest px-3 py-1 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface font-extrabold flex items-center gap-2 shadow-sm">
+<span class="text-secondary font-black">MATCH POINT</span>
+<span class="text-outline">•</span>
+<span class="text-on-surface">1 - 1 TIE</span>
+</div>
+</div>
+<!-- Duel Competitor 2 (Guessing) -->
+<div class="bg-surface-container-lowest rounded-xl p-3 border border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-2xl bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center text-2xl shadow-inner">
+                🐍
+              </div>
+<span class="absolute -bottom-1 -right-1 bg-outline text-white text-[10px] font-black px-1.5 py-0.2 rounded-full border border-white">
+                #4
+              </span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-base text-on-surface font-extrabold leading-none">BrushViper</span>
+<span class="bg-surface-container text-on-surface-variant text-[10px] font-black px-1.5 py-0.5 rounded">2,990 RP</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-xs text-on-surface-variant font-bold">
+<span class="material-symbols-outlined text-xs">keyboard</span>
+<span>Guessing (Attempt 4)</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-2xl font-black text-on-surface font-headline-md">1</span>
+<span class="text-[10px] font-bold text-outline uppercase tracking-wider">Game Won</span>
+</div>
+</div>
+</section>
+<!-- Round & Word Telemetry Spectator Reveal Card -->
+<section class="tactile-card bg-surface-container-lowest rounded-2xl p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">visibility</span>
+<span class="font-label-lg text-label-lg uppercase tracking-wide">Spectator HUD Reveal</span>
+</div>
+<span class="text-xs bg-primary-fixed text-on-primary-fixed font-black px-2 py-0.5 rounded-full">Round 3 of 3</span>
+</div>
+<div class="bg-primary/5 rounded-xl p-3 border border-primary/20 flex flex-col gap-2">
+<div class="flex items-center justify-between text-xs font-bold text-on-surface-variant">
+<span>Category: <strong class="text-on-surface">Mythology &amp; Legends</strong></span>
+<span class="text-[11px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded font-black">Tier 3 Difficulty</span>
+</div>
+<div class="bg-surface-container-lowest p-2.5 rounded-lg border-2 border-primary flex items-center justify-between">
+<div>
+<div class="text-[10px] font-black uppercase tracking-wider text-primary">Secret Word Revealed to You:</div>
+<div class="font-headline-lg text-headline-lg font-black tracking-widest text-primary">CENTAUR</div>
+</div>
+<button class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant text-xs flex items-center gap-1 font-bold" title="Hide/Unhide Secret Word">
+<span class="material-symbols-outlined text-base">visibility_off</span>
+</button>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-tight">
+            Guesses submitted so far: <span class="text-error font-bold line-through">Unicorn</span>, <span class="text-error font-bold line-through">Knight Horse</span>, <span class="text-amber-600 font-bold">Pegasus (Close!)</span>
+</p>
+</div>
+<!-- Real-Time Stroke Analysis & Speed Meter -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<div class="bg-surface-container-low rounded-xl p-2.5 border border-outline-variant/60 flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider text-outline">Drawing Cadence</span>
+<span class="font-headline-md text-lg font-black text-on-surface flex items-center gap-1 mt-0.5">
+              124 <span class="text-xs font-bold text-primary">strokes/min</span>
+</span>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-2.5 border border-outline-variant/60 flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider text-outline">Vector Precision</span>
+<span class="font-headline-md text-lg font-black text-on-surface flex items-center gap-1 mt-0.5">
+              94.2% <span class="text-xs font-bold text-emerald-600">High</span>
+</span>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 94%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Community Live Prediction Widget -->
+<section class="tactile-card bg-surface-container-lowest rounded-2xl p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-container text-xl" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wide">Live Match Predictor</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline font-bold">14,250 XP Pool</span>
+</div>
+<!-- Prediction Bar -->
+<div class="space-y-1.5">
+<div class="flex justify-between font-label-md text-label-md font-extrabold">
+<span class="text-primary">SpeedyFox (62%)</span>
+<span class="text-secondary">BrushViper (38%)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container-high flex overflow-hidden border border-outline-variant/50">
+<div class="bg-primary h-full" style="width: 62%"></div>
+<div class="bg-secondary-container h-full" style="width: 38%"></div>
+</div>
+</div>
+<!-- Quick Vote Buttons with Tactile Feel -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="tactile-btn-primary text-white rounded-xl py-2 px-2 text-center flex flex-col items-center justify-center group">
+<span class="font-label-md text-label-md text-white font-extrabold group-hover:scale-105 transition-transform">SpeedyFox</span>
+<span class="text-[10px] text-primary-fixed opacity-90 font-bold">+500 XP Bet</span>
+</button>
+<button class="tactile-btn-secondary text-white rounded-xl py-2 px-2 text-center flex flex-col items-center justify-center group">
+<span class="font-label-md text-label-md text-white font-extrabold group-hover:scale-105 transition-transform">BrushViper</span>
+<span class="text-[10px] text-white opacity-90 font-bold">+500 XP Bet</span>
+</button>
+</div>
+</section>
+<!-- Mini Lobby Leaderboard Table -->
+<section class="tactile-card bg-surface-container-lowest rounded-2xl p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between text-xs font-bold text-on-surface-variant px-1">
+<span class="uppercase tracking-wider">Tournament Table</span>
+<span>Semi Bracket #1</span>
+</div>
+<div class="flex flex-col gap-1.5 text-xs">
+<!-- Row 1 -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low border border-primary/30">
+<div class="flex items-center gap-2">
+<span class="font-black text-primary">1</span>
+<span class="font-extrabold text-on-surface">SpeedyFox</span>
+<span class="bg-primary text-white text-[9px] px-1 rounded font-black">DRAW</span>
+</div>
+<span class="font-mono font-bold text-on-surface">3,420 pt</span>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="font-bold text-outline">2</span>
+<span class="font-bold text-on-surface">BrushViper</span>
+<span class="bg-amber-100 text-amber-900 text-[9px] px-1 rounded font-black">GUESS</span>
+</div>
+<span class="font-mono font-bold text-on-surface">2,990 pt</span>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container transition-colors opacity-75">
+<div class="flex items-center gap-2">
+<span class="font-bold text-outline">3</span>
+<span class="font-medium text-on-surface">KittenDraws</span>
+<span class="text-outline text-[9px]">Eliminated</span>
+</div>
+<span class="font-mono text-outline">1,820 pt</span>
+</div>
+</div>
+</section>
+</aside>
+<!-- ========================================================================= -->
+<!-- CENTER COLUMN: Canvas Broadcast Theater & Vector Stream (6 Cols) -->
+<!-- ========================================================================= -->
+<section class="lg:col-span-6 flex flex-col gap-3 h-full">
+<!-- Canvas Header Bar with Round Countdown & Word Mask -->
+<div class="tactile-card bg-surface-container-lowest rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+<!-- Live Sync & Stream Telemetry -->
+<div class="flex items-center gap-2.5">
+<!-- Big Circular Countdown Ring (28s) -->
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<!-- Background circle track -->
+<path class="text-surface-container-highest stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<!-- Progress fill stroke -->
+<path class="text-primary stroke-current transition-all duration-500 ease-linear" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="70, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="font-headline-md text-headline-md font-black text-primary leading-none">28</span>
+<span class="text-[8px] font-black uppercase text-outline leading-none mt-0.5">SEC</span>
+</div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface font-extrabold">Final Round Duel</span>
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">SpeedyFox drawing • Calligraphy Pen (#B45309)</span>
+</div>
+</div>
+<!-- Word Blanks & Spectator Confirmation Badge -->
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1.5">
+<!-- Guesser Masked View representation -->
+<div class="flex items-center gap-1 font-mono font-black text-lg bg-surface-container px-3 py-1 rounded-xl border border-outline-variant">
+<span class="text-outline">_</span>
+<span class="text-primary">E</span>
+<span class="text-outline">_</span>
+<span class="text-outline">_</span>
+<span class="text-primary">A</span>
+<span class="text-outline">_</span>
+<span class="text-primary">R</span>
+<span class="text-[11px] font-sans font-bold text-outline-variant ml-1.5">(7 Letters)</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-tertiary-container font-black uppercase tracking-wider mt-0.5">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Spectator Feed: Word is "CENTAUR"</span>
+</div>
+</div>
+</div>
+</div>
+<!-- THE MAIN DRAWING CANVAS (Interactive & Vector Display) -->
+<div class="relative flex-1 bg-surface-container-lowest rounded-2xl border-2 border-outline-variant shadow-[0_12px_28px_-4px_rgba(30,27,75,0.06)] overflow-hidden flex flex-col justify-between group min-h-[500px]">
+<!-- Subtle Vector Canvas Grid Background -->
+<div class="absolute inset-0 opacity-[0.035] pointer-events-none" style="background-image: radial-gradient(#181445 1.5px, transparent 1.5px); background-size: 24px 24px;"></div>
+<!-- Watermark / Stream Broadcast Indicator in top left of canvas -->
+<div class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-outline-variant/60 shadow-sm pointer-events-none">
+<div class="w-2.5 h-2.5 rounded-full bg-secondary animate-ping"></div>
+<span class="font-label-sm text-label-sm text-on-surface font-black tracking-wider">LIVE CANVAS RENDER</span>
+<span class="text-outline text-xs">•</span>
+<span class="text-xs text-primary font-bold">Brush: 8px Copper Calligraphy</span>
+</div>
+<!-- Top Right Canvas Tool Stats Overlay -->
+<div class="absolute top-4 right-4 z-10 hidden sm:flex items-center gap-1.5 bg-surface-container-lowest/90 backdrop-blur-md px-2.5 py-1 rounded-xl border border-outline-variant/60 text-xs font-bold text-on-surface-variant">
+<span class="material-symbols-outlined text-sm text-primary">palette</span>
+<span>Color: #B45309</span>
+<span class="w-3 h-3 rounded-full border border-black/20" style="background-color: #B45309;"></span>
+</div>
+<!-- SVG CENTAUR DRAWING (Majestic Playful Cartoon Centaur in progress) -->
+<div class="relative w-full h-full flex items-center justify-center p-6 select-none">
+<svg class="w-full h-full max-h-[520px]" fill="none" viewbox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+<!-- Sketch construction guide lines (gives live doodle authenticity) -->
+<ellipse cx="440" cy="380" rx="160" ry="90" stroke="#E2E8F0" stroke-dasharray="6 6" stroke-width="2"></ellipse>
+<circle cx="340" cy="220" r="55" stroke="#E2E8F0" stroke-dasharray="6 6" stroke-width="2"></circle>
+<line stroke="#F1EDFA" stroke-width="1.5" x1="260" x2="480" y1="210" y2="170"></line>
+<!-- HORSE BODY (Lower Centaur) -->
+<!-- Horse back legs -->
+<path d="M540 400 Q590 440 575 510 L545 510 Q555 450 510 425" fill="#FEF3C7" stroke="#78350F" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path>
+<path d="M590 410 Q640 450 630 520 L600 520 Q605 460 560 435" fill="#FDE68A" stroke="#78350F" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path>
+<rect fill="#451A03" height="15" rx="3" width="30" x="545" y="505"></rect>
+<rect fill="#451A03" height="15" rx="3" width="30" x="600" y="515"></rect>
+<!-- Horse Barrel / Flank -->
+<path d="M370 360 C420 340 520 330 590 380 C630 410 600 460 520 465 C440 470 380 440 355 400 Z" fill="#FDE68A" stroke="#78350F" stroke-linejoin="round" stroke-width="7"></path>
+<!-- Horse Front Legs -->
+<path d="M380 430 Q370 480 345 525 L375 525 Q395 480 410 435" fill="#FDE68A" stroke="#78350F" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path>
+<path d="M420 425 Q445 470 470 515 L440 515 Q420 470 405 435" fill="#FEF3C7" stroke="#78350F" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path>
+<rect fill="#451A03" height="14" rx="3" width="30" x="345" y="520"></rect>
+<rect fill="#451A03" height="14" rx="3" width="30" x="440" y="510"></rect>
+<!-- Swishing Playful Horse Tail -->
+<path d="M600 375 C640 370 680 395 690 440 C695 465 675 490 660 485 C640 480 655 440 645 425 C635 410 610 405 595 400" fill="#F59E0B" stroke="#B45309" stroke-linecap="round" stroke-width="6"></path>
+<path d="M670 430 C690 450 705 480 690 500" stroke="#92400E" stroke-linecap="round" stroke-width="4"></path>
+<!-- HUMAN TORSO (Upper Centaur Warrior) -->
+<!-- Torso connection to horse with belt -->
+<path d="M355 400 C350 360 365 310 385 270 C410 275 430 300 425 355" fill="#FED7AA" stroke="#78350F" stroke-linecap="round" stroke-width="7"></path>
+<!-- Roman-style Centaur Gold Belt / Cinch -->
+<path d="M350 380 Q390 395 430 375 L428 395 Q390 410 350 395 Z" fill="#F59E0B" stroke="#B45309" stroke-width="4"></path>
+<circle cx="390" cy="392" fill="#DC2626" r="6"></circle>
+<!-- Chest & Muscle Definition Doodles -->
+<path d="M380 300 Q395 315 410 300" stroke="#EA580C" stroke-linecap="round" stroke-width="3"></path>
+<path d="M395 305 L395 340" stroke="#EA580C" stroke-linecap="round" stroke-width="3"></path>
+<path d="M385 330 Q395 338 405 330" stroke="#EA580C" stroke-linecap="round" stroke-width="3"></path>
+<!-- Heroic Centaur Head -->
+<circle cx="390" cy="220" fill="#FED7AA" r="38" stroke="#78350F" stroke-width="6"></circle>
+<!-- Cartoon Expressive Face -->
+<!-- Determined Brow & Eyes -->
+<path d="M375 210 L388 214" stroke="#78350F" stroke-linecap="round" stroke-width="4"></path>
+<path d="M412 210 L398 214" stroke="#78350F" stroke-linecap="round" stroke-width="4"></path>
+<ellipse cx="383" cy="222" fill="#181445" rx="4" ry="6"></ellipse>
+<ellipse cx="403" cy="222" fill="#181445" rx="4" ry="6"></ellipse>
+<circle cx="385" cy="220" fill="#FFFFFF" r="1.5"></circle>
+<circle cx="405" cy="220" fill="#FFFFFF" r="1.5"></circle>
+<!-- Confident Smirk -->
+<path d="M386 238 Q395 246 408 236" stroke="#78350F" stroke-linecap="round" stroke-width="4"></path>
+<!-- Warrior Laurel Headband & Flowing Hair -->
+<path d="M360 205 C355 170 390 165 425 180 C445 190 440 220 430 225 C420 195 380 185 365 215" fill="#B45309" stroke="#92400E" stroke-width="6"></path>
+<path d="M370 205 Q395 195 420 208" fill="none" stroke="#16A34A" stroke-linecap="round" stroke-width="5"></path>
+<!-- Laurel leaves -->
+<circle cx="380" cy="199" fill="#22C55E" r="3"></circle>
+<circle cx="395" cy="198" fill="#22C55E" r="3"></circle>
+<circle cx="410" cy="201" fill="#22C55E" r="3"></circle>
+<!-- Bow & Arrow Arm (Left Arm aiming forward, Right Arm drawing string) -->
+<!-- Left Arm holding majestic wooden bow -->
+<path d="M365 280 L300 260 L240 250" fill="none" stroke="#78350F" stroke-linecap="round" stroke-width="7"></path>
+<!-- The Recurve Bow -->
+<path d="M225 150 C250 200 255 300 225 360" fill="none" stroke="#92400E" stroke-linecap="round" stroke-width="8"></path>
+<!-- Bowstring currently drawn back -->
+<path d="M225 150 L380 260 L225 360" stroke="#94A3B8" stroke-dasharray="4 2" stroke-linecap="round" stroke-width="3"></path>
+<!-- Right Arm pulling bowstring at chest -->
+<path d="M420 275 L405 285 L380 262" fill="none" stroke="#78350F" stroke-linecap="round" stroke-width="7"></path>
+<!-- Arrow being aimed -->
+<line stroke="#DC2626" stroke-linecap="round" stroke-width="4" x1="220" x2="380" y1="250" y2="260"></line>
+<!-- Arrow tip feather -->
+<polygon fill="#EF4444" points="210,249 225,244 225,255"></polygon>
+<polygon fill="#F59E0B" points="375,257 385,254 380,265"></polygon>
+<!-- Active In-Progress Brush Stroke Lines (Simulating live painting) -->
+<path class="animate-pulse" d="M425 320 Q460 330 450 360" stroke="#B45309" stroke-linecap="round" stroke-width="8"></path>
+<path d="M300 240 Q280 230 265 240" stroke="#B45309" stroke-linecap="round" stroke-width="5"></path>
+</svg>
+<!-- REAL-TIME DRAWER CURSOR OVERLAY -->
+<div class="absolute top-[52%] left-[58%] pointer-events-none transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-start transition-all duration-150">
+<!-- Stylized Floating Pencil Icon Cursor -->
+<div class="flex items-center gap-1.5 drop-shadow-md">
+<span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings: 'FILL' 1;">edit</span>
+<!-- Tooltip Tag -->
+<div class="bg-primary text-white font-label-sm text-[11px] font-black px-2 py-0.5 rounded-md shadow-md border border-white/40 flex items-center gap-1">
+<span>SpeedyFox</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+</div>
+</div>
+</div>
+<!-- STREAM SPECTATOR REACTION FLOATER BUBBLES (Visual excitement) -->
+<div class="absolute bottom-16 right-8 pointer-events-none flex flex-col items-center gap-3">
+<span class="text-3xl emoji-float">🎨</span>
+<span class="text-4xl emoji-float-delayed">🔥</span>
+<span class="text-2xl emoji-float-fast">🤯</span>
+<span class="text-3xl emoji-float">👏</span>
+</div>
+</div>
+<!-- CANVAS FOOTER TOOLBAR: Spectator Controls & Interactive Reaction Floaters -->
+<div class="bg-surface-container-low/95 border-t border-outline-variant/60 p-3 px-4 flex flex-wrap items-center justify-between gap-3 backdrop-blur-md">
+<!-- Emoji Shower Button Bar -->
+<div class="flex items-center gap-1.5">
+<span class="text-xs font-black uppercase text-outline mr-1 hidden sm:inline">Hype:</span>
+<button class="w-9 h-9 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest border border-outline-variant/70 text-lg flex items-center justify-center active:scale-95 transition-all shadow-sm" title="Clap">
+              👏
+            </button>
+<button class="w-9 h-9 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest border border-outline-variant/70 text-lg flex items-center justify-center active:scale-95 transition-all shadow-sm" title="Fire">
+              🔥
+            </button>
+<button class="w-9 h-9 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest border border-outline-variant/70 text-lg flex items-center justify-center active:scale-95 transition-all shadow-sm" title="Masterpiece">
+              🎨
+            </button>
+<button class="w-9 h-9 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest border border-outline-variant/70 text-lg flex items-center justify-center active:scale-95 transition-all shadow-sm" title="Mindblown">
+              🤯
+            </button>
+<button class="w-9 h-9 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest border border-outline-variant/70 text-lg flex items-center justify-center active:scale-95 transition-all shadow-sm" title="LOL">
+              🤣
+            </button>
+<button class="w-9 h-9 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest border border-outline-variant/70 text-lg flex items-center justify-center active:scale-95 transition-all shadow-sm" title="Lightning">
+              ⚡
+            </button>
+</div>
+<!-- Broadcast Stream Control Buttons -->
+<div class="flex items-center gap-1.5">
+<!-- Instant Clip Replay Button -->
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-high border border-outline-variant text-on-surface font-label-sm text-label-sm font-bold shadow-sm active:translate-y-0.5">
+<span class="material-symbols-outlined text-base text-secondary-container">history</span>
+<span>15s Clip</span>
+</button>
+<!-- Canvas Grid Toggle -->
+<button class="p-1.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-high border border-outline-variant text-on-surface-variant active:translate-y-0.5 shadow-sm" title="Toggle Grid overlay">
+<span class="material-symbols-outlined text-lg">grid_on</span>
+</button>
+<!-- Zoom Canvas -->
+<button class="p-1.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-high border border-outline-variant text-on-surface-variant active:translate-y-0.5 shadow-sm" title="Zoom Fit">
+<span class="material-symbols-outlined text-lg">fit_screen</span>
+</button>
+<!-- Theater Mode Toggle -->
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary text-white font-label-sm text-label-sm font-extrabold border-b-2 border-primary-container active:translate-y-0.5 shadow-sm">
+<span class="material-symbols-outlined text-base">fullscreen</span>
+<span class="hidden md:inline">Theater</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- RIGHT COLUMN: Dual Chat & Match Feed Stream Panel (3 Cols) -->
+<!-- ========================================================================= -->
+<aside class="lg:col-span-3 flex flex-col h-full gap-3 overflow-hidden">
+<div class="tactile-card bg-surface-container-lowest rounded-2xl flex flex-col h-full overflow-hidden">
+<!-- Chat Header & Tab Selector -->
+<div class="p-2.5 bg-surface-container-low border-b border-outline-variant/60 flex flex-col gap-2">
+<div class="flex items-center justify-between px-1">
+<span class="font-headline-md text-base text-on-surface font-extrabold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">chat</span>
+              Stream Activity
+            </span>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-xs font-bold text-outline">Slowmode: 3s</span>
+</div>
+</div>
+<!-- Dual Tabs Pill -->
+<div class="grid grid-cols-2 p-1 bg-surface-container-highest rounded-xl gap-1 font-label-md text-label-md">
+<button class="py-1.5 px-2 rounded-lg bg-surface-container-lowest text-primary font-black shadow-sm text-center flex items-center justify-center gap-1">
+<span>Spectator Chat</span>
+<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.2 rounded-full">2.8k</span>
+</button>
+<button class="py-1.5 px-2 rounded-lg text-on-surface-variant hover:text-on-surface font-bold text-center flex items-center justify-center gap-1 transition-colors">
+<span>Match Intel Feed</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</button>
+</div>
+<!-- Hype Train Progress Meter -->
+<div class="bg-gradient-to-r from-primary/10 via-secondary-container/15 to-amber-100 rounded-xl p-2 border border-primary/20 flex flex-col gap-1">
+<div class="flex items-center justify-between text-[11px] font-black">
+<span class="text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                Hype Train Level 3
+              </span>
+<span class="text-on-surface">84% to Lvl 4</span>
+</div>
+<div class="w-full bg-white/80 h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary-container h-full rounded-full" style="width: 84%;"></div>
+</div>
+</div>
+</div>
+<!-- Pinned Mod / Caster Banner -->
+<div class="bg-surface-container p-2.5 px-3 border-b border-outline-variant/60 flex items-start gap-2 text-xs">
+<span class="material-symbols-outlined text-primary text-base mt-0.5" style="font-variation-settings: 'FILL' 1;">push_pin</span>
+<div class="leading-tight">
+<span class="font-extrabold text-primary">CasterMod:</span>
+<span class="text-on-surface font-medium">Grand Finals match begins immediately after this tiebreaker decider! Keep guesses polite.</span>
+</div>
+</div>
+<!-- Active Chat Message Stream -->
+<div class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs font-body-sm">
+<!-- Message 1 (VIP / Sub) -->
+<div class="flex items-start gap-2">
+<span class="bg-amber-400 text-on-surface text-[10px] font-black px-1.5 py-0.5 rounded shadow-xs mt-0.5">VIP</span>
+<div>
+<span class="font-bold text-primary font-label-sm">DrawMaster99:</span>
+<span class="text-on-surface ml-1 font-medium">Speedy's horse anatomy in 20 seconds is completely unreal holy 🔥</span>
+</div>
+</div>
+<!-- Message 2 (Guesser Alert / In-Game System Event) -->
+<div class="p-2 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-amber-600">notification_important</span>
+<div class="text-[11px] leading-tight">
+<strong>BrushViper</strong> just guessed <em>"Pegasus"</em> — <span class="text-amber-700 font-extrabold">SO CLOSE!</span>
+</div>
+</div>
+<!-- Message 3 (Regular Viewer) -->
+<div class="flex items-start gap-2">
+<span class="bg-surface-container text-on-surface-variant text-[10px] font-extrabold px-1 rounded mt-0.5">L12</span>
+<div>
+<span class="font-bold text-on-surface font-label-sm">NeonScribbler:</span>
+<span class="text-on-surface ml-1 font-medium">He is drawing the bow right now!! CENTAUR for sure!</span>
+</div>
+</div>
+<!-- Message 4 (Celebratory Correct Guess Flash) -->
+<div class="p-2 rounded-xl bg-emerald-50 border-2 border-emerald-400 text-emerald-950 flex items-center justify-between shadow-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600 text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="text-[11px] leading-tight">
+<span class="font-black text-emerald-800">Lobby Guess:</span>
+<span class="font-extrabold">BrushViper is typing furiously...</span>
+</div>
+</div>
+<span class="text-[10px] font-black bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded">Round Climax</span>
+</div>
+<!-- Message 5 (Moderator) -->
+<div class="flex items-start gap-2">
+<span class="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow-xs mt-0.5">MOD</span>
+<div>
+<span class="font-bold text-primary font-label-sm">ArenaBot:</span>
+<span class="text-on-surface ml-1 font-medium">Prediction closes in 15 seconds! Vote on the left drawer now.</span>
+</div>
+</div>
+<!-- Message 6 (Subscriber with Diamond Gem) -->
+<div class="flex items-start gap-2">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-black px-1.5 py-0.5 rounded flex items-center gap-0.5 mt-0.5">
+              💎 500
+            </span>
+<div>
+<span class="font-bold text-on-surface font-label-sm">ViperFanatic:</span>
+<span class="text-on-surface ml-1 font-medium">Come on BrushViper type CENTAUR!! LOOK AT THE TORSO!! 😭</span>
+</div>
+</div>
+<!-- Message 7 -->
+<div class="flex items-start gap-2">
+<span class="bg-surface-container text-on-surface-variant text-[10px] font-extrabold px-1 rounded mt-0.5">L24</span>
+<div>
+<span class="font-bold text-on-surface font-label-sm">DoodleGamer:</span>
+<span class="text-on-surface ml-1 font-medium">That Greek laurel on his head is top tier detail lmao 🤣👏</span>
+</div>
+</div>
+<!-- Message 8 -->
+<div class="flex items-start gap-2">
+<span class="bg-secondary-container text-white text-[10px] font-black px-1.5 py-0.5 rounded mt-0.5">SUB</span>
+<div>
+<span class="font-bold text-secondary font-label-sm">SketchyCat:</span>
+<span class="text-on-surface ml-1 font-medium">1-1 tie breaker tension is wild tonight!</span>
+</div>
+</div>
+</div>
+<!-- Chat Input Footer Area -->
+<div class="p-3 bg-surface-container-low border-t border-outline-variant/60 flex flex-col gap-2">
+<!-- Quick Gem / Bits Tip Bar -->
+<div class="flex items-center justify-between text-xs">
+<button class="flex items-center gap-1 text-primary hover:text-primary-container font-black text-[11px] bg-primary-fixed/40 px-2 py-0.5 rounded-lg border border-primary/20">
+<span>Cheer with Gems</span>
+<span class="bg-primary text-white text-[10px] px-1 rounded">100 💎</span>
+</button>
+<span class="text-[11px] text-outline font-medium">Balance: 1,450 💎</span>
+</div>
+<!-- Input Bar with Send Button -->
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-lowest border-2 border-outline-variant focus:border-primary focus:ring-0 rounded-xl py-2 pl-3 pr-20 text-xs font-body-sm text-on-surface placeholder:text-outline outline-none shadow-inner" placeholder="Send a message to 2.8k spectators..." type="text"/>
+<div class="absolute right-1.5 flex items-center gap-1">
+<button class="p-1 text-outline hover:text-on-surface" title="Pick Emoji">
+<span class="material-symbols-outlined text-lg">sentiment_satisfied</span>
+</button>
+<button class="tactile-btn-primary p-1.5 px-2.5 rounded-lg text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-sm font-bold">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- BROADCAST FOOTER STATUS BAR (Esports Integrity & Global Shortcuts) -->
+<footer class="w-full bg-surface-container-lowest border-t border-outline-variant/60 py-2 px-space-lg text-xs font-label-sm z-30">
+<div class="max-w-[1920px] mx-auto flex flex-wrap items-center justify-between gap-3 text-on-surface-variant">
+<!-- Integrity Info -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-emerald-700 font-extrabold bg-emerald-100 px-2 py-0.5 rounded-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">security</span>
+<span>Anti-Cheat Hardware Telemetry: VERIFIED</span>
+</div>
+<span class="hidden sm:inline text-outline">•</span>
+<span class="font-mono text-outline">Match ID: #WMC-2024-SF1-DODL</span>
+<span class="hidden md:inline text-outline">•</span>
+<span class="hidden md:inline">Broadcast Server: US-East (Virginia) #08</span>
+</div>
+<!-- Quick Spectator Hotkeys helper -->
+<div class="flex items-center gap-4 text-outline font-bold">
+<span class="hidden xl:inline">Hotkeys:</span>
+<div class="flex items-center gap-1">
+<kbd class="bg-surface-container border border-outline-variant px-1.5 py-0.5 rounded text-[10px] text-on-surface font-mono shadow-xs">T</kbd>
+<span class="text-[11px]">Theater</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="bg-surface-container border border-outline-variant px-1.5 py-0.5 rounded text-[10px] text-on-surface font-mono shadow-xs">C</kbd>
+<span class="text-[11px]">Cheer</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="bg-surface-container border border-outline-variant px-1.5 py-0.5 rounded text-[10px] text-on-surface font-mono shadow-xs">M</kbd>
+<span class="text-[11px]">Mute</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="bg-surface-container border border-outline-variant px-1.5 py-0.5 rounded text-[10px] text-on-surface font-mono shadow-xs">S</kbd>
+<span class="text-[11px]">Spoiler Toggle</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- Light Vanilla Script for Playful Micro-Interactions -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hotkey listeners for esports spectator experience
+      window.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        
+        if (e.key === 'c' || e.key === 'C') {
+          // Trigger floating celebration emoji
+          spawnFloatingEmoji('🎉');
+        }
+      });
+
+      function spawnFloatingEmoji(char) {
+        const floatContainer = document.querySelector('.bottom-16.right-8');
+        if (!floatContainer) return;
+        const span = document.createElement('span');
+        span.className = 'text-3xl emoji-float';
+        span.textContent = char;
+        floatContainer.appendChild(span);
+        setTimeout(() => span.remove(), 3200);
+      }
+    });
+  </script>
+</body></html>

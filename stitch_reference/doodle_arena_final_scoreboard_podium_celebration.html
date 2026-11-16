@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doodle Arena - Match Results &amp; Podium</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed": "#ffdad8",
+            "on-surface": "#181445",
+            "surface-container": "#efebff",
+            "inverse-on-surface": "#f3eeff",
+            "primary-container": "#7c3aed",
+            "on-tertiary-fixed-variant": "#004e5c",
+            "primary-fixed": "#eaddff",
+            "surface-dim": "#dad6ff",
+            "tertiary-container": "#007184",
+            "tertiary-fixed": "#acedff",
+            "surface-variant": "#e3dfff",
+            "on-primary-container": "#ede0ff",
+            "surface-tint": "#732ee4",
+            "on-background": "#181445",
+            "secondary-fixed-dim": "#ffb3b0",
+            "error": "#ba1a1a",
+            "on-secondary-container": "#6d0010",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#e3dfff",
+            "tertiary-fixed-dim": "#4cd7f6",
+            "on-primary": "#ffffff",
+            "on-tertiary-fixed": "#001f26",
+            "on-error-container": "#93000a",
+            "outline-variant": "#ccc3d8",
+            "on-primary-fixed-variant": "#5a00c6",
+            "on-surface-variant": "#4a4455",
+            "on-tertiary-container": "#b7efff",
+            "secondary": "#ae2f34",
+            "on-secondary-fixed": "#410006",
+            "on-secondary-fixed-variant": "#8c1520",
+            "on-secondary": "#ffffff",
+            "outline": "#7b7487",
+            "inverse-surface": "#2d2a5b",
+            "on-primary-fixed": "#25005a",
+            "surface-container-low": "#f6f2ff",
+            "primary-fixed-dim": "#d2bbff",
+            "background": "#fcf8ff",
+            "inverse-primary": "#d2bbff",
+            "secondary-container": "#ff6b6b",
+            "on-tertiary": "#ffffff",
+            "surface": "#fcf8ff",
+            "primary": "#630ed4",
+            "surface-container-lowest": "#ffffff",
+            "on-error": "#ffffff",
+            "surface-container-high": "#e9e5ff",
+            "tertiary": "#005766",
+            "surface-bright": "#fcf8ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-lg": "1.5rem",
+            "space-md": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "margin": "1rem",
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "space-xl": "2rem",
+            "margin-lg": "2rem",
+            "margin-md": "1.5rem"
+          },
+          "fontFamily": {
+            "headline-xl": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+            "headline-xl-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "800"}],
+            "label-lg": ["14px", {"lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+            "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+            "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+            "body-md": ["15px", {"lineHeight": "22px", "fontWeight": "500"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .tactile-btn-primary {
+      background-color: #7c3aed;
+      border-bottom: 4px solid #5b21b6;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-primary:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+    
+    .tactile-btn-coral {
+      background-color: #ff6b6b;
+      border-bottom: 4px solid #dc2626;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-coral:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .tactile-btn-secondary {
+      background-color: #ffffff;
+      border: 1.5px solid #ccc3d8;
+      border-bottom: 4px solid #b3a7c4;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-secondary:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .tactile-card {
+      border: 2px solid #e3dfff;
+      border-bottom: 4px solid #ccc3d8;
+    }
+
+    .podium-1st {
+      background: linear-gradient(180deg, #fef08a 0%, #facc15 60%, #eab308 100%);
+      border: 3px solid #ca8a04;
+      border-bottom: 8px solid #a16207;
+    }
+    .podium-2nd {
+      background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 60%, #cbd5e1 100%);
+      border: 3px solid #94a3b8;
+      border-bottom: 7px solid #64748b;
+    }
+    .podium-3rd {
+      background: linear-gradient(180deg, #ffedd5 0%, #fed7aa 60%, #fdba74 100%);
+      border: 3px solid #f97316;
+      border-bottom: 7px solid #c2410c;
+    }
+
+    @keyframes float-subtle {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1deg); }
+    }
+    .animate-float {
+      animation: float-subtle 3.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-gold {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4)); }
+      50% { filter: drop-shadow(0 0 22px rgba(250, 204, 21, 0.8)); }
+    }
+    .glow-gold {
+      animation: pulse-gold 2.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary">
+<!-- TOP APP BAR (From Shared Components JSON) -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm max-w-full bg-surface-container-lowest dark:bg-inverse-surface z-40 border-b-2 border-outline-variant dark:border-outline shadow-[0_4px_16px_-2px_rgba(24,20,69,0.06)] dark:shadow-none sticky top-0">
+<div class="flex items-center gap-space-md">
+<!-- Brand Logo / Product Name -->
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-md">
+<span class="material-symbols-outlined text-2xl" data-icon="brush">brush</span>
+</div>
+<div class="font-headline-lg text-headline-lg font-black tracking-tight text-primary dark:text-primary-fixed-dim drop-shadow-sm">
+          Doodle Arena
+        </div>
+</div>
+<!-- Match Status Badge -->
+<div class="hidden sm:flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full border border-outline-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface uppercase tracking-wider">Room #DA-8492</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-label-sm text-label-sm font-extrabold text-primary">Match Finished</span>
+</div>
+</div>
+<!-- Actions & Player XP Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Audio & Utility Controls -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl border border-outline-variant">
+<button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors duration-150 text-on-surface-variant active:translate-y-0.5" title="Sound Volume">
+<span class="material-symbols-outlined text-[20px]" data-icon="volume_up">volume_up</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors duration-150 text-on-surface-variant active:translate-y-0.5" title="Settings">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors duration-150 text-on-surface-variant active:translate-y-0.5" title="Help">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+</button>
+</div>
+<!-- Player XP Card -->
+<div class="flex items-center gap-3 bg-surface-container-lowest px-3 py-1.5 rounded-xl border-2 border-primary/20 shadow-sm">
+<div class="relative">
+<img class="w-10 h-10 rounded-full border-2 border-primary object-cover shadow-sm bg-surface-container" data-alt="Playful cartoon penguin avatar wearing purple gaming headphones and artist beret with bold colorful outline in bright modern game art style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhbnIcf8b_kC9G5Lu2hjhRhBphouvhDw3kGqB0X8K8v6zoRz_t2xTxNag-ZpzgTTka_tTXZF-9KjqBSI3xiBMDp19VnyHNKvx3ntJVE1hoDw7xc_gtjXNA4PDM63XZkDotHPKlgP-4mk1GTVKCbz4VKDbrBHsGgd1DG5onSZALt7D8mVnIsbpQMvZ8MX0c8IDVb7NWfFcle3igbWfcxqO33MFaQim1ajJRRq5sHQt4"/>
+<div class="absolute -bottom-1 -right-1 bg-amber-400 text-on-surface font-label-sm text-[10px] px-1 rounded-full font-black border border-white">24</div>
+</div>
+<div class="hidden md:block">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">PixelPenguin</span>
+<span class="bg-primary/10 text-primary font-label-sm text-[10px] font-black px-1.5 py-0.5 rounded">YOU</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-label-sm text-emerald-600 font-extrabold">+420 XP Earned</span>
+<span class="material-symbols-outlined text-[14px] text-emerald-600" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Secondary Exit Action -->
+<button class="hidden lg:flex items-center gap-1 px-3.5 py-2 text-on-surface-variant hover:text-secondary font-label-md text-label-md font-bold rounded-xl hover:bg-secondary-fixed/50 transition-colors active:translate-y-0.5">
+<span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+<span>Leave Game</span>
+</button>
+</div>
+</header>
+<!-- CELEBRATION MAIN WORKSPACE -->
+<main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-8 relative">
+<!-- Ambient Floating Celebration Confetti Particles -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden -z-10">
+<div class="absolute top-10 left-[10%] text-amber-400 opacity-60 text-2xl animate-float">✦</div>
+<div class="absolute top-24 left-[18%] text-primary opacity-50 text-xl animate-float" style="animation-delay: 1s;">▲</div>
+<div class="absolute top-14 right-[14%] text-secondary-container opacity-70 text-2xl animate-float" style="animation-delay: 1.5s;">★</div>
+<div class="absolute top-36 right-[22%] text-cyan-400 opacity-60 text-xl animate-float" style="animation-delay: 0.5s;">●</div>
+<div class="absolute top-8 left-[45%] text-emerald-400 opacity-60 text-lg animate-float" style="animation-delay: 2s;">✦</div>
+</div>
+<!-- HEADER TITLE BANNER -->
+<section class="text-center flex flex-col items-center justify-center pt-2">
+<div class="inline-flex items-center gap-2 bg-amber-100 text-amber-900 border-2 border-amber-300 px-4 py-1 rounded-full font-label-md text-label-md shadow-sm mb-3">
+<span class="material-symbols-outlined text-[18px] text-amber-600" data-icon="emoji_events">emoji_events</span>
+<span>MATCH COMPLETED • 5/5 ROUNDS</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">
+        Victory Podium &amp; Honors
+      </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+        Incredible sketches and lightning-fast guesses! Here are the champions of Room #DA-8492.
+      </p>
+</section>
+<!-- SECTION: THE 3D STEPPED PODIUM -->
+<section class="relative bg-surface-container-lowest rounded-3xl p-6 md:p-8 tactile-card shadow-[0_12px_32px_-4px_rgba(24,20,69,0.08)] overflow-hidden">
+<!-- Background Ambient Glow behind Podium -->
+<div class="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-fixed-dim/30 rounded-full blur-3xl pointer-events-none"></div>
+<div class="grid grid-cols-3 items-end max-w-4xl mx-auto pt-12 md:pt-16 pb-4 gap-2 sm:gap-4 md:gap-6">
+<!-- 2ND PLACE (SILVER - LEFT) -->
+<div class="flex flex-col items-center order-1 text-center">
+<!-- Avatar & Accents -->
+<div class="relative mb-3 flex flex-col items-center">
+<!-- Position Ribbon Badge -->
+<div class="w-8 h-8 rounded-full bg-slate-300 border-2 border-slate-500 text-slate-800 font-extrabold text-sm flex items-center justify-center shadow-md mb-2">
+              #2
+            </div>
+<div class="relative">
+<img class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl border-4 border-slate-300 object-cover bg-surface-container shadow-md" data-alt="Playful cartoon smiling cat avatar wearing purple painter smock with paint splatters, bold stylized outlines on bright background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYXquGC1Jm2CNxFjEtCKpwNrXRF_ufNNGxHloFy_qHLF1Ncwdlvw0cc9sWJwD10apaWBKuH6pPh2N1YCZHNTs6Ihx2HjlSoO7nRny5vzvg94Bb7IUxXScIbn18hWoepgHqWkhiojxaTOoqgZ8VYZiZ-HD2W2JxVXbvVL85anIS1_7NStr2it7_LCLwonBKvhr7ya1nFMhwEbpw-h3nDA312V5H279A6YnhtL-hoWEN"/>
+<div class="absolute -bottom-2 -right-2 bg-slate-100 text-slate-800 p-1.5 rounded-full border-2 border-slate-400 shadow flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="military_tech">military_tech</span>
+</div>
+</div>
+</div>
+<div class="mb-2">
+<span class="inline-block bg-slate-200 text-slate-800 font-label-sm text-[11px] font-bold px-2 py-0.5 rounded-full mb-1">Room Host</span>
+<h3 class="font-headline-md text-headline-md font-extrabold text-on-surface leading-tight truncate max-w-[120px] sm:max-w-none">DoodleMaster</h3>
+<p class="font-label-lg text-label-lg font-black text-primary">2,980 <span class="font-body-sm text-[11px] text-on-surface-variant font-bold">PTS</span></p>
+</div>
+<div class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-lg text-xs font-bold mb-3 border border-outline-variant">
+<span class="material-symbols-outlined text-[14px] text-amber-500" data-icon="bolt">bolt</span>
+<span>Speed Demon</span>
+</div>
+<!-- Podium Column Step 2 -->
+<div class="podium-2nd w-full h-32 sm:h-40 md:h-48 rounded-t-2xl flex flex-col items-center justify-center text-slate-700 shadow-inner">
+<span class="text-4xl sm:text-5xl md:text-6xl font-black opacity-30 select-none">2</span>
+<span class="font-label-md text-label-md font-black tracking-widest text-slate-600 uppercase">Silver</span>
+</div>
+</div>
+<!-- 1ST PLACE (GOLD - CENTER / MVP) -->
+<div class="flex flex-col items-center order-2 text-center -mt-6 sm:-mt-10 z-10">
+<!-- Animated MVP Crown & Halo -->
+<div class="relative mb-3 flex flex-col items-center">
+<div class="glow-gold mb-1">
+<span class="material-symbols-outlined text-4xl sm:text-5xl text-amber-400" data-icon="crown" style="font-variation-settings: 'FILL' 1;">crown</span>
+</div>
+<div class="relative">
+<img class="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-amber-400 object-cover bg-amber-50 shadow-xl ring-4 ring-amber-300/40" data-alt="Charming cartoon fox artist avatar proudly holding golden pencil trophy with sparkling effects and confetti in vibrant comic gaming art style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfz36wcc1YwmkGg3zds1Z4a3b8RZ-H1Hk_x-KfJMM2NUarWce-c8bBifK5lSgh61r3lKnl5kwVmyy-_Nfvxum9Wy3B5IHSHBD1rGBAPejT7ysMC8NDJsgPCd2aCr8q6r22z_trOjKZLp-PBkKQDiO_mPMqkaOZidScwPuQ8mDrWDKXzJ_HL93NUhvpb03RBl2rGy0SQ2SFu__c8DBG2ePejLQj2Zo-pc-eZJTB1Ag4"/>
+<!-- 1st Place Ribbon -->
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-950 font-black px-3 py-0.5 rounded-full border-2 border-white shadow flex items-center gap-1 font-label-md text-label-md whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]" data-icon="award_star">award_star</span>
+<span>WINNER</span>
+</div>
+</div>
+</div>
+<div class="mt-2 mb-2">
+<span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 font-label-sm text-[11px] font-extrabold px-2.5 py-0.5 rounded-full mb-1">Master Doodler • MVP</span>
+<h2 class="font-headline-lg text-headline-lg font-black text-on-surface leading-tight truncate max-w-[140px] sm:max-w-none">SpeedyFox</h2>
+<p class="font-headline-md text-headline-md font-black text-amber-600">3,420 <span class="font-label-md text-label-md text-on-surface-variant font-bold">PTS</span></p>
+</div>
+<div class="inline-flex items-center gap-1 bg-amber-50 text-amber-800 px-3 py-1 rounded-xl text-xs font-extrabold mb-3 border border-amber-200 shadow-sm">
+<span class="material-symbols-outlined text-[15px] text-amber-600" data-icon="star">star</span>
+<span>Fastest Guesser (3.1s avg)</span>
+</div>
+<!-- Podium Column Step 1 -->
+<div class="podium-1st w-full h-44 sm:h-56 md:h-64 rounded-t-2xl flex flex-col items-center justify-center text-amber-900 shadow-lg">
+<span class="text-5xl sm:text-6xl md:text-7xl font-black opacity-35 select-none">1</span>
+<span class="font-label-lg text-label-lg font-black tracking-widest text-amber-900 uppercase">Gold Champion</span>
+<span class="font-label-sm text-[11px] font-bold text-amber-800/80 mt-1">3/3 Drawings Solved</span>
+</div>
+</div>
+<!-- 3RD PLACE (BRONZE - RIGHT - CURRENT USER) -->
+<div class="flex flex-col items-center order-3 text-center">
+<!-- Avatar & Accents -->
+<div class="relative mb-3 flex flex-col items-center">
+<!-- Position Ribbon Badge -->
+<div class="w-8 h-8 rounded-full bg-orange-200 border-2 border-orange-400 text-orange-900 font-extrabold text-sm flex items-center justify-center shadow-md mb-2">
+              #3
+            </div>
+<div class="relative">
+<img class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl border-4 border-orange-300 object-cover bg-surface-container shadow-md" data-alt="Cute customized penguin avatar with purple headphones smiling triumphantly with bronze ribbon and XP particle effect in crisp colorful vector style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr5btY81NwB-5aMjHI24wtrbKV5d288oOAFsCnhKv6sTmtFaPY7ZGjNz4mz8QvJ-2R-jHEgdyRg5uyqUBEONqgHd7vQJ6Z0SZ_PzdzwIgM9CYorRhXwGKMKClUs6R2GBv2hs5PQ911jebL9WTDKH7roJDoqnbU6wc4N8ztRnQIZXCVK81keli8v8UjzJ4tLW7GNCfd4rgK1k5zeGpINfEFpcz9oqQ4qAEhvncsyboA"/>
+<div class="absolute -bottom-2 -right-2 bg-primary text-white p-1 rounded-full border-2 border-white shadow flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+</div>
+</div>
+</div>
+<div class="mb-2">
+<span class="inline-flex items-center gap-1 bg-primary text-on-primary font-label-sm text-[11px] font-black px-2.5 py-0.5 rounded-full mb-1 shadow-sm">
+<span class="material-symbols-outlined text-[12px]" data-icon="verified">verified</span>
+<span>YOU</span>
+</span>
+<h3 class="font-headline-md text-headline-md font-extrabold text-on-surface leading-tight truncate max-w-[120px] sm:max-w-none">PixelPenguin</h3>
+<p class="font-label-lg text-label-lg font-black text-primary">2,640 <span class="font-body-sm text-[11px] text-on-surface-variant font-bold">PTS</span></p>
+</div>
+<div class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-lg text-xs font-black mb-3 border border-emerald-300">
+<span class="material-symbols-outlined text-[14px] text-emerald-600" data-icon="add_circle">add_circle</span>
+<span>+420 XP Gained!</span>
+</div>
+<!-- Podium Column Step 3 -->
+<div class="podium-3rd w-full h-24 sm:h-32 md:h-36 rounded-t-2xl flex flex-col items-center justify-center text-orange-950 shadow-inner">
+<span class="text-3xl sm:text-4xl md:text-5xl font-black opacity-30 select-none">3</span>
+<span class="font-label-md text-label-md font-black tracking-widest text-orange-900 uppercase">Bronze</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2-COLUMN SECTION: FULL ROSTER LEADERBOARD (LEFT) & MATCH HIGHLIGHTS (RIGHT) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN: COMPLETE MATCH LEADERBOARD ROSTER (1 to 8) -->
+<section class="lg:col-span-8 bg-surface-container-lowest rounded-3xl p-5 md:p-6 tactile-card shadow-sm">
+<div class="flex items-center justify-between pb-4 mb-4 border-b-2 border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="format_list_numbered">format_list_numbered</span>
+<h2 class="font-headline-md text-headline-md font-extrabold text-on-surface">Final Leaderboard</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-bold bg-surface-container px-3 py-1 rounded-full">
+            8 Players Total
+          </span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="font-label-sm text-label-sm text-outline uppercase tracking-wider border-b border-surface-container-high pb-2">
+<th class="py-2.5 px-3">Rank</th>
+<th class="py-2.5 px-3">Player</th>
+<th class="py-2.5 px-3 hidden sm:table-cell">Badges</th>
+<th class="py-2.5 px-3 text-center">Guesses</th>
+<th class="py-2.5 px-3 text-right">Drawing</th>
+<th class="py-2.5 px-3 text-right">Guessing</th>
+<th class="py-2.5 px-3 text-right">Total PTS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Rank 1 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-amber-100 text-amber-800 border-2 border-amber-400 font-extrabold text-xs flex items-center justify-center">1</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-amber-50" data-alt="Cartoon fox artist icon with orange fur and sly smiling expression on white round frame" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtiIbRjUqzBk-kJcF6gd4ya-X93d9iARPQoamZ5Nx9sH29wVV91d_kpGoqy0otM7Am_d_NiybiiVxUQ7sRQt2TEa3NZ5TpSny3mzFfRwCZKooGC_Ee-FCqlR6KxK-FAMOuqvDtGRCFGIA2MMmSFb_x_HxChztgL-9EugxXf74TZAkMsF3yaSr7tQa6qRc6XYw3MZjWHYU2cp7RtIUylMa3l5otCn-vgOWyNuHcNtIS"/>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface block">SpeedyFox</span>
+<span class="text-xs text-outline font-medium">Level 32</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded-md border border-amber-200">
+<span class="material-symbols-outlined text-[13px]" data-icon="bolt">bolt</span> MVP
+                  </span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">5/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,420</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">2,000</td>
+<td class="py-3 px-3 text-right font-headline-md text-base font-black text-amber-600">3,420</td>
+</tr>
+<!-- Rank 2 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-slate-200 text-slate-800 border-2 border-slate-400 font-extrabold text-xs flex items-center justify-center">2</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-slate-100" data-alt="Cartoon cat avatar with paintbrush and glasses in vibrant digital game graphic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMBC1DE2zXx9TjFjNg9ytKeI0w5Ms9Ji4qIezgfe9HJ8cSjWwDo3QcijjYcBgIhUBB9aM3lfalOykxlElVXSvAeUfilToi-6l5nzd6dnxRISx_J_tjij9iwOszvN4_BwHpcb-25uMykTng3bbLKIPQpWRXTtSPGpJ92zNESkaWpbp9_7xCREWXeOWCvfirP48YHRJAjgv5zJJ09w53K9uxO8WKyuXU1JyAuD0ytuIe"/>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">DoodleMaster</span>
+<span class="text-[10px] bg-slate-200 font-bold px-1 rounded text-slate-700">HOST</span>
+</div>
+<span class="text-xs text-outline font-medium">Level 40</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant text-[11px] font-bold px-2 py-0.5 rounded-md border border-outline-variant">
+<span class="material-symbols-outlined text-[13px]" data-icon="palette">palette</span> Artist
+                  </span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">4/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,580</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,400</td>
+<td class="py-3 px-3 text-right font-headline-md text-base font-black text-slate-700">2,980</td>
+</tr>
+<!-- Rank 3 (CURRENT USER HIGHLIGHTED) -->
+<tr class="bg-primary/10 border-l-4 border-primary hover:bg-primary/15 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-orange-200 text-orange-900 border-2 border-orange-400 font-extrabold text-xs flex items-center justify-center">3</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-primary-fixed border border-primary/40" data-alt="Cartoon penguin avatar with gaming headphones smiling triumphantly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVhQrBcA_MWZTnw4UAelySfShLy73svdXUy-GsNLJFx1bJa4LTpLdltmtJoLGJZjMA9jU9MCaMqWgZot1Icu1SxPuAeTjiNqoH_9OHE9jidIwHvQwReRFRSNHNcVUkC46IXqoqEStedkknekhhW9jwJn7RqTuVquGyuVxUInOcZGD7Xcy-BDGkCbgkuK0qbLtN9rMlRcr9BSGv5Z8intWM0oMJ1U40WfHG13I_De-R"/>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg font-black text-primary">PixelPenguin</span>
+<span class="text-[10px] bg-primary text-white font-extrabold px-1 rounded">YOU</span>
+</div>
+<span class="text-xs text-emerald-600 font-bold">+420 XP</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-2 py-0.5 rounded-md border border-emerald-300">
+<span class="material-symbols-outlined text-[13px]" data-icon="timer">timer</span> Lightning
+                  </span>
+</td>
+<td class="py-3 px-3 text-center font-black text-xs text-primary">4/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,120</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,520</td>
+<td class="py-3 px-3 text-right font-headline-md text-base font-black text-primary">2,640</td>
+</tr>
+<!-- Rank 4 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface font-bold text-xs flex items-center justify-center">4</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-surface-container" data-alt="Cartoon happy dog wearing yellow bandanna drawing sketch avatar in clean minimalist modern art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGiBd0svVbd8q-AMH_h_eZYW2ER8GFlTymescIf4V30E1FCPtsKEBVM_ZWvijxe31ac5lANpZryPqIqpPYGxCFEuO7wYtJO3rHAm_D1-L4fiZZOmtcHLg0YaCbKBoz9wADqTbTyUmxIZH6IYxIs7nN-pzFBAe7eu9IszkMNu6C02_Dg5iWVrX6WsQiysRGcuv-k-uhcDVV3_jRS6gcI41QXd19IIzi1LatQUpLO3Ul"/>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface block">BarkyDraws</span>
+<span class="text-xs text-outline font-medium">Level 19</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface-variant text-[11px] font-semibold px-2 py-0.5 rounded-md">
+<span class="material-symbols-outlined text-[13px]" data-icon="thumb_up">thumb_up</span> Reliable
+                  </span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">4/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">980</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,340</td>
+<td class="py-3 px-3 text-right font-bold text-base text-on-surface">2,320</td>
+</tr>
+<!-- Rank 5 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface font-bold text-xs flex items-center justify-center">5</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-surface-container" data-alt="Cartoon panda character avatar snacking on bamboo with colored pencils" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeJW4352YI7sZZSg0QtGGqNeCD4wmhi4VN1f1SQnyAwCbHyqkYnf10SAVfxj8vAWAtRtMTeyk9q9GLoHWs0rqP3yqdkvvuceeZ4VaYvcyt5ceJeEbqIfDC5xq6ZdLH0OF83TGtPd3EUPpDq6726bGHyJu28hasGwOLAO6FdVV8vxyoaIUn3XAmAxavmnIyEz6q48P0iCm5A5h1TjxIw5rpe1k9Che4n2qAI3ixpKJx"/>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface block">PandaPencil</span>
+<span class="text-xs text-outline font-medium">Level 28</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface-variant text-[11px] font-semibold px-2 py-0.5 rounded-md">
+<span class="material-symbols-outlined text-[13px]" data-icon="lightbulb">lightbulb</span> Creative
+                  </span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">3/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">1,050</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">960</td>
+<td class="py-3 px-3 text-right font-bold text-base text-on-surface">2,010</td>
+</tr>
+<!-- Rank 6 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface font-bold text-xs flex items-center justify-center">6</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-surface-container" data-alt="Playful cartoon rabbit avatar with long ears holding giant eraser" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfKq_X-8fMVO2xkecxnojLm3DNSUMw50BjuWKOTDTbApw_dkQAyj-AgGRe23CDIOaZG61Vao5k-8Z7q66-hHKG4MQKEM7TZ9S0Jqkpp63OQ8X7agCC3ZYCZN9iQ48ohC0ou2nTWRvB8UK2jf7M2XI-vtlN55R0wSzTeI5N6oL2r1XVOlYEEZKVir1eCKRfh_w5BIlIRNog6QrRR-9Lsyku7jLmNtNjzCcLaXEgRrVN"/>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface block">BunnyHop</span>
+<span class="text-xs text-outline font-medium">Level 15</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="text-xs text-outline-variant font-medium">—</span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">3/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">720</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">920</td>
+<td class="py-3 px-3 text-right font-bold text-base text-on-surface">1,640</td>
+</tr>
+<!-- Rank 7 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface font-bold text-xs flex items-center justify-center">7</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-surface-container" data-alt="Cute cartoon octopus character holding multiple colored chalks and brushes avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo8OyPUpewLG9cKesvKQTeTw_Abi5VwmXW9kttwG0BCzVhmb-sv5nOmHSgbT4fRP3S_hunJVr9BkOwqwMfeyVTd0BRD49zNp48UEf3n50rdVn_WXha3RNejCewewgaxIS8lVNiBr6Eh2s2psyfGa8XpyE4tq4g8v1yeD19VoHDzd2yoFRdp8WEr23KEJiGOq7ZmZR3BrkpUORtbr6k-AKRIjH2KhLLnlOr8gjtUWtv"/>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface block">InkOcto</span>
+<span class="text-xs text-outline font-medium">Level 21</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="text-xs text-outline-variant font-medium">—</span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">2/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">610</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">680</td>
+<td class="py-3 px-3 text-right font-bold text-base text-on-surface">1,290</td>
+</tr>
+<!-- Rank 8 -->
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-3">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface font-bold text-xs flex items-center justify-center">8</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2.5">
+<img class="w-9 h-9 rounded-xl object-cover bg-surface-container" data-alt="Chubby cartoon sloth character leisurely resting next to unfinished drawing canvas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx3lR1E331WLNhnFqezkyzQ_rheKzcIfqGd1DWvfRttygaTBVclSmRXv0r0DOVAPahc8wKAkIX6sF4DxNfEgtQwlgkBH3UFBREYwkrYRjs4sgGZXuZLG0uBR8-XbuyP--K5qP0xDqWkj8itIlUMIN7uPSJmBw6fN26Bfsxhu5UQvcWfR-pshtf3s3oRcUrxvY7VnAywpikC1P3rwYgjD-O81rletzcEamk92ESGzxF"/>
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface block">SlowDraw</span>
+<span class="text-xs text-outline font-medium">Level 8</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3 hidden sm:table-cell">
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface-variant text-[11px] font-semibold px-2 py-0.5 rounded-md">
+<span class="material-symbols-outlined text-[13px]" data-icon="coffee">coffee</span> Zen
+                  </span>
+</td>
+<td class="py-3 px-3 text-center font-bold text-xs">1/5</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">420</td>
+<td class="py-3 px-3 text-right font-semibold text-xs text-on-surface-variant">350</td>
+<td class="py-3 px-3 text-right font-bold text-base text-on-surface">770</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- RIGHT COLUMN: MATCH HIGHLIGHTS & FUN AWARDS -->
+<section class="lg:col-span-4 flex flex-col gap-5">
+<!-- Highlight Card: Masterpiece of the Match -->
+<div class="bg-surface-container-lowest rounded-3xl p-5 tactile-card shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-300 font-label-sm text-[11px] font-black px-2.5 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" data-icon="auto_awesome">auto_awesome</span>
+              BEST MASTERPIECE
+            </span>
+<span class="font-label-sm text-xs font-bold text-emerald-600">98% Upvotes</span>
+</div>
+<!-- Drawing Canvas Preview -->
+<div class="relative bg-surface rounded-2xl border-2 border-outline-variant overflow-hidden mb-3 aspect-[4/3] flex items-center justify-center p-2 group">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Playful whimsical digital sketch of a pink tropical flamingo balancing gracefully on one leg with colorful party hat, crisp doodle outlines on clean white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_K-tJ_F444HwC6N060fP2-8KsT0oGbMYbCs5FHGsdCEQa_K2-LJ3p3gB7sDsc7zaMlPD4Tho5kKSNiZKVT3F6YGPV7QXYbWbDeVD1-4yLk8fbF4xr7gvr5bPS8S_CQLndK8zaiFFLyKh16xbfxtKaRXWhlUmZbVd19hwV6rgD0NcX-h1fved2ZejOPefrsPSvIF0VYkJAbeQr_ILsPMdsirI0t_fbhoRYlJSqa9Po"/>
+<div class="absolute bottom-2 left-2 bg-on-surface/80 text-white px-2.5 py-1 rounded-lg backdrop-blur-sm text-xs font-bold flex items-center gap-1.5">
+<span>Word: "Flamingo"</span>
+</div>
+<button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 shadow text-on-surface flex items-center justify-center hover:bg-white transition-colors" title="Zoom Drawing">
+<span class="material-symbols-outlined text-[18px]" data-icon="zoom_in">zoom_in</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-lg object-cover bg-slate-100" data-alt="Small cat avatar icon with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGVqqQmwnMBGXqBXj3_e-sgp6ORubza6Wy0mjzsE6tzlRyhV_qRSxQw769H_MmQQ4y7zQVWKBzhiTi7ot7AKepvl-BF9nhvPg5ob8_QWvFzrCMbk95SQtCzP60eunWC2g-LlpCaxEFntcmSPvNHOTOZUxFhD5eutjd3YZ71IZXS5vzNQAZ0kcg8vxXIM0Vt6voSJo0jqDscOs9K4nYkkQu1MBXvYZTTHDwXiiqlwgn"/>
+<span class="font-label-md text-label-md font-bold text-on-surface">By DoodleMaster</span>
+</div>
+<button class="tactile-btn-secondary px-3 py-1 rounded-xl text-xs font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="favorite">favorite</span>
+<span>Save</span>
+</button>
+</div>
+</div>
+<!-- Fun Mini Awards Banners -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+<!-- Speed Demon Award -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 border-2 border-surface-container-high flex items-center gap-3">
+<div class="w-12 h-12 rounded-xl bg-cyan-100 border border-cyan-300 text-cyan-800 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="timer">timer</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-[11px] font-black uppercase text-cyan-800 tracking-wider">Fastest Guess</span>
+<span class="text-xs font-black text-cyan-700">3.2s</span>
+</div>
+<p class="font-label-lg text-label-lg font-bold text-on-surface">PixelPenguin (YOU)</p>
+<p class="text-xs text-outline font-medium">Guessed "Pencil" instantly!</p>
+</div>
+</div>
+<!-- Close Call Award -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 border-2 border-surface-container-high flex items-center gap-3">
+<div class="w-12 h-12 rounded-xl bg-rose-100 border border-rose-300 text-rose-800 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="alarm_on">alarm_on</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-[11px] font-black uppercase text-rose-800 tracking-wider">Buzzer Beater</span>
+<span class="text-xs font-black text-rose-700">0.4s left</span>
+</div>
+<p class="font-label-lg text-label-lg font-bold text-on-surface">SpeedyFox</p>
+<p class="text-xs text-outline font-medium">Guessed "Submarine" at buzzer</p>
+</div>
+</div>
+<!-- Level Up / Progression Mini Banner -->
+<div class="bg-gradient-to-r from-primary-fixed to-surface-container-low rounded-2xl p-4 border-2 border-primary/20">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="military_tech">military_tech</span>
+<span class="font-label-md text-label-md font-black text-primary">XP Progress</span>
+</div>
+<span class="font-label-sm text-xs font-bold text-primary">840 / 1000 XP to Lv.25</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-white rounded-full h-3 p-0.5 border border-primary/20 overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-500 w-[84%]"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- REPLAY, ACTIONS & SUMMARY FOOTER BAR -->
+<footer class="bg-surface-container-lowest rounded-3xl p-5 md:p-6 tactile-card shadow-[0_8px_24px_-4px_rgba(24,20,69,0.06)] mt-2">
+<div class="flex flex-col lg:flex-row items-center justify-between gap-5">
+<!-- Match Summary Metadata -->
+<div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="videogame_asset">videogame_asset</span>
+<span><strong>5</strong> Rounds Done</span>
+</div>
+<span class="text-outline-variant">•</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="schedule">schedule</span>
+<span><strong>12m 45s</strong> Total Time</span>
+</div>
+<span class="text-outline-variant">•</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="forum">forum</span>
+<span><strong>24</strong> Correct Guesses</span>
+</div>
+</div>
+<!-- Action Button Cluster -->
+<div class="flex flex-wrap items-center justify-center gap-3 w-full lg:w-auto">
+<!-- Secondary Action: Gallery -->
+<button class="tactile-btn-secondary px-4 py-2.5 rounded-2xl font-label-md text-label-md font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="collections">collections</span>
+<span>Match Gallery</span>
+</button>
+<!-- Tertiary Action: Share Link -->
+<button class="tactile-btn-secondary px-4 py-2.5 rounded-2xl font-label-md text-label-md font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="share">share</span>
+<span>Share Results</span>
+</button>
+<!-- Exit To Lobby -->
+<button class="tactile-btn-secondary px-4 py-2.5 rounded-2xl font-label-md text-label-md font-bold text-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+<span>Lobby</span>
+</button>
+<!-- Primary Hero CTA: Rematch -->
+<button class="tactile-btn-primary px-6 py-3 rounded-2xl font-label-lg text-label-lg font-black text-on-primary flex items-center gap-2.5 shadow-md shadow-primary/25">
+<span class="material-symbols-outlined text-[20px]" data-icon="replay">replay</span>
+<span>Vote Rematch</span>
+<span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-extrabold ml-1">
+              4/6 Voted
+            </span>
+</button>
+</div>
+</div>
+</footer>
+</main>
+<script>
+    // Lightweight playful interactions
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if(this.textContent.includes('Vote Rematch')) {
+          const badge = this.querySelector('span:last-child');
+          if(badge && !badge.textContent.includes('5/6')) {
+            badge.textContent = '5/6 Voted';
+            this.classList.add('scale-[0.98]');
+            setTimeout(() => this.classList.remove('scale-[0.98]'), 150);
+          }
+        }
+      });
+    });
+  </script>
+</body></html>

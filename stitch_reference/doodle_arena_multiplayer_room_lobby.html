@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doodle Arena - Multiplayer Room Lobby</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#5a00c6",
+            "background": "#fcf8ff",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#410006",
+            "secondary-fixed-dim": "#ffb3b0",
+            "secondary": "#ae2f34",
+            "on-secondary-fixed-variant": "#8c1520",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-surface-variant": "#4a4455",
+            "on-background": "#181445",
+            "on-tertiary-fixed-variant": "#004e5c",
+            "on-secondary-container": "#6d0010",
+            "secondary-fixed": "#ffdad8",
+            "on-secondary": "#ffffff",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#ede0ff",
+            "tertiary-container": "#007184",
+            "surface-container-highest": "#e3dfff",
+            "surface-container-low": "#f6f2ff",
+            "outline": "#7b7487",
+            "tertiary": "#005766",
+            "tertiary-fixed": "#acedff",
+            "surface-container-high": "#e9e5ff",
+            "surface-dim": "#dad6ff",
+            "outline-variant": "#ccc3d8",
+            "on-tertiary-fixed": "#001f26",
+            "error": "#ba1a1a",
+            "tertiary-fixed-dim": "#4cd7f6",
+            "surface-container": "#efebff",
+            "primary-fixed-dim": "#d2bbff",
+            "primary": "#630ed4",
+            "on-tertiary-container": "#b7efff",
+            "primary-container": "#7c3aed",
+            "surface-variant": "#e3dfff",
+            "on-surface": "#181445",
+            "on-error": "#ffffff",
+            "secondary-container": "#ff6b6b",
+            "inverse-surface": "#2d2a5b",
+            "inverse-on-surface": "#f3eeff",
+            "primary-fixed": "#eaddff",
+            "inverse-primary": "#d2bbff",
+            "surface-bright": "#fcf8ff",
+            "surface-tint": "#732ee4",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#25005a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "space-md": "0.75rem",
+            "margin": "1rem",
+            "margin-md": "1.5rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "margin-lg": "2rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Tactile button bevel utilities */
+    .tactile-primary {
+      box-shadow: 0 4px 0 #5b21b6;
+      transition: all 0.1s ease;
+    }
+    .tactile-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #5b21b6;
+    }
+    .tactile-coral {
+      box-shadow: 0 4px 0 #dc2626;
+      transition: all 0.1s ease;
+    }
+    .tactile-coral:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #dc2626;
+    }
+    .tactile-ghost {
+      box-shadow: 0 3px 0 #cbd5e1;
+      transition: all 0.1s ease;
+    }
+    .tactile-ghost:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #cbd5e1;
+    }
+    .tactile-card {
+      box-shadow: 0 4px 0 #e2e8f0, 0 10px 24px -4px rgba(30, 27, 75, 0.05);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-fixed selection:text-primary">
+<!-- SHARED COMPONENT: TopNavBar -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm max-w-full bg-surface-container-lowest dark:bg-inverse-surface z-40 border-b-2 border-outline-variant dark:border-outline shadow-[0_4px_16px_-2px_rgba(24,20,69,0.06)] dark:shadow-none sticky top-0">
+<!-- Brand / Title Anchor -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs cursor-pointer group">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary tactile-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl font-black" style="font-variation-settings: 'FILL' 1;">draw</span>
+</div>
+<span class="font-headline-lg text-headline-lg font-black tracking-tight text-primary dark:text-primary-fixed-dim drop-shadow-sm ml-1.5">Doodle Arena</span>
+</div>
+<!-- Room Identification Badge Header -->
+<div class="hidden sm:flex items-center gap-space-xs ml-4 px-3 py-1.5 bg-surface-container rounded-xl border border-outline-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></span>
+<span class="font-label-md text-label-md text-on-surface-variant font-bold">CASUAL MATCH #DA-8492</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-primary font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">lock_open</span> Public
+        </span>
+</div>
+</div>
+<!-- Trailing Icon Actions & Profile Image -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl border border-outline-variant/60">
+<button class="w-9 h-9 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:translate-y-0.5" title="Volume">
+<span class="material-symbols-outlined" data-icon="volume_up">volume_up</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:translate-y-0.5" title="Settings">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors active:translate-y-0.5" title="Help">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="h-6 w-[1.5px] bg-outline-variant mx-1 hidden sm:block"></div>
+<!-- User Profile Thumbnail -->
+<div class="flex items-center gap-space-sm pl-1">
+<div class="relative">
+<img alt="Player customized cartoon avatar with level XP indicator" class="w-10 h-10 rounded-full border-2 border-primary object-cover bg-surface-container-highest shadow-sm" data-alt="Playful 3D cartoon avatar of a creative party gamer wearing futuristic purple goggles, bright playful smile, volumetric lighting, light violet pastel studio background, high definition digital art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7F69BSIeWcv-F0q-QRZ0uEEcwFv-2LJJAaTicZT7Ser3mL-jR6BGonNedI4YRHX-0qMVGAyuu7xzZbrHmrn-OFkqOcKQGPiy3QOwuYE0fNSGJCkXuipoRcfbYqTVUo_FfVOSH-qb06baTcZlqKegzo61Y8YlWGY2c2g7EgCRqz68RRADvaev19dR2qVCAPHZ6kYoh2o8bkjFlBpdqJ6it6BedlwQ36-wn0MAlYkf2"/>
+<span class="absolute -bottom-1 -right-1 bg-amber-400 text-on-surface font-label-sm text-[10px] font-black px-1.5 py-0.2 rounded-full border-2 border-surface-container-lowest leading-tight">LV.24</span>
+</div>
+</div>
+<!-- Trailing Primary Action (Leave Game) -->
+<button class="ml-2 px-space-md py-1.5 bg-secondary-container text-on-error font-label-lg text-label-lg rounded-xl tactile-coral font-bold flex items-center gap-1 hover:opacity-95 transition-opacity">
+<span class="material-symbols-outlined text-base">logout</span>
+<span>Leave Game</span>
+</button>
+</div>
+</header>
+<!-- MAIN APP CONTAINER (SideBar + Canvas / Grid + Chat Stream) -->
+<div class="flex-1 flex overflow-hidden">
+<!-- SHARED COMPONENT: SideNavBar (Lobby Active) -->
+<aside class="hidden lg:flex flex-col justify-between h-[calc(100vh-65px)] w-64 p-space-md bg-surface-container-lowest dark:bg-inverse-surface border-r-2 border-outline-variant dark:border-outline z-30 shrink-0">
+<div class="flex flex-col gap-space-md">
+<!-- Room Meta Host Header -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex items-center gap-3">
+<div class="relative shrink-0">
+<img alt="Cartoon player avatar with host crown and level 24 badge" class="w-11 h-11 rounded-full border-2 border-amber-400 object-cover shadow-sm" data-alt="Playful cartoon avatar wearing a golden shiny host crown with jewel studs, cheerful party aesthetic, studio portrait lighting, soft lavender background, clean 3D character design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs9DTdBpu74n3mKQ685jgM356Xp5r1fgAGhlWEfzm__bcm3B2JpJ4Q5O8Mpi8iuibMjJ3MQyyYYL-rDPmZfIeygQgB9BIVqIiy_aGrb8u61R7DDLTsZJNcbWmNCjUrS90aGjJZw5Ywfs_NRJMF1YjoASFcMFFfGML5p7Pql9UJEPwgO5WhGOjsynyljGru3RSPGlBtwxcYJJKJxMW_U-I6dGz4RO6YY1uPNUcDXdR2"/>
+<span class="absolute -top-1.5 -right-1 text-amber-500 material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="overflow-hidden">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg font-extrabold truncate text-on-surface">Doodle Arena</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Room #4092 • 6/8 Players</p>
+</div>
+</div>
+<!-- Navigation Tab Links (Exact match active logic: Lobby is active) -->
+<nav class="flex flex-col gap-1.5">
+<!-- Active Tab: Lobby -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm bg-primary-container text-on-primary-container font-bold rounded-xl border-b-4 border-primary transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="sports_esports" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+<span class="font-label-md text-label-md">Lobby</span>
+<span class="ml-auto bg-primary text-on-primary font-label-sm text-xs px-2 py-0.5 rounded-full font-black">WAITING</span>
+</a>
+<!-- Inactive Tab: Leaderboard -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant dark:text-outline-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container-highest font-semibold rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="leaderboard">leaderboard</span>
+<span class="font-label-md text-label-md">Leaderboard</span>
+</a>
+<!-- Inactive Tab: Rooms -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant dark:text-outline-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container-highest font-semibold rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="grid_view">grid_view</span>
+<span class="font-label-md text-label-md">Rooms</span>
+</a>
+<!-- Inactive Tab: Shop -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant dark:text-outline-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container-highest font-semibold rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="storefront">storefront</span>
+<span class="font-label-md text-label-md">Shop</span>
+<span class="ml-auto text-amber-500 font-label-sm text-[10px] bg-amber-50 px-1.5 py-0.5 rounded-md font-extrabold border border-amber-200">NEW</span>
+</a>
+</nav>
+<!-- CTA: Invite Friends -->
+<button class="mt-2 w-full py-2.5 px-space-md bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-lg text-label-lg rounded-xl font-bold flex items-center justify-center gap-2 border-2 border-primary/20 transition-all tactile-ghost">
+<span class="material-symbols-outlined text-lg">person_add</span>
+<span>Invite Friends</span>
+</button>
+</div>
+<!-- Footer Navigation Tabs from JSON -->
+<div class="pt-4 border-t border-outline-variant/60 flex flex-col gap-1">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container rounded-xl font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="settings">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container rounded-xl font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+<span class="font-body-sm text-body-sm">Support</span>
+</a>
+</div>
+</aside>
+<!-- CENTER & RIGHT ARENA: Playful Pre-Match Waiting Room Layout -->
+<main class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden bg-background">
+<!-- CENTER COLUMN: Player Roster & Custom Match Rules Configuration -->
+<section class="flex-1 flex flex-col p-4 lg:p-6 overflow-y-auto gap-5">
+<!-- Header Utility Strip: Room Code & Fast Sharing -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 tactile-card border border-outline-variant flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-2xl font-bold" style="font-variation-settings: 'FILL' 1;">meeting_room</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-extrabold">MULTIPLAYER LOBBY</span>
+<span class="bg-amber-100 text-amber-800 text-[11px] font-extrabold px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                  Host: You (DoodleMaster)
+                </span>
+</div>
+<div class="flex items-center gap-3 mt-0.5">
+<span class="font-headline-md text-headline-md font-black tracking-tight text-on-surface">ROOM #DA-8492</span>
+<button class="px-2.5 py-1 bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg text-xs font-bold flex items-center gap-1 transition-all active:scale-95 border border-outline-variant/60" id="copyCodeBtn" onclick="alert('Room code #DA-8492 copied to clipboard!')">
+<span class="material-symbols-outlined text-sm">content_copy</span> Copy Code
+                </button>
+<button class="px-2.5 py-1 bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg text-xs font-bold flex items-center gap-1 transition-all active:scale-95 border border-outline-variant/60" id="shareLinkBtn" onclick="alert('Lobby invitation link copied to clipboard!')">
+<span class="material-symbols-outlined text-sm">share</span> Share Link
+                </button>
+</div>
+</div>
+</div>
+<!-- Quick Capacity & Latency Counter -->
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/60">
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface-variant font-bold">LOBBY CAPACITY</div>
+<div class="font-headline-md text-headline-md font-black text-primary leading-none">6 <span class="text-base text-on-surface-variant font-semibold">/ 8</span></div>
+</div>
+<div class="h-8 w-px bg-outline-variant/80"></div>
+<div class="flex items-center gap-1 text-green-600 font-label-md text-label-md font-extrabold" title="Current Latency">
+<span class="material-symbols-outlined text-lg">wifi</span>
+<span>24 ms</span>
+</div>
+</div>
+</div>
+<!-- PLAYER ROSTER GRID (8 Player Slots) -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md font-black text-on-surface flex items-center gap-2">
+<span>Players in Room</span>
+<span class="bg-primary/10 text-primary font-label-md text-label-md px-2.5 py-0.5 rounded-full font-extrabold">6 Joined</span>
+</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Waiting for host to start match</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
+<!-- Player 1 (Host - You) -->
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl border-2 border-primary tactile-card flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-2 right-2 flex items-center gap-1">
+<span class="bg-amber-400 text-on-surface text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">crown</span> HOST
+                </span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Host player customized avatar" class="w-14 h-14 rounded-2xl object-cover border-2 border-primary bg-primary-fixed shadow-sm" data-alt="Playful cartoon cat artist wearing a tiny beret with a colorful pencil tucked behind its ear, digital vector 3D render, joyful vibrant lighting, purple aesthetic background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDED-tTIqrvHDAyEZkm8BlCpd70gQ-5ynndNXSyycWJ9Ka2c2ChljXRbOcGwOzIERmHQb6vOof2dteg6jflTk7qCOyxwtgIV4cMzgJa6bguyjShzZ9ZwBHhfqm8jPeKPLRUKTGDNWiyClhu_3VP2MQ6fQkekaL1tzUrCLx5amt4KWbz4a2B8acnNI61uoWw4P51jK2ja4m7rzgKXXgOPYyRsKfN7F-rZnUgAPmHCRcY"/>
+<span class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface truncate flex items-center gap-1">
+                    DoodleMaster
+                    <span class="text-xs text-primary font-bold">(You)</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>1,840 pts</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 font-label-sm text-label-sm font-black rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> READY!
+                </span>
+<span class="font-label-sm text-label-sm text-outline font-bold">18 ms</span>
+</div>
+</div>
+<!-- Player 2 -->
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant tactile-card flex flex-col justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Player PixelPenguin avatar" class="w-14 h-14 rounded-2xl object-cover border-2 border-outline-variant bg-surface-container shadow-sm" data-alt="Cute playful 3D cartoon blue penguin wearing giant gaming headphones, smiling happily, soft ambient purple studio lighting, high resolution illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcU77iy7h_wJi26dVAhi5divvvMjIstihiVMSgUbYq3WgwLXfOMBb9n8Cuv5kq-wrUsMmzT05ioYpI4WdyUOkt5pCD4M8zyo5jCnBZPphsA6jQhMh_1Mnn9uRGGfSJ_heonzos-PwqHKwUVijpJ_4fpd_JjGq78Tz6QAMOz7RJHb0hcx9nb5vWTTb3ciTc4HaEY02U48wN7RgFnCsrdvtNr6WwNH_VjdT-FiM6RV3L"/>
+<span class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface truncate">PixelPenguin</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>1,420 pts</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 font-label-sm text-label-sm font-black rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> READY!
+                </span>
+<span class="font-label-sm text-label-sm text-outline font-bold">24 ms</span>
+</div>
+</div>
+<!-- Player 3 -->
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant tactile-card flex flex-col justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Player SketchyFox avatar" class="w-14 h-14 rounded-2xl object-cover border-2 border-outline-variant bg-surface-container shadow-sm" data-alt="Charming cartoon fox character with oversized round glasses sketching in a mini notebook, rich warm colors, purple tinted rim light, smooth 3D game style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBft6st-PaluaK_hzMvUPXOdLkY1Xx3rq3BJ3iBJS2dELkFjUfWG3TSCfmR2BCk507RMeqpBOXbUlqHgaG6_HcNyCZi4O74FbVzOGb6c-HevY4UGTy-ASbXP1ExOjXmfMhR77yznVYwp3RGubh5wJXMwuD7XznMAGyC-qdX1CoAZ5sqG7we2doIdNdYrsK83o5vgqYB7Oj1ZjwBPb7g_5KDlbHlb6XtNwJTeUo6820F"/>
+<span class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface truncate">SketchyFox</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>2,100 pts</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 font-label-sm text-label-sm font-black rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> READY!
+                </span>
+<span class="font-label-sm text-label-sm text-outline font-bold">32 ms</span>
+</div>
+</div>
+<!-- Player 4 -->
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant tactile-card flex flex-col justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Player ArtieBear avatar" class="w-14 h-14 rounded-2xl object-cover border-2 border-outline-variant bg-surface-container shadow-sm" data-alt="Stylized cute 3D cartoon bear wearing a paint-splattered yellow apron and holding a wooden palette, bright friendly expression, clean rendering" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGK_rF-UdAdPdlZiiCbU2y5gpPmfhkE9DPNB92Yd-EHBQ6wENFUJbdQbRvgXaaHgTQ_eZbgLb4TdPB5SbctQdNKlHNMtsb5VTPQt8BMGWnmWPat5H_k6leH10BmyH-eU-Pd-QCuDsTRAgyEn4ht8c0ynEL2cRBY4Ca0KIe9-DGjT8sjhwxQp54ovQoYFyejw8Olgj31-79bfSNIuz8ePIqddJVwrfPu56gvAGYIkwD"/>
+<span class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface truncate">ArtieBear</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>980 pts</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 font-label-sm text-label-sm font-black rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> READY!
+                </span>
+<span class="font-label-sm text-label-sm text-outline font-bold">45 ms</span>
+</div>
+</div>
+<!-- Player 5 (Ready) -->
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant tactile-card flex flex-col justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Player NeonBot avatar" class="w-14 h-14 rounded-2xl object-cover border-2 border-outline-variant bg-surface-container shadow-sm" data-alt="Playful friendly cartoon robot avatar with a smiling LED screen face and two antenna springs, vibrant toy aesthetic, studio lighting, clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJJhUa6PRnBkVQqG4qSTShjS829fGozkaw7zLopvWeuDy-JvsLRk7LA7qpQfNgoXbSc7qg8dGmh9RfX1b4A2O68JyK823ic1OqFyF_zysVOXOVuOHrzgzHMpFIHxj6yrbhwg-mdu8wByCRkaOQBPzmneKQ9rMWTP39ji0UDA3Ucluu34yyLE30j6E0B-7VnBkA_PMQSS1tvmoRHvtgTtO4216MsDHdAmYpGwKbD3na"/>
+<span class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface truncate">NeonBot</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>1,150 pts</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="px-2.5 py-1 bg-green-100 text-green-700 font-label-sm text-label-sm font-black rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> READY!
+                </span>
+<span class="font-label-sm text-label-sm text-outline font-bold">28 ms</span>
+</div>
+</div>
+<!-- Player 6 (Selecting Avatar...) -->
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl border border-amber-300 tactile-card flex flex-col justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Player ColorChameleon avatar" class="w-14 h-14 rounded-2xl object-cover border-2 border-amber-300 bg-amber-50 shadow-sm" data-alt="Playful cartoon chameleon holding a paintbrush with its curly tail, vibrant color shift green and magenta, 3D character design, purple studio ambient light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqlUphMxWAikXJA93JxvaPh-SoxTsyPENX56mLmuycnuV-fW0FtZRt0CYw5PH1FLC8pI_HByvr5Uk3cVsygmKaG-wDX4c2bqwhFOPbfHiBmHCTrdAJ6MK0zERG5eHeddUH7JMJIiby2puqj6h_7cnsm7S-_VxHTAAUDh4Fjvp33Fenxk_VzigRx67XmvcAdDGjmmQZxW_l1a5C9URq01CfAvWOJ7dqYVAbv7rtH3Ku"/>
+<span class="absolute -bottom-1 -right-1 bg-amber-500 w-4 h-4 rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface truncate">ColorChameleon</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>740 pts</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-label-sm text-label-sm font-black rounded-lg flex items-center gap-1 animate-pulse">
+<span class="material-symbols-outlined text-sm">palette</span> Picking Avatar...
+                </span>
+<span class="font-label-sm text-label-sm text-outline font-bold">54 ms</span>
+</div>
+</div>
+<!-- Slot 7 (Empty Open Slot) -->
+<div class="border-2 border-dashed border-outline-variant rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-primary transition-colors cursor-pointer group bg-surface-container-lowest/50 min-h-[120px]">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline group-hover:text-primary group-hover:bg-primary-container group-hover:text-on-primary-container transition-all">
+<span class="material-symbols-outlined text-xl">person_add</span>
+</div>
+<span class="mt-2 font-label-md text-label-md font-bold text-on-surface-variant group-hover:text-primary">Empty Slot #7</span>
+<span class="font-body-sm text-[11px] text-outline">Click to Invite</span>
+</div>
+<!-- Slot 8 (Empty Open Slot) -->
+<div class="border-2 border-dashed border-outline-variant rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-primary transition-colors cursor-pointer group bg-surface-container-lowest/50 min-h-[120px]">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline group-hover:text-primary group-hover:bg-primary-container group-hover:text-on-primary-container transition-all">
+<span class="material-symbols-outlined text-xl">person_add</span>
+</div>
+<span class="mt-2 font-label-md text-label-md font-bold text-on-surface-variant group-hover:text-primary">Empty Slot #8</span>
+<span class="font-body-sm text-[11px] text-outline">Click to Invite</span>
+</div>
+</div>
+</div>
+<!-- CUSTOM ROOM SETTINGS CONFIGURATION CARD -->
+<div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant tactile-card mt-1">
+<div class="flex items-center justify-between mb-4 pb-3 border-b border-outline-variant/60">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">tune</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md font-extrabold text-on-surface leading-tight">Match Rules &amp; Config</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Customized room settings configured by the host</p>
+</div>
+</div>
+<span class="bg-surface-container text-primary font-label-md text-label-md px-3 py-1 rounded-xl font-black border border-primary/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">edit</span> Host Editing
+            </span>
+</div>
+<!-- Settings Grid: 5 Core Attributes -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Setting 1: Number of Rounds -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">repeat</span> Rounds
+              </label>
+<div class="flex items-center justify-between mt-1">
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded-lg bg-surface-container-lowest border border-outline-variant font-black text-sm flex items-center justify-center hover:bg-surface-container active:scale-95">-</button>
+<span class="font-headline-md text-headline-md font-black text-primary px-2">5</span>
+<button class="w-7 h-7 rounded-lg bg-surface-container-lowest border border-outline-variant font-black text-sm flex items-center justify-center hover:bg-surface-container active:scale-95">+</button>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Rounds (3-10)</span>
+</div>
+</div>
+<!-- Setting 2: Draw Time -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">timer</span> Draw Time
+              </label>
+<div class="flex items-center justify-between mt-1">
+<select class="bg-surface-container-lowest border border-outline-variant rounded-lg px-2.5 py-1 text-sm font-extrabold text-on-surface focus:ring-2 focus:ring-primary">
+<option>60 Seconds</option>
+<option selected="">80 Seconds</option>
+<option>100 Seconds</option>
+<option>120 Seconds</option>
+</select>
+<span class="font-label-sm text-label-sm text-green-600 font-bold">Standard</span>
+</div>
+</div>
+<!-- Setting 3: Word Difficulty -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">psychology</span> Difficulty
+              </label>
+<div class="flex items-center justify-between mt-1">
+<div class="inline-flex rounded-lg border border-outline-variant p-0.5 bg-surface-container-lowest">
+<button class="px-2 py-0.5 text-xs font-bold rounded text-on-surface-variant hover:text-on-surface">Easy</button>
+<button class="px-2.5 py-0.5 text-xs font-black rounded bg-primary text-on-primary shadow-sm">Medium</button>
+<button class="px-2 py-0.5 text-xs font-bold rounded text-on-surface-variant hover:text-on-surface">Hard</button>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Balanced</span>
+</div>
+</div>
+<!-- Setting 4: Language Selection -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">language</span> Word Language
+              </label>
+<div class="flex items-center justify-between mt-1">
+<div class="flex items-center gap-2">
+<span class="text-base">🇺🇸</span>
+<span class="font-label-lg text-label-lg font-extrabold text-on-surface">English</span>
+</div>
+<button class="text-xs font-bold text-primary hover:underline">Change</button>
+</div>
+</div>
+<!-- Setting 5: Word Hints Option -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">lightbulb</span> Word Hints
+              </label>
+<div class="flex items-center justify-between mt-1">
+<div class="flex items-center gap-2">
+<div class="w-10 h-6 bg-primary rounded-full p-0.5 cursor-pointer flex items-center justify-end">
+<div class="w-5 h-5 bg-white rounded-full shadow-md"></div>
+</div>
+<span class="font-label-md text-label-md font-bold text-on-surface">Enabled</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">3 Letter reveals</span>
+</div>
+</div>
+<!-- Setting 6: Custom Words Deck -->
+<div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/80 flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary">library_books</span> Custom Word List
+              </label>
+<div class="flex items-center justify-between mt-1">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md font-black text-on-surface">96 Words Loaded</span>
+</div>
+<button class="px-2 py-1 bg-surface-container hover:bg-surface-container-high rounded text-xs font-bold text-primary border border-outline-variant/60">Edit Pack</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Live Lobby Chat & Quick Reaction Stream -->
+<aside class="w-full lg:w-80 xl:w-96 p-4 lg:p-6 lg:border-l-2 border-outline-variant bg-surface-container-lowest flex flex-col justify-between shrink-0">
+<!-- Chat Header -->
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant/70">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">forum</span>
+<h3 class="font-headline-md text-headline-md font-black text-on-surface">Lobby Chat</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full font-bold">Live</span>
+</div>
+<!-- Chat Messages Log -->
+<div class="flex-1 overflow-y-auto py-3 space-y-3 pr-1 text-sm font-body-sm">
+<!-- System Welcome Banner -->
+<div class="p-2.5 bg-primary/10 rounded-xl text-center border border-primary/20">
+<p class="font-label-md text-label-md font-black text-primary">🎨 Welcome to Doodle Arena Lobby!</p>
+<p class="font-body-sm text-[11px] text-on-surface-variant mt-0.5">Invite up to 8 friends or wait for open matchmakers.</p>
+</div>
+<!-- Message 1 (Host) -->
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md font-black text-primary">DoodleMaster</span>
+<span class="bg-amber-400 text-on-surface font-label-sm text-[9px] font-black px-1.5 rounded">HOST</span>
+<span class="text-[10px] text-outline ml-auto">14:02</span>
+</div>
+<div class="p-2.5 bg-surface-container-high text-on-surface rounded-xl rounded-tl-sm inline-block max-w-[90%] font-medium">
+              Hey everyone! We'll start as soon as we hit 6 ready players! 🚀
+            </div>
+</div>
+<!-- System Message: Join Notification -->
+<div class="flex items-center gap-1.5 justify-center py-1 text-outline font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-sm text-green-600">login</span>
+<span><strong class="text-on-surface">PixelPenguin</strong> joined the lobby</span>
+</div>
+<!-- Message 2 -->
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md font-black text-on-surface">PixelPenguin</span>
+<span class="text-[10px] text-outline ml-auto">14:03</span>
+</div>
+<div class="p-2.5 bg-surface-container text-on-surface rounded-xl rounded-tl-sm inline-block max-w-[90%] font-medium">
+              Ready to draw! Did you enable the 80s draw timer?
+            </div>
+</div>
+<!-- Message 3 -->
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md font-black text-on-surface">SketchyFox</span>
+<span class="text-[10px] text-outline ml-auto">14:03</span>
+</div>
+<div class="p-2.5 bg-surface-container text-on-surface rounded-xl rounded-tl-sm inline-block max-w-[90%] font-medium">
+              I brought my tablet today. Good luck beating my masterpieces! 🦊✏️
+            </div>
+</div>
+<!-- System Message: Ready Status -->
+<div class="flex items-center gap-1.5 justify-center py-1 text-outline font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-sm text-primary">thumb_up</span>
+<span><strong class="text-on-surface">NeonBot</strong> is now READY!</span>
+</div>
+<!-- Message 4 -->
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md font-black text-on-surface">ArtieBear</span>
+<span class="text-[10px] text-outline ml-auto">14:04</span>
+</div>
+<div class="p-2.5 bg-surface-container text-on-surface rounded-xl rounded-tl-sm inline-block max-w-[90%] font-medium">
+              Let's doodle! Hit start whenever you're ready host!
+            </div>
+</div>
+</div>
+<!-- Quick Reaction Badges Strip -->
+<div class="pt-2 pb-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+<button class="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-full text-xs font-bold text-on-surface whitespace-nowrap active:scale-95 transition-all">
+            👋 Hello!
+          </button>
+<button class="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-full text-xs font-bold text-on-surface whitespace-nowrap active:scale-95 transition-all">
+            ✨ Ready up!
+          </button>
+<button class="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-full text-xs font-bold text-on-surface whitespace-nowrap active:scale-95 transition-all">
+            ✏️ Let's doodle!
+          </button>
+<button class="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-full text-xs font-bold text-on-surface whitespace-nowrap active:scale-95 transition-all">
+            🔥 GG
+          </button>
+</div>
+<!-- Chat Input Field with Tactile Send Button -->
+<div class="pt-2 border-t border-outline-variant/60">
+<form class="relative flex items-center" onsubmit="event.preventDefault();">
+<input class="w-full bg-surface-container-low border-2 border-outline-variant rounded-xl pl-3 pr-20 py-2.5 text-sm font-medium text-on-surface focus:outline-none focus:border-primary focus:bg-surface-container-lowest placeholder:text-outline transition-all" placeholder="Type a message or react..." type="text"/>
+<div class="absolute right-1.5 flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center text-outline hover:text-on-surface transition-colors" title="Add Emoji" type="button">
+<span class="material-symbols-outlined text-lg">mood</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center tactile-primary active:scale-90" title="Send Message" type="submit">
+<span class="material-symbols-outlined text-base">send</span>
+</button>
+</div>
+</form>
+</div>
+</aside>
+</main>
+</div>
+<!-- BOTTOM COMMAND BAR (Crucial Host Execution Bar) -->
+<footer class="w-full bg-surface-container-lowest border-t-2 border-outline-variant px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 z-40 shadow-[0_-4px_16px_rgba(24,20,69,0.04)]">
+<!-- Left: Status Notification -->
+<div class="flex items-center gap-3">
+<div class="w-3.5 h-3.5 rounded-full bg-green-500 animate-pulse"></div>
+<div>
+<div class="font-label-lg text-label-lg font-black text-on-surface flex items-center gap-2">
+<span>Waiting for players</span>
+<span class="text-xs bg-green-100 text-green-800 font-extrabold px-2 py-0.5 rounded-md border border-green-300">5 of 6 Ready</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant hidden sm:block">Match can start once minimum 3 players ready up.</p>
+</div>
+</div>
+<!-- Right: Command Buttons -->
+<div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+<!-- Invite Friends Trigger -->
+<button class="px-4 py-3 bg-surface-container-lowest border-2 border-outline-variant hover:bg-surface-container text-on-surface font-label-lg text-label-lg rounded-xl font-bold flex items-center gap-2 tactile-ghost">
+<span class="material-symbols-outlined text-lg text-primary">group_add</span>
+<span>Invite Friends</span>
+</button>
+<!-- Primary Action: START GAME (Chunky Tactile Gaming Button) -->
+<button class="flex-1 sm:flex-initial px-8 py-3.5 bg-primary-container hover:bg-primary text-on-primary font-headline-md text-headline-md font-black rounded-xl tactile-primary flex items-center justify-center gap-2 shadow-lg active:translate-y-0.5" onclick="alert('Starting match in 3... 2... 1... Doodle Arena begins!')">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span>START GAME</span>
+<span class="ml-1 bg-white/20 text-on-primary font-label-md text-xs px-2 py-0.5 rounded-full">5/6</span>
+</button>
+</div>
+</footer>
+</body></html>

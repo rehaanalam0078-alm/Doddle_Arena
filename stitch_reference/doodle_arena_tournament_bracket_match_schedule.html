@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doodle Arena — Weekend Masters Cup Finals</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-background": "#181445",
+            "on-secondary-container": "#6d0010",
+            "inverse-on-surface": "#f3eeff",
+            "secondary-fixed": "#ffdad8",
+            "on-primary-container": "#ede0ff",
+            "surface-bright": "#fcf8ff",
+            "surface": "#fcf8ff",
+            "primary": "#630ed4",
+            "secondary-fixed-dim": "#ffb3b0",
+            "on-surface": "#181445",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#2d2a5b",
+            "secondary": "#ae2f34",
+            "tertiary-fixed-dim": "#4cd7f6",
+            "on-secondary": "#ffffff",
+            "primary-fixed-dim": "#d2bbff",
+            "outline-variant": "#ccc3d8",
+            "primary-container": "#7c3aed",
+            "primary-fixed": "#eaddff",
+            "surface-tint": "#732ee4",
+            "on-primary-fixed": "#25005a",
+            "on-error-container": "#93000a",
+            "on-surface-variant": "#4a4455",
+            "surface-container-low": "#f6f2ff",
+            "surface-container-lowest": "#ffffff",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#5a00c6",
+            "error-container": "#ffdad6",
+            "inverse-primary": "#d2bbff",
+            "on-tertiary-fixed-variant": "#004e5c",
+            "on-secondary-fixed-variant": "#8c1520",
+            "on-tertiary-fixed": "#001f26",
+            "surface-container-highest": "#e3dfff",
+            "tertiary-fixed": "#acedff",
+            "background": "#fcf8ff",
+            "surface-container": "#efebff",
+            "on-primary": "#ffffff",
+            "secondary-container": "#ff6b6b",
+            "tertiary-container": "#007184",
+            "on-secondary-fixed": "#410006",
+            "surface-variant": "#e3dfff",
+            "outline": "#7b7487",
+            "surface-dim": "#dad6ff",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#b7efff",
+            "tertiary": "#005766",
+            "surface-container-high": "#e9e5ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "gutter-lg": "1.5rem",
+            "margin-lg": "2rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "margin-md": "1.5rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-xl": "2rem",
+            "space-lg": "1.25rem"
+          },
+          "fontFamily": {
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "800" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .tactile-btn-primary {
+      background-color: #7c3aed;
+      border-bottom: 4px solid #5b21b6;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-primary:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+    .tactile-btn-secondary {
+      background-color: #ff6b6b;
+      border-bottom: 4px solid #dc2626;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-secondary:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+    .tactile-btn-ghost {
+      background-color: #ffffff;
+      border: 1.5px solid #ccc3d8;
+      border-bottom: 3px solid #7b7487;
+      transition: all 0.1s ease-in-out;
+    }
+    .tactile-btn-ghost:active {
+      transform: translateY(2px);
+      border-bottom-width: 1.5px;
+    }
+    .bracket-connector-h {
+      height: 2px;
+      background-color: #ccc3d8;
+    }
+    .bracket-connector-v {
+      width: 2px;
+      background-color: #ccc3d8;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white">
+<!-- TOP NAVIGATION BAR (Shared Component Anchor) -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm max-w-full bg-surface-container-lowest z-40 border-b-2 border-outline-variant shadow-sm sticky top-0">
+<!-- Brand & Live Arena Indicator -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-xs cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="brush" style="font-variation-settings: 'FILL' 1;">brush</span>
+<span class="font-headline-lg text-headline-lg font-black tracking-tight text-primary drop-shadow-sm">Doodle Arena</span>
+</div>
+<!-- Live Tournament Capsule Badge -->
+<div class="hidden xl:flex items-center gap-space-xs px-space-md py-1 bg-surface-container rounded-full border border-outline-variant">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface tracking-wider uppercase font-black">WEEKEND MASTERS CUP #14 • LIVE STAGE</span>
+</div>
+</div>
+<!-- Navigation Center Tabs -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<a class="text-on-surface-variant hover:text-on-surface font-medium hover:bg-surface-container-high transition-colors duration-150 px-space-sm py-1 rounded-lg" href="#">Lobby</a>
+<a class="text-on-surface-variant hover:text-on-surface font-medium hover:bg-surface-container-high transition-colors duration-150 px-space-sm py-1 rounded-lg" href="#">Ranked Arena</a>
+<!-- Active Tab: Tournaments -->
+<a class="text-primary font-bold border-b-2 border-primary pb-1 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="emoji_events" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+        Tournaments
+      </a>
+<a class="text-on-surface-variant hover:text-on-surface font-medium hover:bg-surface-container-high transition-colors duration-150 px-space-sm py-1 rounded-lg" href="#">Leaderboards</a>
+<a class="text-on-surface-variant hover:text-on-surface font-medium hover:bg-surface-container-high transition-colors duration-150 px-space-sm py-1 rounded-lg" href="#">Shop</a>
+</nav>
+<!-- Trailing Actions & Player Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Quick Utility Icons -->
+<div class="flex items-center gap-space-xs border-r border-outline-variant pr-space-md">
+<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" title="Audio">
+<span class="material-symbols-outlined" data-icon="volume_up">volume_up</span>
+</button>
+<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" title="Settings">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" title="Help">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<!-- Player Profile Pill -->
+<div class="flex items-center gap-space-sm px-space-sm py-1 bg-surface-container rounded-xl border border-outline-variant hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="relative">
+<img class="w-9 h-9 rounded-full object-cover ring-2 ring-primary" data-alt="Playful vector illustration of a determined cartoon penguin player avatar wearing purple gaming headphones with glowing cyan visor in high key light mode style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLIlXbEsua8u-865DE154-bo5iAuxdNXx_GsYxL3NfqbFOwEyys3BhXC_215SaEP-qFJXIsc8E-gVkD7628tz1sa5HagEPCPFnvrmfXX5pZJojiggEzwS3CPsNyBW478NVCOJbyh4n65E0szSw374QkPsIYk12hD2cPzyn_MbS3zQpjDs249UtJ5uq6OTEzNgYTW3SAy5R_NExsdKBaXKPDtoZcDWRwSG-FqLafORN"/>
+<span class="absolute -bottom-1 -right-1 bg-primary text-white text-[9px] font-black px-1 rounded-full border border-white">24</span>
+</div>
+<div class="text-left hidden sm:block">
+<div class="font-label-sm text-label-sm font-black text-on-surface flex items-center gap-1">
+            PixelPenguin
+            <span class="material-symbols-outlined text-amber-500 text-[14px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="font-body-sm text-[11px] text-on-surface-variant leading-none">Master II • 2,480 ELO</div>
+</div>
+</div>
+<!-- Leave / Hub Action -->
+<button class="tactile-btn-secondary px-space-md py-1.5 rounded-xl text-white font-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="logout">logout</span>
+<span class="hidden lg:inline">Leave Game</span>
+</button>
+</div>
+</header>
+<!-- MAIN WRAPPER -->
+<main class="flex-1 w-full max-w-[1600px] mx-auto p-space-md lg:p-space-lg flex flex-col gap-space-lg">
+<!-- HERO / TOURNAMENT OVERVIEW CARD -->
+<section class="w-full bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-space-lg shadow-[0_8px_24px_-4px_rgba(30,27,75,0.06)] relative overflow-hidden">
+<!-- Ambient Glow Decorator -->
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-container opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 left-1/4 w-80 h-80 bg-secondary-container opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-space-lg">
+<!-- Title & Meta -->
+<div class="flex flex-col gap-space-xs max-w-3xl">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm font-black tracking-wide uppercase border border-secondary-fixed-dim">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+              🔴 LIVE • Semifinals Ongoing
+            </span>
+<span class="inline-flex items-center gap-1 px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full font-label-sm font-black border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+              Grand Finals starts in 01h : 24m : 15s
+            </span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-background mt-1 flex items-center gap-space-sm flex-wrap">
+            Weekend Masters Cup — Season 4 Finals
+            <span class="material-symbols-outlined text-amber-500 text-[36px]" data-icon="military_tech" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</h1>
+<!-- Prize Pool & Details Pill Bar -->
+<div class="flex flex-wrap items-center gap-space-sm mt-space-xs">
+<div class="flex items-center gap-1.5 px-space-md py-1 bg-surface-container rounded-xl font-label-md text-primary font-black border border-primary/20">
+<span class="material-symbols-outlined text-[18px] text-amber-500" data-icon="diamond" style="font-variation-settings: 'FILL' 1;">diamond</span>
+              100,000 Gems + Exclusive 'Golden Stylus' Trail &amp; Crown Trophy
+            </div>
+<div class="text-on-surface-variant font-body-sm flex items-center gap-2">
+<span>•</span> 64 Players <span>•</span> Single Elimination <span>•</span> Best of 3 Rounds <span>•</span> Strict Spell Check <span>•</span> 45s Clock
+            </div>
+</div>
+</div>
+<!-- Hero Actions -->
+<div class="flex flex-wrap items-center gap-space-sm w-full xl:w-auto">
+<!-- Spectate Live Button -->
+<button class="tactile-btn-primary px-space-lg py-3 rounded-xl text-white font-label-lg flex items-center gap-space-xs shadow-lg shadow-primary/25 animate-pulse-subtle">
+<span class="material-symbols-outlined text-[20px]" data-icon="smart_display" style="font-variation-settings: 'FILL' 1;">smart_display</span>
+            Spectate Match Live
+          </button>
+<!-- Team Status Chip -->
+<div class="tactile-btn-ghost px-space-md py-2.5 rounded-xl font-label-md text-on-surface-variant flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="cancel">cancel</span>
+<span>My Status: <strong class="text-on-surface">Eliminated in Ro16</strong></span>
+</div>
+<!-- Register Next Cup -->
+<button class="tactile-btn-ghost px-space-md py-2.5 rounded-xl font-label-md text-primary hover:text-primary-container flex items-center gap-space-xs border-primary/30">
+<span class="material-symbols-outlined text-[18px]" data-icon="app_registration">app_registration</span>
+            Register Next Cup (Sat 18:00 UTC)
+          </button>
+</div>
+</div>
+</section>
+<!-- MAIN TWO-COLUMN CONTENT GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- LEFT & CENTER (8 COLUMNS): STAGE SWITCHER & BRACKET VIEW -->
+<section class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- Stage Switcher Tabs & Quick Filter -->
+<div class="flex flex-wrap items-center justify-between gap-space-md bg-surface-container-lowest p-space-sm rounded-2xl border-2 border-outline-variant shadow-sm">
+<div class="flex items-center gap-1 sm:gap-space-xs overflow-x-auto">
+<button class="px-space-md py-2 rounded-xl font-label-md bg-primary-container text-white font-black shadow-sm">All Brackets</button>
+<button class="px-space-md py-2 rounded-xl font-label-md text-on-surface-variant hover:bg-surface-container font-semibold transition-colors">Round of 16</button>
+<button class="px-space-md py-2 rounded-xl font-label-md text-on-surface-variant hover:bg-surface-container font-semibold transition-colors">Quarterfinals</button>
+<button class="px-space-md py-2 rounded-xl font-label-md text-on-surface-variant hover:bg-surface-container font-semibold transition-colors flex items-center gap-1">
+              Semifinals
+              <span class="w-2 h-2 rounded-full bg-secondary"></span>
+</button>
+<button class="px-space-md py-2 rounded-xl font-label-md text-on-surface-variant hover:bg-surface-container font-semibold transition-colors">Grand Finals</button>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm">
+<button class="p-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container" title="Zoom In">
+<span class="material-symbols-outlined text-[18px]" data-icon="zoom_in">zoom_in</span>
+</button>
+<button class="p-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container" title="Reset View">
+<span class="material-symbols-outlined text-[18px]" data-icon="fit_screen">fit_screen</span>
+</button>
+</div>
+</div>
+<!-- INTERACTIVE BRACKET BOARD -->
+<div class="w-full bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-space-lg shadow-sm overflow-x-auto">
+<div class="min-w-[760px] flex flex-col gap-space-md">
+<!-- Bracket Column Headers -->
+<div class="grid grid-cols-3 gap-space-lg text-center font-label-md uppercase tracking-wider text-on-surface-variant border-b border-outline-variant pb-space-sm">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="splitscreen">splitscreen</span>
+                Quarterfinals (Bo3)
+              </div>
+<div class="flex items-center justify-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px] text-secondary animate-pulse" data-icon="fiber_manual_record" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                Semifinals (Bo3) • LIVE
+              </div>
+<div class="flex items-center justify-center gap-1 text-amber-600">
+<span class="material-symbols-outlined text-[16px]" data-icon="trophy" style="font-variation-settings: 'FILL' 1;">trophy</span>
+                Grand Finals (Bo5)
+              </div>
+</div>
+<!-- Bracket Tree Grid -->
+<div class="grid grid-cols-3 gap-space-lg items-center relative py-space-sm">
+<!-- COLUMN 1: QUARTERFINALS (4 Matches) -->
+<div class="flex flex-col gap-6 justify-between">
+<!-- MATCH 1 (Finished) -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-space-sm hover:border-primary/50 transition-all hover:shadow-md relative">
+<div class="flex items-center justify-between text-[11px] font-label-sm text-on-surface-variant border-b border-outline-variant/60 pb-1 mb-1.5">
+<span>MATCH #QF-1</span>
+<span class="font-bold text-slate-500">FINAL</span>
+</div>
+<!-- Player 1 (Winner) -->
+<div class="flex items-center justify-between p-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40 mb-1">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-primary font-black">#1</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Playful cartoon orange fox gaming avatar with mischievous expression in a clean vector modern art style with soft studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFk0_FxzPMqFC5bG9li0qy7kO33qfMIi5mLbf90qdMMCxMo3kIaQixpiVXrPvSIyAEgG8p3Oh-jk87iTlxNgKlM6M0l_hbXiceOPCQPBs6WDS-9FbQQlG-nTbv4VRlKp_quMYya-wK5fuJPii3o3MaXEdBQItbprAHbLtGu5yxtXNtZyl0F0EhXKGWv2RDA_w_xUuXf5TWEUrXlG-fPndYJpw5MqKmCFMVAPymzeow"/>
+<span class="font-label-md text-on-surface font-bold">SpeedyFox</span>
+</div>
+<span class="font-label-lg text-primary font-black px-2 py-0.5 bg-primary-fixed rounded">2</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center justify-between p-1 rounded-lg opacity-60">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-on-surface-variant font-bold">#8</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Cartoon giant panda wearing glowing futuristic cyan glasses smiling playfully in modern flat vector esports visual language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz-HoSxq2SzPc5VjEkxWwJnVCGPzzZpKmrGj5fKjnKSSzaUxbbXKFxcCnFSnCBB5137SyzS6xTHm39I_skZ_jHrcRpim_Rm7XcJi4IY6E6T6N_6nZy4BaqSFegAniAvl3G4MReHQsMOAXVXH_JLRqOOcBIQHdHGw1Ewhq-QSiEPUxKPKe-iLZs3bnxYstlOifrNrEoZBLZ0MCJ1PtZMtnbCNDQv5EAnYYN1N0Obnyf"/>
+<span class="font-body-md text-on-surface-variant">NeonPanda</span>
+</div>
+<span class="font-label-md text-on-surface-variant font-bold px-2">1</span>
+</div>
+</div>
+<!-- MATCH 2 (Finished) -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-space-sm hover:border-primary/50 transition-all hover:shadow-md relative">
+<div class="flex items-center justify-between text-[11px] font-label-sm text-on-surface-variant border-b border-outline-variant/60 pb-1 mb-1.5">
+<span>MATCH #QF-2</span>
+<span class="font-bold text-slate-500">FINAL</span>
+</div>
+<!-- Player 1 (Winner) -->
+<div class="flex items-center justify-between p-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40 mb-1">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-primary font-black">#4</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Stylized emerald green cartoon snake coiling a digital paintbrush with dynamic sparkles in light mode palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5MfLhR1OnZXCwqoXZ-fbVBX-4hFBrrv_XCQHM9blcICguJC87VkeWMa7a3djRe3zuz_SWgRb0Kv3EIKqcPQuiOA_vrrGUOlaL3lKrUYlV5UKtKmNPYjvLiWu5RiY6hMzMEbxtsBr2I6WVb8EvHOc8lafEPaE6E0c2L52ktMIRUo_6XjUWEsWO4-NWbph9RL-h3epmVAvMVCcQg7v4CL_-FJY3yJcWyG9dsAVUuXe_"/>
+<span class="font-label-md text-on-surface font-bold">BrushViper</span>
+</div>
+<span class="font-label-lg text-primary font-black px-2 py-0.5 bg-primary-fixed rounded">2</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center justify-between p-1 rounded-lg opacity-60">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-on-surface-variant font-bold">#5</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Chubby cartoon sea turtle sporting a jetpack with playful smoke trails in pastel esports gaming style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEp9wtgGcc9lanN6CmKRYOwBKTm7MTsGYhMb5QCeWbniT-eLu67zDEufErfQ7I9yRNGO3TaS_LIFKMiKnK1f2XyaR_MSLcF43D30DcXIkvRM-5X8Xrw8-liXlJ8fgk--524ETCfvFdOKg0bT07joGoeNJGc2gRUvZwk2nugulO9n6Lho5uSHZw9D-sqdUAQ9zfgK1eFZ9voousXc8zda5laQY4g6WIsCPueQOpeDq7"/>
+<span class="font-body-md text-on-surface-variant">TurboTurtle</span>
+</div>
+<span class="font-label-md text-on-surface-variant font-bold px-2">0</span>
+</div>
+</div>
+<!-- MATCH 3 (Finished) -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-space-sm hover:border-primary/50 transition-all hover:shadow-md relative">
+<div class="flex items-center justify-between text-[11px] font-label-sm text-on-surface-variant border-b border-outline-variant/60 pb-1 mb-1.5">
+<span>MATCH #QF-3</span>
+<span class="font-bold text-slate-500">FINAL</span>
+</div>
+<!-- Player 1 (Winner) -->
+<div class="flex items-center justify-between p-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40 mb-1">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-primary font-black">#2</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Cute white space bunny wearing an astronaut helmet with starry reflections and cheerful expression on bright background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPYmaDmC1wWwA8YaLJdX8GK7wSVLXZ16340NspMqHvPzIroGHHgFwwGR9hmpLBv-95m69h2-57r5UGZNCEgAEqaSwJveMg3gBP2z3JPGcuaRBpzoABdZVwt7aMUJ8BNFU_JhcbLZ-bnjgMNmhWOzHFvAFcmkmCeVOb3ZlMmAn_3bBbx-eyphdhb4OzpiVhPJLjwEgA7fzmEJfVIRlzNWMdyjnZpqsY1YIH3AJRA64D"/>
+<span class="font-label-md text-on-surface font-bold">AstroBunny</span>
+</div>
+<span class="font-label-lg text-primary font-black px-2 py-0.5 bg-primary-fixed rounded">2</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center justify-between p-1 rounded-lg opacity-60">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-on-surface-variant font-bold">#7</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Playful cartoon wizard owl holding a glowing magic pencil with playful runes floating in vibrant light mode palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlyRsgVvVryFR-A0gC6NpsCknBjuNuHL3alty4ZgspfhmE8suayTIGw69--5OOXDys_jHOcL3bm7HRAMsPGTZ3vaLBrbAn2rKYThQgHKIzJOE7vnbIjtCwhqlPh1Y5UYyxeMG6GE31iOQMitxNkwNbW6ijY_vsvj3PjHrMkNdbdZ7E0jB64IFf2okz-tr-FSEdXjKU88YwRYgYXgUgxmgA55SgsmLySZ6U9fqm0Mbo"/>
+<span class="font-body-md text-on-surface-variant">DoodleMaster</span>
+</div>
+<span class="font-label-md text-on-surface-variant font-bold px-2">1</span>
+</div>
+</div>
+<!-- MATCH 4 (Finished - Player's Match) -->
+<div class="bg-surface-container-low rounded-xl border-2 border-primary/40 p-space-sm hover:shadow-md relative ring-2 ring-primary/10">
+<div class="flex items-center justify-between text-[11px] font-label-sm text-primary border-b border-outline-variant/60 pb-1 mb-1.5 font-bold">
+<span>MATCH #QF-4 • YOUR MATCH</span>
+<span class="text-secondary font-black">DEFEAT</span>
+</div>
+<!-- Player 1 (User - Narrow Defeat) -->
+<div class="flex items-center justify-between p-1 rounded-lg bg-surface-container-lowest border border-primary/30 mb-1">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-primary font-black">#3</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Playful vector illustration of a cartoon penguin wearing purple headphones looking resolute in a cheerful casual gaming UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPqLq0tJ4sxu4RAWpSkqs6wO1Bw1yMjqwh5egPfldyHJUsxvFZt9o8DIryHniFwhIzAuBvh1Yv2WXUf71nkaITFl7vbOQHZuaoakVi8VBziu7cOJ1giOP2sHOUjwggogc-AIX0ma1yFfrnuimrqH7q2d5jalxXAx-4S_kvzW4orrmL46zbOjPaK6jYlfiIFAQSAarP0Vem1L54xaqmLobmcsFXoZSuBVsvfF-bl2MZ"/>
+<span class="font-label-md text-primary font-black">PixelPenguin (YOU)</span>
+</div>
+<span class="font-label-md text-primary font-black px-2">1</span>
+</div>
+<!-- Player 2 (Winner) -->
+<div class="flex items-center justify-between p-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-primary font-black">#6</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Cute smiling bumblebee wearing artist beret with honeycomb pattern brush handle in bright pastel colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUtn6qa6h9k9-A0R_2MQYPX0LHlXgVoKUQ2eoCqbfnHOETy-s5VBelAlPx01Gp2gsU1B2hJOJCo35ZIdGWu69ieC7WJ6gkyvACpRcOWFkTqxGz7csvek1eY9_U2pD8_bpCrioNdr9MF2HhAGSmLaL8ntWuBl8ccYAf9kBhkgjustykocXER3oB7QqOqCl_R3EcYpvRQz9TcAUQBqX079tpMElI0xqWzQKZppdiEG--"/>
+<span class="font-label-md text-on-surface font-bold">CheerfulBee</span>
+</div>
+<span class="font-label-lg text-primary font-black px-2 py-0.5 bg-primary-fixed rounded">2</span>
+</div>
+</div>
+</div>
+<!-- COLUMN 2: SEMIFINALS (2 Matches) -->
+<div class="flex flex-col gap-24 justify-around">
+<!-- SEMIFINAL 1 (LIVE NOW) -->
+<div class="bg-surface-container-lowest rounded-2xl border-2 border-primary p-space-md shadow-[0_12px_28px_-4px_rgba(124,58,237,0.18)] relative">
+<div class="flex items-center justify-between text-label-sm border-b border-outline-variant pb-1.5 mb-2">
+<div class="flex items-center gap-1.5 font-black text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+                      SF-1 • LIVE DECIDER (1-1)
+                    </div>
+<span class="text-[11px] font-bold text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span> 1,420
+                    </span>
+</div>
+<!-- Player 1 -->
+<div class="flex items-center justify-between p-2 rounded-xl bg-surface-container-low mb-1.5 border border-outline-variant/40">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-full object-cover ring-2 ring-primary" data-alt="Playful orange fox cartoon avatar with animated brush ring indicator in high key aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJsiiW2C5ESKsOoNa8mN_OWRqTpF64G_5BHGy3-6XkvDpFX2bg7Yq8d8RYHlgW2lKaBKmze4064adaw74cI-zYZsemUMi7KgyLNiyihvnfZY0nbEYqEq-9tpehvzRzvSzGAKBLXD5YkW8LphQhnPtccxkp0UEtPOMq4QLaQQsx8ZawEiawOrOWEBEDmVdHwC6OxApY-jh1DinXeO62Dk37lr0Phdw0if5E0QJqWo9s"/>
+<div>
+<div class="font-label-md text-on-surface font-black">SpeedyFox</div>
+<div class="text-[10px] text-tertiary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="edit">edit</span> Drawing Now
+                        </div>
+</div>
+</div>
+<span class="font-headline-md text-headline-md text-primary font-black">1</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center justify-between p-2 rounded-xl bg-surface-container-low mb-3 border border-outline-variant/40">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Cute green cartoon viper with artist palette headband in cheerful esports digital art style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA-HZL3IghJh7rcdDzY_KZWFCfK12HD6onMcMbOuM6T8GO6fUr8F01L6tlzFNtqVsAqmgP-RjYQES3NbFXw1BtsKs1XGiRoQLDJZum9JfGA734IOG-X7H-d5_6cDMZSLksz63FP1ZI0Hi2mJRE6u0oGNkrUlagGUfM9syLJ5gd_cSTkWqWuWh68BN-T7Q3XfuDbU8If5iA_uhNZ8JHqUIcoeBTWY9s3Laa5LxJk8wk"/>
+<div>
+<div class="font-label-md text-on-surface font-black">BrushViper</div>
+<div class="text-[10px] text-on-surface-variant font-bold">Guessing...</div>
+</div>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface-variant font-black">1</span>
+</div>
+<!-- Spectate CTA -->
+<button class="w-full tactile-btn-secondary py-2 rounded-xl text-white font-label-md flex items-center justify-center gap-1.5 uppercase font-black tracking-wider">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_circle" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+                    Spectate Round 3
+                  </button>
+</div>
+<!-- SEMIFINAL 2 (Upcoming in 12m) -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-space-md hover:border-primary/40 transition-all">
+<div class="flex items-center justify-between text-label-sm border-b border-outline-variant/60 pb-1.5 mb-2 font-bold text-on-surface-variant">
+<span>SF-2 • UPCOMING</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-[11px] font-black">Starts in 12m</span>
+</div>
+<!-- Player 1 -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 mb-1.5">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Cute astronaut bunny cartoon player icon with blue visor and playful expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6biIgekxUZfSx3RHBswIFSwwC8l9SEjxg2pi97ydqnltC_6FO9vnPkAogRIJYcR-dAJMdIeykfrHxR9eZrJPaVvSA_RxqPJaJxAGSCOcLyzyn-yeBIHX3IYBbf9tcSQx67KRKdPm-8DLuzDXLP3T4znLPa8WsiLJGH2as_nQNNR7_lgwbb_Z7nvTAG4jGNqM0O0z6Ad9tKEGBMqObzTeg67NBrPvXgOWqYPfErwzM"/>
+<span class="font-label-md text-on-surface font-bold">AstroBunny</span>
+</div>
+<span class="text-label-md text-on-surface-variant font-black">VS</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Cheerful bumblebee mascot cartoon avatar with paint smudges and bright eyes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJRGBTecpi7RE9A4ucctGptpFeJGAuxqZW5vExXHYFnH8lK6H5LUusMoZ8G7yPPth-KRne1CVpRnPrR5AZD5k1SRB2LOZGcu6GYeqRL2FHJRG9M5UipvwbGfgVhwrFP8lcTzdXQKg7lbOHR8yJI15aSmBmaUoLuyKun4ZxzUySn3Gjtv27JM5fQD2GMNgTGXMRP6lc6rNx-hSpeeDziTnIljCTg5xQPP1zo2PaFLJa"/>
+<span class="font-label-md text-on-surface font-bold">CheerfulBee</span>
+</div>
+<span class="text-label-sm px-2 py-0.5 rounded bg-surface-container font-black text-on-surface-variant">Ready</span>
+</div>
+</div>
+</div>
+<!-- COLUMN 3: GRAND FINALS & CHAMPION PODIUM -->
+<div class="flex flex-col items-center justify-center">
+<!-- Grand Finals Card -->
+<div class="w-full bg-gradient-to-b from-amber-50 to-surface-container-lowest rounded-2xl border-2 border-amber-300 p-space-md shadow-md text-center flex flex-col items-center gap-space-sm relative">
+<div class="absolute -top-4 px-3 py-1 bg-amber-400 text-amber-950 font-label-sm font-black rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="crown" style="font-variation-settings: 'FILL' 1;">crown</span>
+                    CHAMPIONSHIP MATCH
+                  </div>
+<!-- Trophy Graphic Representation -->
+<div class="w-16 h-16 rounded-full bg-amber-100 border-2 border-amber-300 flex items-center justify-center mt-2 shadow-inner">
+<span class="material-symbols-outlined text-amber-500 text-[36px]" data-icon="emoji_events" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-black">Grand Finals (Bo5)</h3>
+<div class="text-[12px] font-bold text-amber-700">Winner takes 50,000 Gems + Trophy</div>
+</div>
+<!-- Finals Slots -->
+<div class="w-full flex flex-col gap-2 mt-1">
+<div class="p-2.5 rounded-xl border border-dashed border-outline-variant bg-surface-container-lowest/80 flex items-center justify-between font-label-md text-on-surface-variant">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="hourglass_top">hourglass_top</span>
+                        Winner SF1 (Fox/Viper)
+                      </span>
+<span class="font-bold text-xs uppercase text-slate-400">TBD</span>
+</div>
+<div class="text-xs font-black text-on-surface-variant">VS</div>
+<div class="p-2.5 rounded-xl border border-dashed border-outline-variant bg-surface-container-lowest/80 flex items-center justify-between font-label-md text-on-surface-variant">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="hourglass_top">hourglass_top</span>
+                        Winner SF2 (Bunny/Bee)
+                      </span>
+<span class="font-bold text-xs uppercase text-slate-400">TBD</span>
+</div>
+</div>
+<div class="w-full pt-space-xs">
+<span class="text-[11px] font-bold text-on-surface-variant block">Scheduled for 19:30 UTC</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- DETAILED MATCH SCHEDULE & ODDS COMPONENT -->
+<div class="w-full bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-sm border-b border-outline-variant pb-space-sm">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-extrabold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]" data-icon="event_note">event_note</span>
+                Match Schedule &amp; Community Intel
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time room telemetry, prediction odds, and viewer metrics.</p>
+</div>
+<!-- Filters -->
+<div class="flex items-center gap-1 bg-surface-container p-1 rounded-xl">
+<button class="px-3 py-1 rounded-lg font-label-sm bg-surface-container-lowest font-black text-primary shadow-xs">Live Matches (1)</button>
+<button class="px-3 py-1 rounded-lg font-label-sm text-on-surface-variant font-bold hover:text-on-surface">Upcoming (3)</button>
+<button class="px-3 py-1 rounded-lg font-label-sm text-on-surface-variant font-bold hover:text-on-surface">Completed (12)</button>
+</div>
+</div>
+<!-- Featured Live Match Card -->
+<div class="bg-surface-container-low rounded-2xl border-2 border-outline-variant p-space-md flex flex-col xl:flex-row items-center justify-between gap-space-lg">
+<!-- Left Player & Canvas Preview -->
+<div class="flex items-center gap-space-md w-full xl:w-1/3">
+<div class="relative w-28 h-28 bg-white rounded-xl border-2 border-outline-variant shadow-inner flex flex-col items-center justify-center p-2 text-center overflow-hidden">
+<div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">LIVE CANVAS</div>
+<!-- Drawing preview doodle mockup -->
+<span class="material-symbols-outlined text-[44px] text-primary/70 animate-bounce" data-icon="draw">draw</span>
+<span class="text-[11px] font-bold text-primary">_ O _ D _ E</span>
+<div class="absolute bottom-1 right-1 text-[9px] font-black bg-secondary text-white px-1 rounded">28s</div>
+</div>
+<div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11px] font-black tracking-wider uppercase">ROUND 3 DECIDER</span>
+<div class="font-headline-md text-headline-md font-black text-on-surface mt-1">SpeedyFox vs BrushViper</div>
+<div class="text-body-sm text-on-surface-variant flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="palette">palette</span>
+                  Drawer: SpeedyFox • Best of 3
+                </div>
+</div>
+</div>
+<!-- Prediction Vote Bar Component -->
+<div class="w-full xl:w-1/3 flex flex-col gap-1.5 px-space-md">
+<div class="flex justify-between items-center font-label-sm font-black">
+<span class="text-primary flex items-center gap-1">SpeedyFox (58%)</span>
+<span class="text-on-surface-variant">Community Prediction</span>
+<span class="text-tertiary flex items-center gap-1">(42%) BrushViper</span>
+</div>
+<!-- Chunky dual-colored prediction progress bar -->
+<div class="w-full h-3 bg-tertiary rounded-full overflow-hidden flex border border-outline-variant/50">
+<div class="h-full bg-primary" style="width: 58%"></div>
+<div class="h-full bg-tertiary" style="width: 42%"></div>
+</div>
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>1,024 Votes</span>
+<span class="text-primary font-bold">Predict to win +250 XP</span>
+<span>742 Votes</span>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-space-sm w-full xl:w-auto justify-end">
+<button class="tactile-btn-primary px-space-lg py-2.5 rounded-xl text-white font-label-md flex items-center gap-1 shadow-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="videocam">videocam</span>
+                Launch Stream
+              </button>
+<button class="tactile-btn-ghost px-space-md py-2.5 rounded-xl text-on-surface-variant font-label-md flex items-center gap-1" title="Share Match">
+<span class="material-symbols-outlined text-[18px]" data-icon="share">share</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT SIDEBAR (4 COLUMNS): LIVE SPECTATOR FEED, PRIZE DISTRIBUTION & RULES -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- LIVE SPECTATOR MINI-FEED / EVENT TICKER -->
+<div class="bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between border-b border-outline-variant pb-space-xs">
+<h3 class="font-headline-md text-[18px] font-black text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="campaign" style="font-variation-settings: 'FILL' 1;">campaign</span>
+              Tournament Live Feed
+            </h3>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
+</div>
+<!-- Feed Items Stream -->
+<div class="flex flex-col gap-space-xs text-body-sm max-h-[290px] overflow-y-auto pr-1">
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/60 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5" data-icon="bolt">bolt</span>
+<div>
+<span class="font-label-sm font-black text-primary">SpeedyFox</span>
+<span class="text-on-surface-variant"> guessed </span>
+<strong class="text-on-surface font-bold">"Metamorphosis"</strong>
+<span class="text-on-surface-variant"> in just </span>
+<span class="font-black text-tertiary">2.1s!</span>
+<div class="text-[10px] text-slate-400 mt-0.5">38 seconds ago • Round 2</div>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2">
+<span class="material-symbols-outlined text-amber-600 text-[18px] mt-0.5" data-icon="celebration">celebration</span>
+<div>
+<span class="font-label-sm font-black text-amber-900">CheerfulBee</span>
+<span class="text-amber-800"> claimed an upset victory over </span>
+<span class="font-black text-primary">PixelPenguin</span>
+<span class="text-amber-800"> (2 - 1).</span>
+<div class="text-[10px] text-amber-600 mt-0.5">4 minutes ago • Match QF-4</div>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/60 flex items-start gap-2">
+<span class="material-symbols-outlined text-tertiary text-[18px] mt-0.5" data-icon="palette">palette</span>
+<div>
+<span class="font-label-sm font-black text-on-surface">BrushViper</span>
+<span class="text-on-surface-variant"> completed round 1 drawing with 98% player accuracy.</span>
+<div class="text-[10px] text-slate-400 mt-0.5">9 minutes ago • Semifinal 1</div>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/60 flex items-start gap-2">
+<span class="material-symbols-outlined text-slate-500 text-[18px] mt-0.5" data-icon="sports_score">sports_score</span>
+<div>
+<span class="font-label-sm font-black text-on-surface">AstroBunny</span>
+<span class="text-on-surface-variant"> advanced to Semifinals defeating DoodleMaster.</span>
+<div class="text-[10px] text-slate-400 mt-0.5">14 minutes ago • Match QF-3</div>
+</div>
+</div>
+</div>
+<!-- Live Chat Input Snippet -->
+<div class="mt-space-xs pt-space-xs border-t border-outline-variant">
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container rounded-xl pl-3 pr-10 py-2 text-body-sm border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary/40 font-body-sm" placeholder="Cheer or predict in spectator chat..." type="text"/>
+<button class="absolute right-1.5 p-1 rounded-lg bg-primary text-white hover:bg-primary-container">
+<span class="material-symbols-outlined text-[16px]" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- PRIZE POOL BREAKDOWN BENTO CARD -->
+<div class="bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between border-b border-outline-variant pb-space-xs">
+<h3 class="font-headline-md text-[18px] font-black text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-amber-500 text-[20px]" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+              Prize Distribution
+            </h3>
+<span class="font-label-sm text-primary font-black">100k GEMS TOTAL</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- 1st Place -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-300">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-full bg-amber-400 text-amber-950 font-black text-xs flex items-center justify-center shadow-xs">1st</span>
+<div>
+<div class="font-label-md text-amber-950 font-black">50,000 Gems</div>
+<div class="text-[11px] text-amber-800 font-semibold">+ Exclusive Golden Stylus Trail &amp; Trophy</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-amber-500 text-[24px]" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<!-- 2nd Place -->
+<div class="flex items-center justify-between p-2 rounded-xl bg-surface-container-low border border-slate-300">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-slate-300 text-slate-800 font-black text-xs flex items-center justify-center">2nd</span>
+<div>
+<div class="font-label-md text-on-surface font-black">25,000 Gems</div>
+<div class="text-[11px] text-on-surface-variant font-medium">+ Silver Brush Avatar Frame</div>
+</div>
+</div>
+<span class="font-label-sm font-bold text-slate-600">Finalist</span>
+</div>
+<!-- 3rd - 4th -->
+<div class="flex items-center justify-between p-2 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-amber-700/20 text-amber-900 font-black text-xs flex items-center justify-center">3-4</span>
+<div>
+<div class="font-label-md text-on-surface font-bold">10,000 Gems each</div>
+<div class="text-[11px] text-on-surface-variant">Semifinalist Badge + 1,500 XP</div>
+</div>
+</div>
+<span class="font-label-sm font-bold text-on-surface-variant">Semifinals</span>
+</div>
+<!-- 5th - 8th -->
+<div class="flex items-center justify-between p-2 rounded-xl bg-surface-container-low border border-outline-variant/40">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant font-black text-xs flex items-center justify-center">5-8</span>
+<div>
+<div class="font-label-md text-on-surface font-bold">2,500 Gems each</div>
+<div class="text-[11px] text-on-surface-variant">Quarterfinalist Certificate</div>
+</div>
+</div>
+<span class="font-label-sm font-bold text-on-surface-variant">Quarterfinals</span>
+</div>
+</div>
+</div>
+<!-- FAIR PLAY & RULES ACCORDION CARD -->
+<div class="bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-space-md shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-[17px] font-black text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="gavel">gavel</span>
+              Competitive Rules &amp; Fair Play
+            </h3>
+<button class="text-primary font-label-sm hover:underline">View All</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Weekend Masters operates under strict automated anti-cheat and competitive etiquette protocols.
+          </p>
+<ul class="flex flex-col gap-1.5 mt-1 font-body-sm text-[12px] text-on-surface">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[15px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<strong>90s Grace Period:</strong> In case of player disconnect before forfeit.
+            </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[15px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<strong>No Text-Drawing:</strong> Writing words or letters triggers auto-flag.
+            </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[15px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<strong>Spell-Check Strictness:</strong> Exact dictionary spelling required.
+            </li>
+</ul>
+<div class="mt-2 pt-2 border-t border-outline-variant/60 flex items-center justify-between text-[11px] text-on-surface-variant">
+<span>Tournament ID: #DA-WMC-2024-S4</span>
+<span class="font-bold text-tertiary flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="shield">shield</span> Anti-Cheat Verified
+            </span>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="w-full bg-surface-container-lowest border-t-2 border-outline-variant mt-space-xl py-space-lg px-space-lg">
+<div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-space-md text-on-surface-variant font-body-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md font-black text-primary">Doodle Arena</span>
+<span class="text-xs px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant font-black">v2.4.1-ESPORTS</span>
+<span>• © 2024 Doodle Arena Interactive. All rights reserved.</span>
+</div>
+<div class="flex items-center gap-space-lg text-label-md font-semibold">
+<a class="hover:text-primary transition-colors" href="#">Tournament Rules</a>
+<a class="hover:text-primary transition-colors" href="#">Fair-Play Code</a>
+<a class="hover:text-primary transition-colors" href="#">Discord Community</a>
+<a class="hover:text-primary transition-colors" href="#">Support &amp; Disputes</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+    // Lightweight interactivity for tab toggles and countdown pulse
+    document.querySelectorAll('nav a, .tactile-btn-ghost, .tactile-btn-primary').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        el.style.transform = 'translateY(-1px)';
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+  </script>
+</body></html>
