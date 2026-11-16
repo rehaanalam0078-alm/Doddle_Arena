@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RoomState } from '@/types/game';
 import { sound } from '@/services/sound';
+import { getApiUrl } from '@/config/backend';
 
 interface RoomsDirectoryViewProps {
   onJoinRoom: (code: string) => void;
@@ -19,10 +20,17 @@ export const RoomsDirectoryView: React.FC<RoomsDirectoryViewProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/rooms/public')
-      .then((res) => res.json())
+    fetch(getApiUrl('/api/rooms/public'))
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
-        setRooms(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setRooms(data);
+        } else {
+          throw new Error('No rooms returned');
+        }
         setLoading(false);
       })
       .catch(() => {

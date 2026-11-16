@@ -7,6 +7,7 @@ interface AppHeaderProps {
   currentView: string;
   onNavigate: (view: string) => void;
   onlineCount?: number;
+  isSocketConnected?: boolean;
   userAvatar: IPlayerAvatar;
   userName: string;
   userLevel: number;
@@ -20,6 +21,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   currentView,
   onNavigate,
   onlineCount = 1,
+  isSocketConnected = true,
   userAvatar,
   userName,
   userLevel,
@@ -58,9 +60,27 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-primary drop-shadow-sm leading-none font-headline-lg">
               Doodle Arena
             </span>
-            <span className="text-[10px] sm:text-xs text-outline font-bold flex items-center gap-1 mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              {onlineCount.toLocaleString()} ARTISTS ONLINE
+            <span
+              onClick={!isSocketConnected ? onOpenSettings : undefined}
+              className={`text-[10px] sm:text-xs font-bold flex items-center gap-1 mt-0.5 ${
+                !isSocketConnected
+                  ? 'text-amber-500 cursor-pointer hover:underline'
+                  : 'text-outline'
+              }`}
+              title={
+                !isSocketConnected
+                  ? 'Click to configure backend URL in Settings'
+                  : 'Connected to game server'
+              }
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isSocketConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                }`}
+              ></span>
+              {isSocketConnected
+                ? `${onlineCount.toLocaleString()} ARTISTS ONLINE`
+                : 'OFFLINE (CONNECT BACKEND)'}
             </span>
           </div>
         </div>

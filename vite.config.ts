@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
+  base: '/Doddle_Arena/',
   plugins: [react()],
   resolve: {
     alias: {

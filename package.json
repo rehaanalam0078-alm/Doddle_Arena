@@ -7,7 +7,7 @@
     "dev:server": "tsx watch server/index.ts",
     "dev:client": "vite",
     "dev": "concurrently -k -n \"SRV,CLI\" -c \"magenta,cyan\" \"npm run dev:server\" \"npm run dev:client\"",
-    "build:client": "vite build",
+    "build:client": "vite build && node scripts/copy-404.js",
     "build:server": "tsc -p tsconfig.server.json",
     "build": "npm run build:client && npm run build:server",
     "start": "node dist-server/server/index.js",

@@ -17,14 +17,43 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+// Cross-Origin Resource Sharing (Configured for GitHub Pages & Cloud Hosting)
+const allowedOrigins = [
+  'https://rehaanalam0078-alm.github.io',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:3001',
+];
+
+if (process.env.CLIENT_ORIGIN) {
+  allowedOrigins.push(...process.env.CLIENT_ORIGIN.split(',').map((s) => s.trim()));
+}
+if (process.env.CORS_ORIGIN) {
+  allowedOrigins.push(...process.env.CORS_ORIGIN.split(',').map((s) => s.trim()));
+}
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, mobile, server-to-server) or listed origins
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive public multiplayer access
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const io = new Server(server, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
+    credentials: true,
   },
+  transports: ['websocket', 'polling'],
   pingTimeout: 30000,
   pingInterval: 10000,
 });
@@ -368,7 +397,7 @@ io.on('connection', (socket: Socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🎮 Doodle Arena Backend Server running on http://localhost:${PORT}`);
+const PORT = Number(process.env.PORT) || 3001;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🎮 Doodle Arena Backend Server running on http://0.0.0.0:${PORT}`);
 });

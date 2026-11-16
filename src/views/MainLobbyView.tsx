@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PlayerAvatar } from '@/components/common/PlayerAvatar';
 import { PlayerAvatar as IPlayerAvatar, AvatarStyle, AvatarHat } from '@/types/game';
 import { sound } from '@/services/sound';
+import { getApiUrl } from '@/config/backend';
 
 interface MainLobbyViewProps {
   userAvatar: IPlayerAvatar;
@@ -54,14 +55,30 @@ export const MainLobbyView: React.FC<MainLobbyViewProps> = ({
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/leaderboard')
-      .then((r) => r.json())
+    fetch(getApiUrl('/api/leaderboard'))
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setTopPlayers(data.slice(0, 3));
+        } else {
+          setTopPlayers([
+            { id: '1', name: 'PixelMaster', avatar: { style: 'cat', hat: 'crown', color: '#7C3AED' }, score: 2840, wins: 42 },
+            { id: '2', name: 'NeonSketcher', avatar: { style: 'fox', hat: 'headphones', color: '#06B6D4' }, score: 2310, wins: 35 },
+            { id: '3', name: 'SpeedyPencil', avatar: { style: 'robot', hat: 'beret', color: '#10B981' }, score: 1980, wins: 29 },
+          ]);
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        // Fallback demo players for offline / static preview
+        setTopPlayers([
+          { id: '1', name: 'PixelMaster', avatar: { style: 'cat', hat: 'crown', color: '#7C3AED' }, score: 2840, wins: 42 },
+          { id: '2', name: 'NeonSketcher', avatar: { style: 'fox', hat: 'headphones', color: '#06B6D4' }, score: 2310, wins: 35 },
+          { id: '3', name: 'SpeedyPencil', avatar: { style: 'robot', hat: 'beret', color: '#10B981' }, score: 1980, wins: 29 },
+        ]);
+      })
       .finally(() => setLeaderboardLoading(false));
   }, []);
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { socketService } from '@/services/socket';
 import { voiceService } from '@/services/voice';
 import { sound } from '@/services/sound';
+import { getApiUrl } from '@/config/backend';
 import {
   RoomState,
   Stroke,
@@ -99,6 +100,15 @@ export const App: React.FC = () => {
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [helpModalOpen, setHelpModalOpen] = useState(false);
+
+  // Backend Connection State
+  const [isSocketConnected, setIsSocketConnected] = useState<boolean>(socketService.isConnected);
+
+  useEffect(() => {
+    return socketService.subscribeConnection((connected) => {
+      setIsSocketConnected(connected);
+    });
+  }, []);
 
   // Competitive & Tournament State
   const [isRankedQueued, setIsRankedQueued] = useState(false);
@@ -229,8 +239,11 @@ export const App: React.FC = () => {
     });
 
     // Fetch initial tournament data
-    fetch('/api/tournament')
-      .then((res) => res.json())
+    fetch(getApiUrl('/api/tournament'))
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => setTournamentData(data))
       .catch((e) => console.warn('Tournament fetch note', e));
 
@@ -255,14 +268,20 @@ export const App: React.FC = () => {
   // Periodic health check for truthful live online artists count
   useEffect(() => {
     const fetchHealth = () => {
-      fetch('/api/health')
-        .then((res) => res.json())
+      fetch(getApiUrl('/api/health'))
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then((data) => {
           if (typeof data.onlineArtists === 'number') {
             setOnlineCount(data.onlineArtists);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          // Default online presence when backend is cold/offline
+          setOnlineCount(1);
+        });
     };
     fetchHealth();
     const interval = setInterval(fetchHealth, 10000);
@@ -271,10 +290,75 @@ export const App: React.FC = () => {
 
   // --- Actions ---
 
+  const startOfflinePractice = () => {
+    sound.playClick();
+    const guestPlayerId = `ply_guest_${Date.now()}`;
+    setCurrentPlayerId(guestPlayerId);
+    const mockRoom: RoomState = {
+      code: 'PRACTICE',
+      hostId: guestPlayerId,
+      settings: {
+        isPrivate: true,
+        maxPlayers: 2,
+        rounds: 3,
+        drawTimeSeconds: 80,
+        difficulty: 'easy',
+        wordPackId: 'classic',
+        language: 'en',
+      },
+      players: [
+        {
+          id: guestPlayerId,
+          socketId: 'offline_socket',
+          name: userName,
+          avatar: userAvatar,
+          score: 0,
+          rank: 1,
+          isHost: true,
+          isReady: true,
+          isDrawing: true,
+          hasGuessed: false,
+        },
+        {
+          id: 'bot_ai',
+          socketId: 'bot_socket',
+          name: 'DoodleBot_AI',
+          avatar: { style: 'robot', hat: 'headphones', color: '#06B6D4' },
+          score: 0,
+          rank: 2,
+          isHost: false,
+          isReady: true,
+          isDrawing: false,
+          hasGuessed: false,
+        },
+      ],
+      phase: 'LOBBY',
+      currentRound: 1,
+      totalRounds: 3,
+      currentDrawerId: guestPlayerId,
+      drawerName: userName,
+      timerStart: 0,
+      timerEnd: 0,
+      durationSeconds: 80,
+      clue: '',
+      category: 'General',
+      letterCount: 5,
+      difficultyPoints: 100,
+      rematchVotes: [],
+      artworks: [],
+    };
+    setRoomState(mockRoom);
+    setCurrentView('room_lobby');
+  };
+
   const handlePlayCasual = () => {
     setIsSpectatorMode(false);
     setStrokes([]);
     setMessages([]);
+    if (!socketService.isConnected) {
+      startOfflinePractice();
+      return;
+    }
     socketService.createRoom(userName, userAvatar, {
       isPrivate: false,
       rounds: 3,
@@ -366,6 +450,7 @@ export const App: React.FC = () => {
           setCurrentView(view);
         }}
         onlineCount={onlineCount}
+        isSocketConnected={isSocketConnected}
         userAvatar={userAvatar}
         userName={userName}
         userLevel={userLevel}

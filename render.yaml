@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: doodle-arena-backend
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build:server
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_ORIGIN
+        value: https://rehaanalam0078-alm.github.io
