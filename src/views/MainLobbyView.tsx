@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlayerAvatar } from '@/components/common/PlayerAvatar';
 import { PlayerAvatar as IPlayerAvatar, AvatarStyle, AvatarHat } from '@/types/game';
 import { sound } from '@/services/sound';
