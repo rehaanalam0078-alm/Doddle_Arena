@@ -8,6 +8,8 @@ import { RoomManager } from './game/RoomManager.js';
 import { TournamentService } from './game/TournamentService.js';
 import { CompetitiveService } from './game/CompetitiveService.js';
 import { db } from './db/Database.js';
+import { VoiceManager } from './voice/VoiceManager.js';
+import { wordRepository } from './db/WordRepository.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,6 +30,8 @@ const io = new Server(server, {
 });
 
 const roomManager = new RoomManager(io);
+const voiceManager = new VoiceManager(io, roomManager);
+roomManager.voiceManager = voiceManager;
 
 // --- REST API ROUTES ---
 
@@ -74,6 +78,34 @@ app.post('/api/tournament/register', (req, res) => {
 
 app.get('/api/competitive/battles', (req, res) => {
   res.json(CompetitiveService.getRecentBattles());
+});
+
+// --- WORD REPOSITORY REST APIS ---
+
+app.get('/api/words/stats', (req, res) => {
+  res.json(wordRepository.getStats());
+});
+
+app.get('/api/words/candidates', (req, res) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 50;
+  res.json(wordRepository.getCandidates(page, limit));
+});
+
+app.post('/api/words/candidates/:id/approve', (req, res) => {
+  const success = wordRepository.approveCandidate(req.params.id);
+  if (!success) {
+    return res.status(404).json({ error: 'Candidate word record not found' });
+  }
+  res.json({ success: true, message: `Candidate word ${req.params.id} approved and moved to active pool.` });
+});
+
+app.post('/api/words/candidates/:id/reject', (req, res) => {
+  const success = wordRepository.rejectCandidate(req.params.id);
+  if (!success) {
+    return res.status(404).json({ error: 'Candidate word record not found' });
+  }
+  res.json({ success: true, message: `Candidate word ${req.params.id} rejected and removed.` });
 });
 
 app.get('/api/shop/items', (req, res) => {
@@ -303,9 +335,35 @@ io.on('connection', (socket: Socket) => {
     socket.emit('ranked:queueStatus', { status: 'idle' });
   });
 
+  // --- PRIVATE ROOM VOICE COMMUNICATION ---
+  socket.on('voice:join', (data) => {
+    const { roomCode } = data || {};
+    voiceManager.handleJoin(socket, roomCode);
+  });
+
+  socket.on('voice:leave', (data) => {
+    const { roomCode } = data || {};
+    voiceManager.handleLeave(socket, roomCode);
+  });
+
+  socket.on('voice:signal', (data) => {
+    voiceManager.handleSignal(socket, data);
+  });
+
+  socket.on('voice:mute', (data) => {
+    const { roomCode, isMuted } = data || {};
+    voiceManager.handleMute(socket, roomCode, Boolean(isMuted));
+  });
+
+  socket.on('voice:speaking', (data) => {
+    const { roomCode, isSpeaking } = data || {};
+    voiceManager.handleSpeaking(socket, roomCode, Boolean(isSpeaking));
+  });
+
   // Disconnect
   socket.on('disconnect', () => {
     CompetitiveService.dequeue(socket.id);
+    voiceManager.handleLeave(socket);
     roomManager.handleDisconnect(socket);
   });
 });

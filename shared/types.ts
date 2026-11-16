@@ -31,6 +31,7 @@ export interface RoomSettings {
   difficulty: 'easy' | 'medium' | 'hard';
   wordPackId: string;
   language: string;
+  voiceChatEnabled?: boolean;
 }
 
 export type GamePhase =
@@ -46,6 +47,9 @@ export interface WordOption {
   category: string;
   difficulty: 'easy' | 'medium' | 'hard';
   points: number;
+  id?: string;
+  wordLength?: number;
+  categoryVisible?: boolean;
 }
 
 export type DrawingTool = 'brush' | 'eraser' | 'fill' | 'line' | 'rectangle' | 'circle';
@@ -106,10 +110,32 @@ export interface RoomState {
   category: string;
   letterCount: number;
   difficultyPoints: number;
+  categoryVisible?: boolean;
+  wordLength?: number;
+  voiceParticipants?: string[];
   secretWord?: string;
   winnerId?: string;
   rematchVotes?: string[];
   artworks: ArtworkRecord[];
+}
+
+export interface VoiceParticipant {
+  socketId: string;
+  playerId: string;
+  playerName: string;
+  avatar: PlayerAvatar;
+  isMuted: boolean;
+  isSpeaking: boolean;
+}
+
+export interface VoiceSignalPayload {
+  roomCode: string;
+  targetSocketId: string;
+  senderSocketId?: string;
+  signal: {
+    type: 'offer' | 'answer' | 'candidate';
+    data: any;
+  };
 }
 
 export interface TournamentMatch {

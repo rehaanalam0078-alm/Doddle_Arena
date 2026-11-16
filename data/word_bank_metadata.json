@@ -1,0 +1,25 @@
+{
+  "dataset_name": "Doodle Arena Expanded Drawable Word Bank",
+  "dataset_version": "2.0.0",
+  "imported_at": "2026-11-16",
+  "total_records": 2746,
+  "unique_normalized_words": 2744,
+  "active_records": 2124,
+  "candidate_records": 622,
+  "difficulty": {
+    "easy": 892,
+    "medium": 1317,
+    "hard": 537
+  },
+  "active_by_difficulty": {
+    "easy": 680,
+    "medium": 1040,
+    "hard": 404
+  },
+  "candidate_by_difficulty": {
+    "easy": 212,
+    "medium": 277,
+    "hard": 133
+  },
+  "categories_count": 82
+}

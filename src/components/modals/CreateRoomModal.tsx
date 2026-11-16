@@ -19,6 +19,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [wordPack, setWordPack] = useState('classic');
   const [customCode, setCustomCode] = useState('');
+  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
 
   if (!isOpen) return null;
 
@@ -33,6 +34,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
         difficulty,
         wordPackId: wordPack,
         isPrivate: true,
+        voiceChatEnabled,
       },
       customCode.trim() || undefined
     );
@@ -132,6 +134,34 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Voice Chat Communication Toggle */}
+          <div className="bg-surface-container-low border-2 border-outline-variant p-3.5 rounded-2xl flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-600 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-xl">mic</span>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-on-surface">
+                  Voice Chat Communication
+                </label>
+                <p className="text-[11px] text-outline font-medium">
+                  Enable voice communication so players in this private room can talk to one another during the game.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setVoiceChatEnabled(!voiceChatEnabled)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all border shrink-0 ${
+                voiceChatEnabled
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                  : 'bg-surface-container-high text-outline border-outline-variant'
+              }`}
+            >
+              {voiceChatEnabled ? 'ON' : 'OFF'}
+            </button>
           </div>
 
           {/* Custom Room Code (Optional) */}

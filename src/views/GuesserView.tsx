@@ -4,6 +4,7 @@ import { PlayerCard } from '@/components/common/PlayerCard';
 import { GameTimer } from '@/components/common/GameTimer';
 import { DrawingCanvas } from '@/components/canvas/DrawingCanvas';
 import { ChatMessageItem } from '@/components/common/ChatMessageItem';
+import { VoiceChatBar } from '@/components/voice/VoiceChatBar';
 import { sound } from '@/services/sound';
 
 interface GuesserViewProps {
@@ -81,14 +82,20 @@ export const GuesserView: React.FC<GuesserViewProps> = ({
           {/* Masked Clue Letters */}
           <div className="bg-surface-container-low border-2 border-outline-variant px-5 py-2 rounded-2xl flex flex-col items-center">
             <span className="text-[10px] font-bold text-outline uppercase tracking-widest">
-              WORD CLUE ({room.letterCount} LETTERS)
+              WORD CLUE ({room.wordLength || room.letterCount} LETTERS)
             </span>
             <span className="font-mono text-xl sm:text-2xl font-black text-primary tracking-widest leading-tight">
               {room.clue || '_ _ _ _ _'}
             </span>
-            <span className="text-[11px] font-semibold text-outline">
-              Category: {room.category || 'General'}
-            </span>
+            {room.categoryVisible && room.category ? (
+              <span className="text-[11px] font-semibold text-outline">
+                Category: {room.category}
+              </span>
+            ) : (
+              <span className="text-[11px] font-semibold text-outline">
+                Difficulty: {(room.settings.difficulty || 'Medium').toUpperCase()}
+              </span>
+            )}
           </div>
         </div>
 
@@ -107,6 +114,9 @@ export const GuesserView: React.FC<GuesserViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* PRIVATE ROOM VOICE CHAT BAR */}
+      <VoiceChatBar room={room} currentPlayerId={currentPlayerId} />
 
       {/* THREE-COLUMN ARENA LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start flex-1">

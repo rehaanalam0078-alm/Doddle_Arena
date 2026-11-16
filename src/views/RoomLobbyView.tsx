@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RoomState, Player } from '@/types/game';
 import { PlayerCard } from '@/components/common/PlayerCard';
 import { ChatMessageItem } from '@/components/common/ChatMessageItem';
+import { VoiceChatBar } from '@/components/voice/VoiceChatBar';
 import { sound } from '@/services/sound';
 
 interface RoomLobbyViewProps {
@@ -113,6 +114,9 @@ export const RoomLobbyView: React.FC<RoomLobbyViewProps> = ({
         </div>
       </div>
 
+      {/* PRIVATE ROOM VOICE CHAT BAR (Rendered only when enabled in private rooms) */}
+      <VoiceChatBar room={room} currentPlayerId={currentPlayerId} />
+
       {/* MAIN TWO-COLUMN LOBBY ARENA */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT COLUMN: PLAYER ROSTER GRID (7 Cols) */}
@@ -219,6 +223,63 @@ export const RoomLobbyView: React.FC<RoomLobbyViewProps> = ({
                 ))}
               </div>
             </div>
+
+            {/* Difficulty Selector */}
+            <div>
+              <div className="flex items-center justify-between text-xs font-bold text-on-surface mb-1.5">
+                <span>Difficulty</span>
+                <span className="uppercase font-extrabold text-primary">
+                  {room.settings.difficulty || 'medium'}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {(['easy', 'medium', 'hard'] as const).map((diff) => (
+                  <button
+                    key={diff}
+                    disabled={!isHost}
+                    onClick={() => onUpdateSettings({ difficulty: diff })}
+                    className={`py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
+                      (room.settings.difficulty || 'medium').toLowerCase() === diff
+                        ? 'bg-secondary text-white border-secondary shadow-sm'
+                        : 'bg-surface-container-low border-outline-variant hover:bg-surface-container-high disabled:opacity-60'
+                    }`}
+                  >
+                    {diff}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Voice Communication Toggle (Private Rooms Only) */}
+            {room.settings.isPrivate && (
+              <div className="p-3 rounded-2xl bg-surface-container-low border border-outline-variant flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-600 text-lg">mic</span>
+                  <div>
+                    <span className="block text-xs font-bold text-on-surface">Voice Chat</span>
+                    <span className="text-[10px] text-outline font-medium">
+                      {isHost ? 'Toggle voice for room' : 'Host managed'}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={!isHost}
+                  onClick={() =>
+                    onUpdateSettings({
+                      voiceChatEnabled: !room.settings.voiceChatEnabled,
+                    })
+                  }
+                  className={`px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider border transition-all ${
+                    room.settings.voiceChatEnabled
+                      ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                      : 'bg-surface-container-high text-outline border-outline-variant disabled:opacity-60'
+                  }`}
+                >
+                  {room.settings.voiceChatEnabled ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            )}
 
             {/* Wordpack & Edit Pack trigger */}
             <div className="pt-2 border-t border-outline-variant flex items-center justify-between">

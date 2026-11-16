@@ -1,28 +1,45 @@
 import { describe, it, expect } from 'vitest';
 import { WordService } from '../server/game/WordService.js';
+import { wordRepository } from '../server/db/WordRepository.js';
 
-describe('WordService', () => {
-  it('generates 3 tiered word options: easy, medium, and hard', () => {
-    const options = WordService.getRandomWordOptions();
-    expect(options).toHaveLength(3);
+describe('WordService & Word Database Integration', () => {
+  it('generates 3 word options matching room difficulty without mixing', () => {
+    // Easy mode
+    const easyOptions = WordService.getRandomWordOptions('easy');
+    expect(easyOptions).toHaveLength(3);
+    for (const opt of easyOptions) {
+      expect(opt.difficulty).toBe('easy');
+      expect(opt.points).toBe(100);
+      expect(opt.categoryVisible).toBe(true);
+      expect(opt.category).toBeTruthy();
+    }
 
-    const easy = options.find((o) => o.difficulty === 'easy');
-    const med = options.find((o) => o.difficulty === 'medium');
-    const hard = options.find((o) => o.difficulty === 'hard');
+    // Medium mode
+    const mediumOptions = WordService.getRandomWordOptions('medium');
+    expect(mediumOptions).toHaveLength(3);
+    for (const opt of mediumOptions) {
+      expect(opt.difficulty).toBe('medium');
+      expect(opt.points).toBe(250);
+      expect(opt.categoryVisible).toBe(false); // Hidden from guessers
+    }
 
-    expect(easy).toBeDefined();
-    expect(easy?.points).toBe(100);
+    // Hard mode
+    const hardOptions = WordService.getRandomWordOptions('hard');
+    expect(hardOptions).toHaveLength(3);
+    for (const opt of hardOptions) {
+      expect(opt.difficulty).toBe('hard');
+      expect(opt.points).toBe(450);
+      expect(opt.categoryVisible).toBe(false); // Hidden from guessers
+    }
+  });
 
-    expect(med).toBeDefined();
-    expect(med?.points).toBe(250);
+  it('excludes previously used words in match', () => {
+    const initialOptions = WordService.getRandomWordOptions('medium');
+    const firstWord = initialOptions[0].word;
 
-    expect(hard).toBeDefined();
-    expect(hard?.points).toBe(450);
-
-    // Words should be non-empty strings
-    expect(easy?.word.length).toBeGreaterThan(0);
-    expect(med?.word.length).toBeGreaterThan(0);
-    expect(hard?.word.length).toBeGreaterThan(0);
+    const nextOptions = WordService.getRandomWordOptions('medium', [firstWord]);
+    const words = nextOptions.map((o) => o.word.toLowerCase());
+    expect(words).not.toContain(firstWord.toLowerCase());
   });
 
   it('generates masked initial clues matching word length', () => {

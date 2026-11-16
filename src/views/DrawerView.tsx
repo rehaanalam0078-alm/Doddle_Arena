@@ -5,6 +5,7 @@ import { GameTimer } from '@/components/common/GameTimer';
 import { DrawingCanvas } from '@/components/canvas/DrawingCanvas';
 import { DrawingToolbar } from '@/components/canvas/DrawingToolbar';
 import { ChatMessageItem } from '@/components/common/ChatMessageItem';
+import { VoiceChatBar } from '@/components/voice/VoiceChatBar';
 import { sound } from '@/services/sound';
 
 interface DrawerViewProps {
@@ -102,6 +103,9 @@ export const DrawerView: React.FC<DrawerViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* PRIVATE ROOM VOICE CHAT BAR */}
+      <VoiceChatBar room={room} currentPlayerId={currentPlayerId} />
 
       {/* THREE-COLUMN ARENA LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start flex-1">

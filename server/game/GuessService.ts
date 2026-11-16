@@ -1,3 +1,5 @@
+import { wordRepository } from '../db/WordRepository.js';
+
 export interface GuessEvaluation {
   isCorrect: boolean;
   isClose: boolean;
@@ -51,10 +53,16 @@ export class GuessService {
       return { isCorrect: false, isClose: false, cleanGuess: '' };
     }
 
+    // Exact or space-collapsed match
     if (
       cleanGuess === cleanSecret ||
       cleanGuess.replace(/\s+/g, '') === cleanSecret.replace(/\s+/g, '')
     ) {
+      return { isCorrect: true, isClose: false, cleanGuess };
+    }
+
+    // Approved alias or regional variant match
+    if (wordRepository.isMatchingGuess(cleanGuess, secretWord)) {
       return { isCorrect: true, isClose: false, cleanGuess };
     }
 

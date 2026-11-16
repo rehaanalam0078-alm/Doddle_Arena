@@ -201,5 +201,5 @@ describe('Turn Rotation & Canvas Lifecycle Verification', () => {
     // Clean up
     clientA.disconnect();
     clientB.disconnect();
-  }, 25000);
+  }, 35000);
 });

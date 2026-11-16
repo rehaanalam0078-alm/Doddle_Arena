@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { socketService } from '@/services/socket';
+import { voiceService } from '@/services/voice';
 import { sound } from '@/services/sound';
 import {
   RoomState,
@@ -305,6 +306,7 @@ export const App: React.FC = () => {
 
   const handleLeaveRoom = () => {
     sound.playClick();
+    voiceService.leave();
     setRoomState(null);
     setStrokes([]);
     setMessages([]);

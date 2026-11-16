@@ -15,6 +15,7 @@ import { GuessService } from './GuessService.js';
 import { ScoringService } from './ScoringService.js';
 import { db } from '../db/Database.js';
 import { BotDrawingEngine } from './BotDrawingEngine.js';
+import type { VoiceManager } from '../voice/VoiceManager.js';
 
 export interface InternalRoom {
   code: string;
@@ -55,6 +56,7 @@ export interface InternalRoom {
 export class RoomManager {
   private io: Server;
   private rooms: Map<string, InternalRoom> = new Map();
+  public voiceManager?: VoiceManager;
 
   constructor(io: Server) {
     this.io = io;
@@ -77,16 +79,23 @@ export class RoomManager {
     const code = customCode ? customCode.toUpperCase() : this.generateRoomCode();
     const playerId = `ply_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
 
+    const isPrivate = Boolean(settings?.isPrivate);
     const defaultSettings: RoomSettings = {
-      isPrivate: false,
+      isPrivate,
       maxPlayers: 8,
       rounds: 3,
       drawTimeSeconds: 80,
       difficulty: 'medium',
       wordPackId: 'classic',
       language: 'en',
+      voiceChatEnabled: isPrivate ? Boolean(settings?.voiceChatEnabled) : false,
       ...settings,
     };
+
+    // Strict constraint: voice chat is exclusively permitted in private rooms
+    if (!defaultSettings.isPrivate) {
+      defaultSettings.voiceChatEnabled = false;
+    }
 
     const hostPlayer: Player = {
       id: playerId,
@@ -215,6 +224,8 @@ export class RoomManager {
   }
 
   public handleDisconnect(socket: Socket) {
+    this.voiceManager?.handleLeave(socket);
+
     for (const room of this.rooms.values()) {
       // Check if spectator
       if (room.spectatorSocketIds.has(socket.id)) {
@@ -297,9 +308,20 @@ export class RoomManager {
       return;
     }
 
-    room.settings = { ...room.settings, ...newSettings };
+    const mergedSettings: RoomSettings = { ...room.settings, ...newSettings };
+    if (!mergedSettings.isPrivate) {
+      mergedSettings.voiceChatEnabled = false;
+    }
+
+    const voiceWasDisabled = room.settings.voiceChatEnabled && !mergedSettings.voiceChatEnabled;
+    room.settings = mergedSettings;
     room.totalRounds = room.settings.rounds;
     room.durationSeconds = room.settings.drawTimeSeconds;
+
+    if (voiceWasDisabled) {
+      this.voiceManager?.handleRoomVoiceToggled(room);
+    }
+
     this.broadcastSystemMessage(room, `Room settings updated by host.`);
     this.broadcastRoomState(room);
   }
@@ -457,8 +479,14 @@ export class RoomManager {
     });
     this.io.to(room.code).emit('drawing:cleared', {});
 
-    // Generate 3 tiered word choices
-    room.wordOptions = WordService.getRandomWordOptions();
+    // Generate 3 word choices strictly matching the room's difficulty level (NEVER mixed)
+    let targetDiff: 'easy' | 'medium' | 'hard' = 'medium';
+    const roomDiff = (room.settings.difficulty || '').toLowerCase();
+    if (roomDiff === 'easy' || roomDiff === 'medium' || roomDiff === 'hard') {
+      targetDiff = roomDiff as 'easy' | 'medium' | 'hard';
+    }
+    const usedWords = room.artworks.map((a) => a.word);
+    room.wordOptions = WordService.getRandomWordOptions(targetDiff, usedWords);
 
     this.broadcastSystemMessage(
       room,
@@ -974,6 +1002,13 @@ export class RoomManager {
       room.phase === 'MATCH_RESULT' ||
       (isSpectator && !room.settings.isPrivate);
 
+    const isEasy = (room.settings.difficulty || '').toUpperCase() === 'EASY';
+    const isCategoryVisible =
+      isEasy ||
+      isDrawer ||
+      room.phase === 'ROUND_RESULT' ||
+      room.phase === 'MATCH_RESULT';
+
     return {
       code: room.code,
       hostId: room.hostId,
@@ -989,13 +1024,16 @@ export class RoomManager {
       timerEnd: room.timerEnd,
       durationSeconds: room.durationSeconds,
       clue: room.clue,
-      category: room.category,
+      category: isCategoryVisible ? room.category : '',
+      categoryVisible: isEasy,
+      wordLength: room.secretWord.replace(/\s+/g, '').length,
       letterCount: room.secretWord.replace(/\s+/g, '').length,
       difficultyPoints: room.difficultyPoints,
       secretWord: canSeeWord ? room.secretWord : undefined,
       winnerId: room.winnerId,
       rematchVotes: Array.from(room.rematchVotes),
       artworks: room.artworks,
+      voiceParticipants: this.voiceManager?.getConnectedParticipants(room.code) || [],
     };
   }
 
