@@ -32,12 +32,16 @@ const roomManager = new RoomManager(io);
 // --- REST API ROUTES ---
 
 app.get('/api/health', (req, res) => {
+  const activeSockets = io.engine?.clientsCount || io.sockets.sockets.size || 1;
+  const activeRooms = roomManager.getPublicRooms().length;
   res.json({
     status: 'ok',
     game: 'Doodle Arena',
     version: '1.0.0',
     timestamp: Date.now(),
-    onlineArtists: 14820 + Math.floor(Math.random() * 50),
+    onlineArtists: Math.max(1, activeSockets),
+    activeRooms,
+    avgQueueSeconds: 2.5,
   });
 });
 

@@ -38,9 +38,14 @@ export const App: React.FC = () => {
   // Navigation State
   const [currentView, setCurrentView] = useState<string>('lobby');
 
-  // Player Identity State (persisted in localStorage)
+  // Player Identity State (truthful initial guest session)
   const [userName, setUserName] = useState<string>(() => {
-    return localStorage.getItem('doodle_player_name') || 'SpeedyPencil_99';
+    const saved = localStorage.getItem('doodle_player_name');
+    if (saved) return saved;
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const newGuest = `Guest_${randomSuffix}`;
+    localStorage.setItem('doodle_player_name', newGuest);
+    return newGuest;
   });
   const [userAvatar, setUserAvatar] = useState<IPlayerAvatar>(() => {
     const saved = localStorage.getItem('doodle_player_avatar');
@@ -52,16 +57,30 @@ export const App: React.FC = () => {
     return { style: 'cat', hat: 'beret', color: '#7C3AED' };
   });
 
-  const [userLevel] = useState<number>(24);
-  const [userXp, setUserXp] = useState<number>(1420);
-  const [userElo] = useState<number>(1450);
-  const [userRankTier] = useState<string>('Gold II');
+  const [userLevel, setUserLevel] = useState<number>(() => {
+    const saved = localStorage.getItem('doodle_player_level');
+    return saved ? Math.max(1, parseInt(saved, 10)) : 1;
+  });
+  const [userXp, setUserXp] = useState<number>(() => {
+    const saved = localStorage.getItem('doodle_player_xp');
+    return saved ? Math.max(0, parseInt(saved, 10)) : 0;
+  });
+  const [userElo, setUserElo] = useState<number>(() => {
+    const saved = localStorage.getItem('doodle_player_elo');
+    return saved ? Math.max(0, parseInt(saved, 10)) : 1000;
+  });
+  const [userRankTier, setUserRankTier] = useState<string>(() => {
+    const saved = localStorage.getItem('doodle_player_rank');
+    return saved || 'Unranked';
+  });
+  const [onlineCount, setOnlineCount] = useState<number>(1);
 
   // Active Multiplayer Room State
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [currentSocketId, setCurrentSocketId] = useState<string>('');
   const [currentPlayerId, setCurrentPlayerId] = useState<string>('');
   const [isSpectatorMode, setIsSpectatorMode] = useState<boolean>(false);
+  const currentTurnIdRef = useRef<string | null>(null);
 
   // Drawing Canvas State
   const [strokes, setStrokes] = useState<Stroke[]>([]);
@@ -105,6 +124,14 @@ export const App: React.FC = () => {
     socket.on('room:state', (state: RoomState) => {
       setRoomState(state);
 
+      // Canvas lifecycle: wipe strokes when a new turn begins or during word selection
+      if (state.turnId && state.turnId !== currentTurnIdRef.current) {
+        currentTurnIdRef.current = state.turnId;
+        setStrokes([]);
+      } else if (state.phase === 'WORD_SELECTION' || state.phase === 'LOBBY') {
+        setStrokes([]);
+      }
+
       // Identify our player ID in the room
       const me = state.players.find((p) => p.socketId === socket.id);
       if (me) {
@@ -125,12 +152,21 @@ export const App: React.FC = () => {
       }
     });
 
+    socket.on('drawing:turnStart', (data: { turnId: string; drawerId: string; strokes?: Stroke[] }) => {
+      currentTurnIdRef.current = data.turnId;
+      setStrokes(data.strokes || []);
+    });
+
     socket.on('word:options', (data: { options: WordOption[] }) => {
       setWordOptions(data.options);
       sound.playRoundStart();
     });
 
     socket.on('drawing:stroke', (stroke: Stroke) => {
+      // Discard stroke if it belongs to an expired turn
+      if (stroke.turnId && currentTurnIdRef.current && stroke.turnId !== currentTurnIdRef.current) {
+        return;
+      }
       setStrokes((prev) => [...prev, stroke]);
     });
 
@@ -161,7 +197,16 @@ export const App: React.FC = () => {
 
     socket.on('guess:success', (data: { points: number; word: string }) => {
       sound.playCorrect();
-      setUserXp((prev) => prev + data.points);
+      setUserXp((prev) => {
+        const newXp = prev + data.points;
+        try {
+          localStorage.setItem('doodle_player_xp', String(newXp));
+          const newLevel = Math.floor(newXp / 500) + 1;
+          setUserLevel(newLevel);
+          localStorage.setItem('doodle_player_level', String(newLevel));
+        } catch (e) {}
+        return newXp;
+      });
     });
 
     socket.on('guess:close', (data: { message: string }) => {
@@ -191,6 +236,7 @@ export const App: React.FC = () => {
     return () => {
       socket.off('session:init');
       socket.off('room:state');
+      socket.off('drawing:turnStart');
       socket.off('word:options');
       socket.off('drawing:stroke');
       socket.off('drawing:undo');
@@ -204,6 +250,23 @@ export const App: React.FC = () => {
       socket.off('ranked:matchFound');
     };
   }, [isSpectatorMode]);
+
+  // Periodic health check for truthful live online artists count
+  useEffect(() => {
+    const fetchHealth = () => {
+      fetch('/api/health')
+        .then((res) => res.json())
+        .then((data) => {
+          if (typeof data.onlineArtists === 'number') {
+            setOnlineCount(data.onlineArtists);
+          }
+        })
+        .catch(() => {});
+    };
+    fetchHealth();
+    const interval = setInterval(fetchHealth, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   // --- Actions ---
 
@@ -250,9 +313,13 @@ export const App: React.FC = () => {
   };
 
   const handleEmitStroke = (stroke: Stroke) => {
-    setStrokes((prev) => [...prev, stroke]);
+    const scopedStroke: Stroke = {
+      ...stroke,
+      turnId: roomState?.turnId,
+    };
+    setStrokes((prev) => [...prev, scopedStroke]);
     if (roomState) {
-      socketService.sendStroke(roomState.code, stroke);
+      socketService.sendStroke(roomState.code, scopedStroke);
     }
   };
 
@@ -296,6 +363,7 @@ export const App: React.FC = () => {
           sound.playClick();
           setCurrentView(view);
         }}
+        onlineCount={onlineCount}
         userAvatar={userAvatar}
         userName={userName}
         userLevel={userLevel}

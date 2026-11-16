@@ -19,7 +19,7 @@ interface AppHeaderProps {
 export const AppHeader: React.FC<AppHeaderProps> = ({
   currentView,
   onNavigate,
-  onlineCount = 14820,
+  onlineCount = 1,
   userAvatar,
   userName,
   userLevel,

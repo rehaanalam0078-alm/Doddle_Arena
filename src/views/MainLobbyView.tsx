@@ -50,6 +50,20 @@ export const MainLobbyView: React.FC<MainLobbyViewProps> = ({
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [styleIndex, setStyleIndex] = useState(0);
   const [hatIndex, setHatIndex] = useState(1);
+  const [topPlayers, setTopPlayers] = useState<any[]>([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/leaderboard')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setTopPlayers(data.slice(0, 3));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLeaderboardLoading(false));
+  }, []);
 
   // Surprise Me / Randomize Everything
   const handleRandomize = () => {
@@ -274,7 +288,7 @@ export const MainLobbyView: React.FC<MainLobbyViewProps> = ({
               </div>
               <div className="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-xl border border-outline-variant self-start sm:self-auto">
                 <span className="material-symbols-outlined text-primary text-base">speed</span>
-                <span className="text-xs font-bold text-on-surface">Avg. queue: 1.8s</span>
+                <span className="text-xs font-bold text-on-surface">Avg. queue: Instant</span>
               </div>
             </div>
 
@@ -627,76 +641,65 @@ export const MainLobbyView: React.FC<MainLobbyViewProps> = ({
           </div>
 
           <div className="space-y-3">
-            {/* Rank 1: Gold */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200">
-              <div className="flex items-center gap-3.5">
-                <div className="w-7 h-7 rounded-full bg-amber-400 text-on-background font-black text-xs flex items-center justify-center shadow-sm">
-                  1
-                </div>
-                <PlayerAvatar style="fox" hat="beret" color="#F59E0B" size="md" />
-                <div className="text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm text-on-surface">DoodleQueen</span>
-                    <span className="bg-amber-200 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded">
-                      CHAMPION
-                    </span>
+            {leaderboardLoading ? (
+              <div className="p-8 text-center text-outline text-xs font-bold animate-pulse">
+                Loading weekly leaderboards...
+              </div>
+            ) : topPlayers.length === 0 ? (
+              <div className="p-6 rounded-2xl bg-surface-container-low border-2 border-dashed border-outline-variant flex flex-col items-center text-center gap-2">
+                <span className="material-symbols-outlined text-3xl text-primary">emoji_events</span>
+                <span className="font-extrabold text-sm text-on-surface">No Ranked Matches Recorded This Week</span>
+                <p className="text-xs text-outline max-w-xs font-medium">
+                  Be the first to jump into a casual or competitive match and claim Rank #1 on the leaderboard!
+                </p>
+              </div>
+            ) : (
+              topPlayers.map((player, idx) => {
+                const rankColors = [
+                  { bg: 'bg-amber-50/70', border: 'border-amber-200', badge: 'bg-amber-400', text: 'text-amber-900', label: 'CHAMPION' },
+                  { bg: 'bg-slate-50', border: 'border-slate-200', badge: 'bg-slate-300', text: 'text-slate-700', label: 'RUNNER UP' },
+                  { bg: 'bg-orange-50/60', border: 'border-orange-200', badge: 'bg-amber-700 text-white', text: 'text-amber-900', label: 'BRONZE' },
+                ][idx] || { bg: 'bg-surface-container-low', border: 'border-outline-variant', badge: 'bg-surface-container-high', text: 'text-on-surface', label: `#${idx + 1}` };
+
+                const winRate = player.totalGames > 0 ? ((player.totalWins / player.totalGames) * 100).toFixed(1) : '100.0';
+
+                return (
+                  <div
+                    key={player.id || idx}
+                    className={`flex items-center justify-between p-3.5 rounded-2xl ${rankColors.bg} border ${rankColors.border}`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className={`w-7 h-7 rounded-full ${rankColors.badge} font-black text-xs flex items-center justify-center shadow-sm`}>
+                        {idx + 1}
+                      </div>
+                      <PlayerAvatar
+                        style={player.avatarStyle || 'cat'}
+                        hat={player.avatarHat || 'none'}
+                        color={player.avatarColor || '#7C3AED'}
+                        size="md"
+                      />
+                      <div className="text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-sm text-on-surface">{player.nickname || player.name}</span>
+                          <span className="bg-primary/10 text-primary text-[10px] font-black px-1.5 py-0.5 rounded">
+                            {player.rankTier || rankColors.label}
+                          </span>
+                        </div>
+                        <span className="text-xs text-outline font-medium">
+                          {player.totalWins || 0} Wins • {winRate}% Accuracy
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className={`font-headline-md text-lg font-black ${rankColors.text}`}>
+                        {(player.xp || player.score || 0).toLocaleString()}
+                      </span>
+                      <span className="block text-[10px] font-bold text-outline">PTS</span>
+                    </div>
                   </div>
-                  <span className="text-xs text-outline font-medium">
-                    342 Wins • 98.4% Accuracy
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-headline-md text-lg font-black text-amber-900">
-                  18,420
-                </span>
-                <span className="block text-[10px] font-bold text-outline">PTS</span>
-              </div>
-            </div>
-
-            {/* Rank 2: Silver */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="flex items-center gap-3.5">
-                <div className="w-7 h-7 rounded-full bg-slate-300 text-on-background font-black text-xs flex items-center justify-center shadow-sm">
-                  2
-                </div>
-                <PlayerAvatar style="robot" hat="headphones" color="#06B6D4" size="md" />
-                <div className="text-left">
-                  <span className="font-bold text-sm text-on-surface">NeonSketcher</span>
-                  <span className="block text-xs text-outline font-medium">
-                    289 Wins • 96.1% Accuracy
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-headline-md text-lg font-black text-slate-700">
-                  16,190
-                </span>
-                <span className="block text-[10px] font-bold text-outline">PTS</span>
-              </div>
-            </div>
-
-            {/* Rank 3: Bronze */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-orange-50/60 border border-orange-200">
-              <div className="flex items-center gap-3.5">
-                <div className="w-7 h-7 rounded-full bg-amber-700 text-white font-black text-xs flex items-center justify-center shadow-sm">
-                  3
-                </div>
-                <PlayerAvatar style="monkey" hat="cap" color="#EAB308" size="md" />
-                <div className="text-left">
-                  <span className="font-bold text-sm text-on-surface">BananaCanvas</span>
-                  <span className="block text-xs text-outline font-medium">
-                    245 Wins • 94.8% Accuracy
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-headline-md text-lg font-black text-amber-900">
-                  14,880
-                </span>
-                <span className="block text-[10px] font-bold text-outline">PTS</span>
-              </div>
-            </div>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -715,7 +718,7 @@ export const MainLobbyView: React.FC<MainLobbyViewProps> = ({
               Word of the Day: "Rollercoaster"
             </h3>
             <p className="text-xs text-on-primary-container font-medium mt-2 leading-relaxed">
-              Doodled over 3,400 times this weekend! Pro tip: Start with the loopy tracks before drawing the tiny cheering passengers.
+              Today's Curated Challenge! Pro tip: Start with the loopy tracks before sketching the tiny cheering passengers.
             </p>
           </div>
 

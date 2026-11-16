@@ -36,9 +36,12 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message }) => 
   }
 
   if (message.type === 'system') {
+    const isTurnDivider = message.text.includes('--- Round') || message.text.includes('Round Over');
     return (
-      <div className="text-center my-1">
-        <span className="inline-block px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-bold text-[11px]">
+      <div className={`text-center my-2 ${isTurnDivider ? 'py-1 border-y border-outline-variant/60 bg-surface-container-low/50 rounded-xl' : ''}`}>
+        <span className={`inline-block px-3 py-1 rounded-full font-bold text-[11px] ${
+          isTurnDivider ? 'bg-primary-fixed text-primary font-extrabold uppercase tracking-wide' : 'bg-surface-container text-on-surface-variant'
+        }`}>
           {message.text}
         </span>
       </div>

@@ -63,6 +63,7 @@ export interface Stroke {
   points: Point[];
   seq: number;
   timestamp?: number;
+  turnId?: string;
 }
 
 export interface ArtworkRecord {
@@ -83,6 +84,8 @@ export interface ChatMessage {
   type: 'normal' | 'close' | 'correct' | 'system' | 'cheer';
   timestamp: number;
   reactionIcon?: string;
+  turnId?: string;
+  roundNumber?: number;
 }
 
 export interface RoomState {
@@ -93,6 +96,7 @@ export interface RoomState {
   phase: GamePhase;
   currentRound: number;
   totalRounds: number;
+  turnId?: string;
   currentDrawerId: string | null;
   drawerName?: string;
   timerStart: number;

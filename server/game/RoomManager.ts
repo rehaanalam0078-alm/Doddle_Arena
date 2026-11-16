@@ -14,6 +14,7 @@ import { WordService } from './WordService.js';
 import { GuessService } from './GuessService.js';
 import { ScoringService } from './ScoringService.js';
 import { db } from '../db/Database.js';
+import { BotDrawingEngine } from './BotDrawingEngine.js';
 
 export interface InternalRoom {
   code: string;
@@ -25,6 +26,10 @@ export interface InternalRoom {
   phase: GamePhase;
   currentRound: number;
   totalRounds: number;
+  turnId: string;
+  isEndingRound?: boolean;
+  selectionTimeout?: NodeJS.Timeout | null;
+  botDrawingTimeouts: NodeJS.Timeout[];
   drawerOrder: string[];
   drawerIndex: number;
   currentDrawerId: string | null;
@@ -106,6 +111,10 @@ export class RoomManager {
       phase: 'LOBBY',
       currentRound: 1,
       totalRounds: defaultSettings.rounds,
+      turnId: `turn_${code}_r1_t0_${Date.now()}`,
+      isEndingRound: false,
+      selectionTimeout: null,
+      botDrawingTimeouts: [],
       drawerOrder: [],
       drawerIndex: 0,
       currentDrawerId: null,
@@ -366,8 +375,58 @@ export class RoomManager {
     return { success: true };
   }
 
+  private clearBotDrawing(room: InternalRoom) {
+    if (room.botDrawingTimeouts && room.botDrawingTimeouts.length > 0) {
+      for (const timeout of room.botDrawingTimeouts) {
+        clearTimeout(timeout);
+      }
+      room.botDrawingTimeouts = [];
+    }
+  }
+
+  private startBotDrawing(room: InternalRoom) {
+    this.clearBotDrawing(room);
+    room.botDrawingTimeouts = [];
+
+    const strokes = BotDrawingEngine.generateStrokesForWord(
+      room.secretWord,
+      room.category,
+      room.turnId
+    );
+
+    // Stream strokes across 35 seconds of the drawing phase
+    const stepDurationMs = Math.min(5000, Math.floor(35000 / Math.max(1, strokes.length)));
+
+    strokes.forEach((stroke, index) => {
+      const delay = 1500 + index * stepDurationMs;
+      const timeout = setTimeout(() => {
+        if (
+          !this.rooms.has(room.code) ||
+          room.phase !== 'DRAWING' ||
+          room.turnId !== stroke.turnId
+        ) {
+          return;
+        }
+        stroke.timestamp = Date.now();
+        room.strokes.push(stroke);
+        this.io.to(room.code).emit('drawing:stroke', stroke);
+      }, delay);
+
+      room.botDrawingTimeouts.push(timeout);
+    });
+  }
+
   private startWordSelection(room: InternalRoom) {
-    if (room.timerInterval) clearInterval(room.timerInterval);
+    if (room.timerInterval) {
+      clearInterval(room.timerInterval);
+      room.timerInterval = null;
+    }
+    if (room.selectionTimeout) {
+      clearTimeout(room.selectionTimeout);
+      room.selectionTimeout = null;
+    }
+    this.clearBotDrawing(room);
+    room.isEndingRound = false;
 
     // Pick current drawer
     const drawerId = room.drawerOrder[room.drawerIndex];
@@ -383,20 +442,31 @@ export class RoomManager {
     room.durationSeconds = 15;
     room.timerStart = Date.now();
     room.timerEnd = Date.now() + 15000;
+
+    // Generate unique authoritative turnId
+    room.turnId = `turn_${room.code}_r${room.currentRound}_t${room.drawerIndex}_${Date.now()}`;
     room.strokes = [];
     room.undoneStrokes = [];
     room.roundGuesserScores.clear();
+
+    // Broadcast clean turn wipe to all clients
+    this.io.to(room.code).emit('drawing:turnStart', {
+      turnId: room.turnId,
+      drawerId: room.currentDrawerId,
+      strokes: [],
+    });
+    this.io.to(room.code).emit('drawing:cleared', {});
 
     // Generate 3 tiered word choices
     room.wordOptions = WordService.getRandomWordOptions();
 
     this.broadcastSystemMessage(
       room,
-      `${drawer ? drawer.name : 'Drawer'} is choosing a mystery word...`
+      `--- Round ${room.currentRound} • ${drawer ? drawer.name : 'Drawer'} is choosing a word! ---`
     );
 
     // Send word options to active drawer
-    if (drawer && drawer.socketId !== 'bot_socket') {
+    if (drawer && drawer.socketId !== 'bot_socket' && !drawer.id.startsWith('bot_')) {
       const drawerSocket = this.io.sockets.sockets.get(drawer.socketId);
       if (drawerSocket) {
         drawerSocket.emit('word:options', {
@@ -414,25 +484,31 @@ export class RoomManager {
     this.broadcastRoomState(room);
 
     // Auto-select first word if timeout occurs
-    const selectionTimeout = setTimeout(() => {
+    room.selectionTimeout = setTimeout(() => {
       if (room.phase === 'WORD_SELECTION' && this.rooms.has(room.code)) {
         this.selectWord(room, room.wordOptions[0].word);
       }
     }, 15000);
 
     // If drawer is bot, auto-select after 1.5s
-    if (drawer && drawer.socketId === 'bot_socket') {
-      setTimeout(() => {
+    if (drawer && (drawer.socketId === 'bot_socket' || drawer.id.startsWith('bot_'))) {
+      const botSelectTimer = setTimeout(() => {
         if (room.phase === 'WORD_SELECTION' && this.rooms.has(room.code)) {
-          clearTimeout(selectionTimeout);
+          if (room.selectionTimeout) clearTimeout(room.selectionTimeout);
           this.selectWord(room, room.wordOptions[1].word);
         }
       }, 1500);
+      room.botDrawingTimeouts.push(botSelectTimer);
     }
   }
 
   public selectWord(room: InternalRoom, chosenWord: string): boolean {
     if (room.phase !== 'WORD_SELECTION') return false;
+
+    if (room.selectionTimeout) {
+      clearTimeout(room.selectionTimeout);
+      room.selectionTimeout = null;
+    }
 
     const selectedDef =
       room.wordOptions.find((w) => w.word.toLowerCase() === chosenWord.toLowerCase()) ||
@@ -448,7 +524,11 @@ export class RoomManager {
   }
 
   private startDrawingPhase(room: InternalRoom) {
-    if (room.timerInterval) clearInterval(room.timerInterval);
+    if (room.timerInterval) {
+      clearInterval(room.timerInterval);
+      room.timerInterval = null;
+    }
+    this.clearBotDrawing(room);
 
     room.phase = 'DRAWING';
     room.durationSeconds = room.settings.drawTimeSeconds;
@@ -462,6 +542,11 @@ export class RoomManager {
     );
 
     this.broadcastRoomState(room);
+
+    // If drawer is AI bot, start streaming procedural vector strokes
+    if (drawer && (drawer.socketId === 'bot_socket' || drawer.id.startsWith('bot_'))) {
+      this.startBotDrawing(room);
+    }
 
     // Authoritative Server Timer Tick Interval (1 Hz)
     room.timerInterval = setInterval(() => {
@@ -481,7 +566,10 @@ export class RoomManager {
 
       // Check if time expired
       if (remainingMs <= 0) {
-        if (room.timerInterval) clearInterval(room.timerInterval);
+        if (room.timerInterval) {
+          clearInterval(room.timerInterval);
+          room.timerInterval = null;
+        }
         this.endRound(room, 'Time is up!');
       }
     }, 1000);
@@ -497,6 +585,12 @@ export class RoomManager {
       return;
     }
 
+    // Reject stroke if it belongs to an expired turn
+    if (stroke.turnId && stroke.turnId !== room.turnId) {
+      return;
+    }
+
+    stroke.turnId = room.turnId;
     stroke.timestamp = Date.now();
     room.strokes.push(stroke);
     room.undoneStrokes = []; // reset redo stack on new stroke
@@ -654,9 +748,20 @@ export class RoomManager {
   }
 
   private endRound(room: InternalRoom, reason: string) {
-    if (room.timerInterval) clearInterval(room.timerInterval);
-
+    if (room.phase !== 'DRAWING' || room.isEndingRound) return;
+    room.isEndingRound = true;
     room.phase = 'ROUND_RESULT';
+
+    if (room.timerInterval) {
+      clearInterval(room.timerInterval);
+      room.timerInterval = null;
+    }
+    if (room.selectionTimeout) {
+      clearTimeout(room.selectionTimeout);
+      room.selectionTimeout = null;
+    }
+    this.clearBotDrawing(room);
+
     room.durationSeconds = 5;
     room.timerStart = Date.now();
     room.timerEnd = Date.now() + 5000;
@@ -845,6 +950,8 @@ export class RoomManager {
       text,
       type,
       timestamp: Date.now(),
+      turnId: room.turnId,
+      roundNumber: room.currentRound,
     };
     room.messages.push(message);
     if (room.messages.length > 100) room.messages.shift();
@@ -875,6 +982,7 @@ export class RoomManager {
       phase: room.phase,
       currentRound: room.currentRound,
       totalRounds: room.totalRounds,
+      turnId: room.turnId,
       currentDrawerId: room.currentDrawerId,
       drawerName: room.players.get(room.currentDrawerId || '')?.name,
       timerStart: room.timerStart,
@@ -963,6 +1071,10 @@ export class RoomManager {
       phase: 'DRAWING',
       currentRound: 2,
       totalRounds: 3,
+      turnId: `turn_${code}_r2_t0_${Date.now()}`,
+      isEndingRound: false,
+      selectionTimeout: null,
+      botDrawingTimeouts: [],
       drawerOrder: ['ply_mock_host', 'ply_mock_2'],
       drawerIndex: 0,
       currentDrawerId: 'ply_mock_host',

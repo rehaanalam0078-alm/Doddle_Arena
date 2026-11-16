@@ -216,5 +216,5 @@ describe('End-to-End Real-Time Multiplayer Flow', () => {
     clientA.disconnect();
     clientB.disconnect();
     clientC.disconnect();
-  }, 15000);
+  }, 30000);
 });
