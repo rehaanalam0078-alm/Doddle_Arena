@@ -35,10 +35,9 @@ export const getBackendUrl = (): string => {
         : window.location.origin;
     }
 
-    // 4. GitHub Pages: if no backend URL is set, return empty string
-    // (caller will handle gracefully with fallback mock data)
+    // 4. GitHub Pages: automatically connect to live Render backend
     if (window.location.hostname.includes('github.io')) {
-      return '';
+      return 'https://doddle-arena.onrender.com';
     }
 
     return window.location.origin;
