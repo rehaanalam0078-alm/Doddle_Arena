@@ -1,12 +1,13 @@
 import { Socket } from 'socket.io-client';
 import { socketService } from './socket';
-import { VoiceParticipant, VoiceSignalPayload } from '@/types/game';
+import { VoiceParticipant, VoiceSignalPayload, VoiceJoinResponse } from '@/types/game';
 
 export interface VoiceState {
   isActive: boolean;
   isConnecting: boolean;
   isMuted: boolean;
   isSpeaking: boolean;
+  autoplayBlocked: boolean;
   error: string | null;
   participants: Map<string, VoiceParticipant>; // socketId -> VoiceParticipant
 }
@@ -23,6 +24,8 @@ class VoiceService {
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
   // socketId -> HTMLAudioElement
   private audioElements: Map<string, HTMLAudioElement> = new Map();
+  // socketId -> pending ICE candidates received before remoteDescription was set
+  private pendingCandidates: Map<string, RTCIceCandidateInit[]> = new Map();
 
   private currentRoomCode: string | null = null;
   private iceServers: RTCIceServer[] = [{ urls: 'stun:stun.l.google.com:19302' }];
@@ -32,15 +35,19 @@ class VoiceService {
     isConnecting: false,
     isMuted: false,
     isSpeaking: false,
+    autoplayBlocked: false,
     error: null,
     participants: new Map(),
   };
 
   private listeners: Set<VoiceStateListener> = new Set();
-  private socketListenersAttached = false;
+  private boundSocket: Socket | null = null;
+  private joinSessionCounter = 0;
 
   constructor() {
-    this.setupSocketListeners();
+    socketService.subscribeSocketInstance((socket) => {
+      this.rebindSocketListeners(socket);
+    });
   }
 
   public subscribe(listener: VoiceStateListener): () => void {
@@ -65,10 +72,21 @@ class VoiceService {
     }
   }
 
-  private setupSocketListeners() {
-    if (this.socketListenersAttached) return;
-    const socket = socketService.getSocket();
-    if (!socket) return;
+  private rebindSocketListeners(socket: Socket) {
+    if (this.boundSocket === socket) return;
+
+    if (this.boundSocket) {
+      this.boundSocket.off('voice:room-users', this.handleRoomUsers);
+      this.boundSocket.off('voice:user-joined', this.handleUserJoined);
+      this.boundSocket.off('voice:user-left', this.handleUserLeft);
+      this.boundSocket.off('voice:signal', this.handleSignal);
+      this.boundSocket.off('voice:user-muted', this.handleUserMuted);
+      this.boundSocket.off('voice:user-speaking', this.handleUserSpeaking);
+      this.boundSocket.off('voice:terminated', this.handleTerminated);
+      this.boundSocket.off('voice:error', this.handleError);
+    }
+
+    this.boundSocket = socket;
 
     socket.on('voice:room-users', this.handleRoomUsers);
     socket.on('voice:user-joined', this.handleUserJoined);
@@ -78,16 +96,16 @@ class VoiceService {
     socket.on('voice:user-speaking', this.handleUserSpeaking);
     socket.on('voice:terminated', this.handleTerminated);
     socket.on('voice:error', this.handleError);
-
-    this.socketListenersAttached = true;
   }
 
   public async join(roomCode: string): Promise<boolean> {
     if (this.state.isActive || this.state.isConnecting) return true;
 
+    const currentJoinId = ++this.joinSessionCounter;
     this.currentRoomCode = roomCode.toUpperCase().replace('#', '').trim();
     this.state.isConnecting = true;
     this.state.error = null;
+    this.state.autoplayBlocked = false;
     this.notify();
 
     try {
@@ -96,7 +114,7 @@ class VoiceService {
         throw new Error('Microphone access is not supported by your browser environment.');
       }
 
-      this.localStream = await navigator.mediaDevices.getUserMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
@@ -105,12 +123,52 @@ class VoiceService {
         video: false,
       });
 
+      // Cancellation check: if user clicked leave while permission was pending
+      if (this.joinSessionCounter !== currentJoinId || !this.state.isConnecting) {
+        stream.getTracks().forEach((track) => track.stop());
+        return false;
+      }
+
+      this.localStream = stream;
+
       // 2. Setup audio analysis for real-time speaking detection
       this.setupSpeakingDetector(this.localStream);
 
-      // 3. Inform server of join request
+      // 3. Inform server of join request and wait for authorization ack
       const socket = socketService.getSocket();
-      socket.emit('voice:join', { roomCode: this.currentRoomCode });
+      this.rebindSocketListeners(socket);
+
+      const response: VoiceJoinResponse = await new Promise((resolve) => {
+        let responded = false;
+        socket.emit('voice:join', { roomCode: this.currentRoomCode }, (ack: VoiceJoinResponse) => {
+          if (!responded) {
+            responded = true;
+            resolve(ack || { success: true });
+          }
+        });
+
+        // Fallback in case of legacy server
+        setTimeout(() => {
+          if (!responded) {
+            responded = true;
+            resolve({ success: true });
+          }
+        }, 3000);
+      });
+
+      // Secondary cancellation check
+      if (this.joinSessionCounter !== currentJoinId || !this.state.isConnecting) {
+        this.cleanupMedia();
+        return false;
+      }
+
+      if (!response.success) {
+        throw new Error(response.error || 'Server rejected voice chat join.');
+      }
+
+      if (response.iceServers && Array.isArray(response.iceServers)) {
+        this.iceServers = response.iceServers;
+      }
 
       this.state.isActive = true;
       this.state.isConnecting = false;
@@ -135,6 +193,7 @@ class VoiceService {
   }
 
   public leave() {
+    this.joinSessionCounter++;
     if (!this.state.isActive && !this.state.isConnecting) return;
 
     if (this.currentRoomCode) {
@@ -149,6 +208,7 @@ class VoiceService {
     this.state.isActive = false;
     this.state.isConnecting = false;
     this.state.isSpeaking = false;
+    this.state.autoplayBlocked = false;
     this.state.participants.clear();
     this.state.error = null;
     this.notify();
@@ -177,6 +237,20 @@ class VoiceService {
     return this.state.isMuted;
   }
 
+  public async resumeAudioPlayback(): Promise<boolean> {
+    try {
+      for (const audioEl of this.audioElements.values()) {
+        await audioEl.play();
+      }
+      this.state.autoplayBlocked = false;
+      this.notify();
+      return true;
+    } catch (e) {
+      console.warn('[VoiceService] Could not resume audio playback:', e);
+      return false;
+    }
+  }
+
   // --- WebRTC Peer Connection Lifecycle ---
 
   private handleRoomUsers = async (data: { participants: VoiceParticipant[]; iceServers: RTCIceServer[] }) => {
@@ -201,7 +275,6 @@ class VoiceService {
     const { participant } = data;
     this.state.participants.set(participant.socketId, participant);
     this.notify();
-    // Do not initiate offer here; the newly joined user will initiate the offer to us
   };
 
   private handleUserLeft = (data: { socketId: string }) => {
@@ -238,6 +311,18 @@ class VoiceService {
     this.notify();
   };
 
+  private async flushPendingCandidates(socketId: string, pc: RTCPeerConnection) {
+    const pending = this.pendingCandidates.get(socketId) || [];
+    this.pendingCandidates.delete(socketId);
+    for (const candidate of pending) {
+      try {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (e) {
+        console.warn('[VoiceService] Could not flush buffered ICE candidate:', e);
+      }
+    }
+  }
+
   private handleSignal = async (data: { senderSocketId: string; signal: any }) => {
     const { senderSocketId, signal } = data;
     if (!this.state.isActive || !this.currentRoomCode) return;
@@ -251,11 +336,24 @@ class VoiceService {
 
     try {
       if (signal.type === 'offer') {
+        const socket = socketService.getSocket();
+        const isPolite = (socket.id || '') > senderSocketId;
+
+        // Collision avoidance
+        if (pc.signalingState !== 'stable') {
+          if (!isPolite) {
+            console.warn('[VoiceService] Glare detected; impolite peer ignoring incoming offer from', senderSocketId);
+            return;
+          }
+          await pc.setLocalDescription({ type: 'rollback' });
+        }
+
         await pc.setRemoteDescription(new RTCSessionDescription(signal));
+        await this.flushPendingCandidates(senderSocketId, pc);
+
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
 
-        const socket = socketService.getSocket();
         socket.emit('voice:signal', {
           roomCode: this.currentRoomCode,
           targetSocketId: senderSocketId,
@@ -263,11 +361,22 @@ class VoiceService {
         });
       } else if (signal.type === 'answer') {
         await pc.setRemoteDescription(new RTCSessionDescription(signal));
+        await this.flushPendingCandidates(senderSocketId, pc);
       } else if (signal.candidate) {
-        try {
-          await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-        } catch (e) {
-          console.warn('[VoiceService] Could not add ICE candidate:', e);
+        if (!pc.remoteDescription) {
+          // Buffer candidate until remote description is set
+          let list = this.pendingCandidates.get(senderSocketId);
+          if (!list) {
+            list = [];
+            this.pendingCandidates.set(senderSocketId, list);
+          }
+          list.push(signal.candidate);
+        } else {
+          try {
+            await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+          } catch (e) {
+            console.warn('[VoiceService] Could not add ICE candidate:', e);
+          }
         }
       }
     } catch (e) {
@@ -316,7 +425,13 @@ class VoiceService {
           this.audioElements.set(targetSocketId, audioEl);
         }
         audioEl.srcObject = remoteStream;
-        audioEl.play().catch((e) => console.warn('[VoiceService] Autoplay blocked:', e));
+        audioEl.play().catch((e) => {
+          if (e.name === 'NotAllowedError') {
+            console.warn('[VoiceService] Audio autoplay blocked by browser policy:', e);
+            this.state.autoplayBlocked = true;
+            this.notify();
+          }
+        });
       }
     };
 
@@ -349,6 +464,7 @@ class VoiceService {
   }
 
   private closePeerConnection(socketId: string) {
+    this.pendingCandidates.delete(socketId);
     const pc = this.peerConnections.get(socketId);
     if (pc) {
       pc.close();

@@ -76,6 +76,7 @@ export class RoomManager {
     settings?: Partial<RoomSettings>,
     customCode?: string
   ): InternalRoom {
+    this.leaveAllRooms(hostSocket);
     const code = customCode ? customCode.toUpperCase() : this.generateRoomCode();
     const playerId = `ply_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
 
@@ -157,6 +158,7 @@ export class RoomManager {
     playerName: string,
     avatar: PlayerAvatar
   ): { success: boolean; error?: string; room?: InternalRoom } {
+    this.leaveAllRooms(socket);
     const cleanCode = roomCode.toUpperCase().replace('#', '').trim();
     const room = this.rooms.get(cleanCode);
 
@@ -201,9 +203,19 @@ export class RoomManager {
 
     // If room not found and it's a default/featured code, auto-create a mock live room for seamless demo
     if (!room) {
-      room = this.createFeaturedDemoRoom(cleanCode);
+      if (cleanCode === 'PARTY-ANIMALS' || cleanCode.startsWith('FEATURED')) {
+        room = this.createFeaturedDemoRoom(cleanCode);
+      } else {
+        return { success: false, error: 'Room does not exist.' };
+      }
     }
 
+    // Security: private rooms cannot be spectated without host authorization
+    if (room.settings.isPrivate) {
+      return { success: false, error: 'Private rooms cannot be spectated without host authorization.' };
+    }
+
+    this.leaveAllRooms(socket);
     room.spectatorSocketIds.add(socket.id);
     socket.join(cleanCode);
 
@@ -211,6 +223,119 @@ export class RoomManager {
     this.sendRoomStateToSocket(socket, room, true);
 
     return { success: true, room };
+  }
+
+  public leaveRoom(
+    socket: Socket,
+    roomCode?: string
+  ): { success: boolean; error?: string } {
+    let targetRoom: InternalRoom | undefined;
+
+    if (roomCode) {
+      const cleanCode = roomCode.toUpperCase().replace('#', '').trim();
+      targetRoom = this.rooms.get(cleanCode);
+    } else {
+      for (const r of this.rooms.values()) {
+        if (r.socketToPlayerId.has(socket.id) || r.spectatorSocketIds.has(socket.id)) {
+          targetRoom = r;
+          break;
+        }
+      }
+    }
+
+    if (!targetRoom) {
+      return { success: false, error: 'Player is not in this room.' };
+    }
+
+    const room = targetRoom;
+
+    // Remove from voice manager if joined
+    this.voiceManager?.handleLeave(socket, room.code);
+
+    // If spectator
+    if (room.spectatorSocketIds.has(socket.id)) {
+      room.spectatorSocketIds.delete(socket.id);
+      socket.leave(room.code);
+      return { success: true };
+    }
+
+    const playerId = room.socketToPlayerId.get(socket.id);
+    if (!playerId) {
+      socket.leave(room.code);
+      return { success: true };
+    }
+
+    const player = room.players.get(playerId);
+    room.socketToPlayerId.delete(socket.id);
+    room.players.delete(playerId);
+    socket.leave(room.code);
+
+    if (player) {
+      this.broadcastSystemMessage(room, `${player.name} left the room.`);
+    }
+
+    // Host transfer if leaving player was host
+    if (room.hostId === playerId) {
+      const remainingPlayers = Array.from(room.players.values()).filter((p) => !p.isDisconnected);
+      if (remainingPlayers.length > 0) {
+        remainingPlayers[0].isHost = true;
+        room.hostId = remainingPlayers[0].id;
+        this.broadcastSystemMessage(room, `${remainingPlayers[0].name} is now the host.`);
+      }
+    }
+
+    // If active drawer left during turn:
+    if (room.currentDrawerId === playerId && (room.phase === 'DRAWING' || room.phase === 'WORD_SELECTION')) {
+      this.broadcastSystemMessage(room, 'The drawer left the match. Advancing turn...');
+      if (room.timerInterval) {
+        clearInterval(room.timerInterval);
+        room.timerInterval = null;
+      }
+      if (room.selectionTimeout) {
+        clearTimeout(room.selectionTimeout);
+        room.selectionTimeout = null;
+      }
+      this.clearBotDrawing(room);
+      this.endRound(room, 'Drawer left the match');
+    } else if (room.phase === 'DRAWING') {
+      // Check if all remaining guessers have guessed
+      const remainingGuessers = Array.from(room.players.values()).filter(
+        (p) => p.id !== room.currentDrawerId && !p.isDisconnected
+      );
+      if (remainingGuessers.length > 0 && remainingGuessers.every((p) => p.hasGuessed)) {
+        this.broadcastSystemMessage(room, 'All remaining doodlers solved the word!');
+        if (room.timerInterval) clearInterval(room.timerInterval);
+        this.endRound(room, 'All doodlers solved the word!');
+      }
+    }
+
+    // Check if room is empty of active players
+    const activeCount = Array.from(room.players.values()).filter((p) => !p.isDisconnected).length;
+    if (activeCount === 0) {
+      if (room.timerInterval) {
+        clearInterval(room.timerInterval);
+        room.timerInterval = null;
+      }
+      if (room.selectionTimeout) {
+        clearTimeout(room.selectionTimeout);
+        room.selectionTimeout = null;
+      }
+      this.clearBotDrawing(room);
+      this.rooms.delete(room.code);
+    } else {
+      this.updatePlayerRanks(room);
+      this.broadcastRoomState(room);
+    }
+
+    return { success: true };
+  }
+
+  public leaveAllRooms(socket: Socket) {
+    for (const room of Array.from(this.rooms.values())) {
+      if (room.socketToPlayerId.has(socket.id) || room.spectatorSocketIds.has(socket.id)) {
+        this.leaveRoom(socket, room.code);
+      }
+    }
   }
 
   public getRoom(roomCode: string): InternalRoom | undefined {
@@ -530,8 +655,23 @@ export class RoomManager {
     }
   }
 
-  public selectWord(room: InternalRoom, chosenWord: string): boolean {
+  public selectWord(room: InternalRoom, chosenWord: string, socket?: Socket): boolean {
     if (room.phase !== 'WORD_SELECTION') return false;
+
+    if (socket) {
+      const playerId = room.socketToPlayerId.get(socket.id);
+      if (!playerId || playerId !== room.currentDrawerId) {
+        return false;
+      }
+    }
+
+    // Verify chosen word matches one of authoritative room.wordOptions
+    const matchesOption = room.wordOptions.some(
+      (w) => w.word.toLowerCase() === chosenWord.toLowerCase()
+    );
+    if (!matchesOption) {
+      return false;
+    }
 
     if (room.selectionTimeout) {
       clearTimeout(room.selectionTimeout);
@@ -933,6 +1073,9 @@ export class RoomManager {
   ) {
     const room = this.getRoom(roomCode);
     if (!room) return;
+    if (!room.socketToPlayerId.has(socket.id) && !room.spectatorSocketIds.has(socket.id)) {
+      return;
+    }
 
     this.io.to(room.code).emit('spectator:burst', {
       reaction,
@@ -941,9 +1084,12 @@ export class RoomManager {
     });
   }
 
-  public handleArtworkLike(roomCode: string, roundNumber: number) {
+  public handleArtworkLike(socket: Socket, roomCode: string, roundNumber: number) {
     const room = this.getRoom(roomCode);
     if (!room) return;
+    if (!room.socketToPlayerId.has(socket.id) && !room.spectatorSocketIds.has(socket.id)) {
+      return;
+    }
 
     const art = room.artworks.find((a) => a.round === roundNumber);
     if (art) {

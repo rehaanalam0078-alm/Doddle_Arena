@@ -138,6 +138,26 @@ export interface VoiceSignalPayload {
   };
 }
 
+export interface RoomLeavePayload {
+  roomCode: string;
+}
+
+export interface RoomLeaveResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface VoiceJoinPayload {
+  roomCode: string;
+}
+
+export interface VoiceJoinResponse {
+  success: boolean;
+  iceServers?: any[];
+  participants?: VoiceParticipant[];
+  error?: string;
+}
+
 export interface TournamentMatch {
   id: string;
   tournamentId: string;

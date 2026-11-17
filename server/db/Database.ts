@@ -1,3 +1,11 @@
+/**
+ * Doodle Arena Database Persistence Layer
+ *
+ * Architecture Notice: Storage uses atomic, structured JSON file serialization (`data/doodle_arena.json`)
+ * rather than SQLite, providing zero-native-compilation dependencies, cross-platform stability
+ * on Windows/Linux/macOS, and portable match history and player accounts.
+ */
+
 import fs from 'fs';
 import path from 'path';
 
@@ -93,6 +101,9 @@ export class Database {
   }
 
   private seedDefaultsIfEmpty() {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
     if (Object.keys(this.data.players).length === 0) {
       // Seed weekly top doodlers matching Stitch design
       this.upsertPlayer({

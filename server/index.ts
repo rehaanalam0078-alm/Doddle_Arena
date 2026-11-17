@@ -250,6 +250,15 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
+  // Room Leave
+  socket.on('room:leave', (data, callback) => {
+    const { roomCode } = data || {};
+    const result = roomManager.leaveRoom(socket, roomCode);
+    if (typeof callback === 'function') {
+      callback(result);
+    }
+  });
+
   // Ready Status
   socket.on('player:ready', (data) => {
     const { roomCode, isReady } = data || {};
@@ -272,11 +281,16 @@ io.on('connection', (socket: Socket) => {
   });
 
   // Word Selection
-  socket.on('word:select', (data) => {
+  socket.on('word:select', (data, callback) => {
     const { roomCode, word } = data || {};
     const room = roomManager.getRoom(roomCode);
     if (room) {
-      roomManager.selectWord(room, word);
+      const success = roomManager.selectWord(room, word, socket);
+      if (typeof callback === 'function') {
+        callback({ success, error: success ? undefined : 'Unauthorized or invalid word selection.' });
+      }
+    } else if (typeof callback === 'function') {
+      callback({ success: false, error: 'Room not found.' });
     }
   });
 
@@ -303,7 +317,7 @@ io.on('connection', (socket: Socket) => {
 
   socket.on('drawing:like', (data) => {
     const { roomCode, roundNumber } = data || {};
-    roomManager.handleArtworkLike(roomCode, roundNumber);
+    roomManager.handleArtworkLike(socket, roomCode, roundNumber);
   });
 
   // Guess & Chat
@@ -339,24 +353,41 @@ io.on('connection', (socket: Socket) => {
       estimatedWaitSeconds: queueInfo.avgWaitSeconds,
     });
 
-    // Auto-match after 2 seconds for high responsiveness
-    setTimeout(() => {
-      CompetitiveService.dequeue(socket.id);
+    // Check if 2 real players can be paired
+    const match = CompetitiveService.checkMatch();
+    if (match) {
       const rankedRoomCode = roomManager.generateRoomCode();
-      const room = roomManager.createRoom(
-        socket,
-        playerName || 'SpeedyPencil_99',
-        { style: 'cat', hat: 'beret', color: '#7C3AED' },
-        { isPrivate: false, rounds: 3, drawTimeSeconds: 60, difficulty: 'hard' },
-        rankedRoomCode
-      );
-      socket.emit('ranked:matchFound', {
-        roomCode: room.code,
-        opponentName: 'NeonSketcher',
-        opponentTier: 'Diamond II',
-      });
-      roomManager.sendRoomStateToSocket(socket, room);
-    }, 2000);
+      const p1Socket = io.sockets.sockets.get(match.p1.socketId);
+      const p2Socket = io.sockets.sockets.get(match.p2.socketId);
+
+      if (p1Socket) {
+        const room = roomManager.createRoom(
+          p1Socket,
+          match.p1.playerName,
+          { style: 'cat', hat: 'beret', color: '#7C3AED' },
+          { isPrivate: false, rounds: 3, drawTimeSeconds: 60, difficulty: 'hard' },
+          rankedRoomCode
+        );
+        p1Socket.emit('ranked:matchFound', {
+          roomCode: room.code,
+          opponentName: match.p2.playerName,
+        });
+        roomManager.sendRoomStateToSocket(p1Socket, room);
+
+        if (p2Socket) {
+          roomManager.joinRoom(p2Socket, room.code, match.p2.playerName, {
+            style: 'fox',
+            hat: 'headphones',
+            color: '#06B6D4',
+          });
+          p2Socket.emit('ranked:matchFound', {
+            roomCode: room.code,
+            opponentName: match.p1.playerName,
+          });
+          roomManager.sendRoomStateToSocket(p2Socket, room);
+        }
+      }
+    }
   });
 
   socket.on('ranked:cancel', () => {
@@ -365,14 +396,20 @@ io.on('connection', (socket: Socket) => {
   });
 
   // --- PRIVATE ROOM VOICE COMMUNICATION ---
-  socket.on('voice:join', (data) => {
+  socket.on('voice:join', (data, callback) => {
     const { roomCode } = data || {};
-    voiceManager.handleJoin(socket, roomCode);
+    const result = voiceManager.handleJoin(socket, roomCode);
+    if (typeof callback === 'function') {
+      callback(result);
+    }
   });
 
-  socket.on('voice:leave', (data) => {
+  socket.on('voice:leave', (data, callback) => {
     const { roomCode } = data || {};
     voiceManager.handleLeave(socket, roomCode);
+    if (typeof callback === 'function') {
+      callback({ success: true });
+    }
   });
 
   socket.on('voice:signal', (data) => {

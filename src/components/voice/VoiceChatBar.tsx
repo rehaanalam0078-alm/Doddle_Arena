@@ -67,6 +67,22 @@ export const VoiceChatBar: React.FC<VoiceChatBarProps> = ({ room, currentPlayerI
         </div>
       )}
 
+      {/* AUTOPLAY BLOCKED RECOVERY BANNER */}
+      {voiceState.autoplayBlocked && (
+        <div className="mb-3 px-3 py-2 bg-amber-100 border border-amber-300 text-amber-900 rounded-xl text-xs flex items-center justify-between gap-2 animate-pulse">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-sm text-amber-600">volume_off</span>
+            <span className="font-semibold">Audio playback is restricted by your browser. Tap to enable incoming audio.</span>
+          </div>
+          <button
+            onClick={() => voiceService.resumeAudioPlayback()}
+            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition-colors shrink-0 shadow-sm"
+          >
+            Enable Audio
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* LEFT: STATUS & PARTICIPANT AVATARS */}
         <div className="flex items-center gap-3 w-full sm:w-auto">

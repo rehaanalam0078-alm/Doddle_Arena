@@ -9,12 +9,23 @@ class SocketService {
   public isConnected = false;
   private currentUrl = '';
   private listeners: Set<SocketConnectionListener> = new Set();
+  private instanceListeners: Set<(socket: Socket) => void> = new Set();
 
   public subscribeConnection(listener: SocketConnectionListener): () => void {
     this.listeners.add(listener);
     listener(this.isConnected);
     return () => {
       this.listeners.delete(listener);
+    };
+  }
+
+  public subscribeSocketInstance(listener: (socket: Socket) => void): () => void {
+    this.instanceListeners.add(listener);
+    if (this.socket) {
+      listener(this.socket);
+    }
+    return () => {
+      this.instanceListeners.delete(listener);
     };
   }
 
@@ -25,11 +36,17 @@ class SocketService {
     }
   }
 
+  private notifyInstance(socket: Socket) {
+    for (const listener of this.instanceListeners) {
+      listener(socket);
+    }
+  }
+
   public connect(customUrl?: string): Socket {
     const targetUrl = customUrl !== undefined ? customUrl : getBackendUrl();
 
-    // If socket exists and connected to same target, reuse it
-    if (this.socket && this.socket.connected && this.currentUrl === targetUrl) {
+    // If socket exists and targeting the same URL, reuse it
+    if (this.socket && this.currentUrl === targetUrl) {
       return this.socket;
     }
 
@@ -48,6 +65,7 @@ class SocketService {
         autoConnect: false,
       });
       this.notify(false);
+      this.notifyInstance(this.socket);
       return this.socket;
     }
 
@@ -57,6 +75,8 @@ class SocketService {
       reconnectionDelay: 1000,
       timeout: 10000,
     });
+
+    this.notifyInstance(this.socket);
 
     this.socket.on('connect', () => {
       console.log('⚡ Connected to Doodle Arena server:', this.socket?.id, 'at', targetUrl || window.location.origin);
@@ -89,6 +109,29 @@ class SocketService {
       return this.connect();
     }
     return this.socket;
+  }
+
+  public leaveRoom(roomCode: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const socket = this.getSocket();
+      if (!socket || !socket.connected) {
+        resolve(true);
+        return;
+      }
+      let resolved = false;
+      socket.emit('room:leave', { roomCode }, (response: any) => {
+        if (!resolved) {
+          resolved = true;
+          resolve(response?.success ?? true);
+        }
+      });
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          resolve(true);
+        }
+      }, 1000);
+    });
   }
 
   // --- Emitters ---

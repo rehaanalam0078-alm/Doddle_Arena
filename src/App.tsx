@@ -83,6 +83,8 @@ export const App: React.FC = () => {
   const [currentPlayerId, setCurrentPlayerId] = useState<string>('');
   const [isSpectatorMode, setIsSpectatorMode] = useState<boolean>(false);
   const currentTurnIdRef = useRef<string | null>(null);
+  const activeRoomCodeRef = useRef<string | null>(null);
+  const membershipStatusRef = useRef<'IDLE' | 'IN_ROOM' | 'LEAVING'>('IDLE');
 
   // Drawing Canvas State
   const [strokes, setStrokes] = useState<Stroke[]>([]);
@@ -132,7 +134,26 @@ export const App: React.FC = () => {
       setCurrentSocketId(data.socketId);
     });
 
+    socket.on('room:joinError', (data: { error: string }) => {
+      membershipStatusRef.current = 'IDLE';
+      activeRoomCodeRef.current = null;
+      setRoomState(null);
+      alert(`Could not join room: ${data.error}`);
+    });
+
     socket.on('room:state', (state: RoomState) => {
+      // Discard event if player has left or is leaving
+      if (membershipStatusRef.current === 'LEAVING' || membershipStatusRef.current === 'IDLE') {
+        return;
+      }
+
+      // Discard event if it belongs to a different room than active session
+      if (activeRoomCodeRef.current && state.code !== activeRoomCodeRef.current) {
+        return;
+      }
+
+      activeRoomCodeRef.current = state.code;
+      membershipStatusRef.current = 'IN_ROOM';
       setRoomState(state);
 
       // Canvas lifecycle: wipe strokes when a new turn begins or during word selection
@@ -164,16 +185,19 @@ export const App: React.FC = () => {
     });
 
     socket.on('drawing:turnStart', (data: { turnId: string; drawerId: string; strokes?: Stroke[] }) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       currentTurnIdRef.current = data.turnId;
       setStrokes(data.strokes || []);
     });
 
     socket.on('word:options', (data: { options: WordOption[] }) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       setWordOptions(data.options);
       sound.playRoundStart();
     });
 
     socket.on('drawing:stroke', (stroke: Stroke) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       // Discard stroke if it belongs to an expired turn
       if (stroke.turnId && currentTurnIdRef.current && stroke.turnId !== currentTurnIdRef.current) {
         return;
@@ -182,22 +206,27 @@ export const App: React.FC = () => {
     });
 
     socket.on('drawing:undo', ({ strokeId }: { strokeId: string }) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       setStrokes((prev) => prev.filter((s) => s.id !== strokeId));
     });
 
     socket.on('drawing:redo', ({ stroke }: { stroke: Stroke }) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       setStrokes((prev) => [...prev, stroke]);
     });
 
     socket.on('drawing:cleared', () => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       setStrokes([]);
     });
 
     socket.on('drawing:snapshot', ({ strokes: snapStrokes }: { strokes: Stroke[] }) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       setStrokes(snapStrokes || []);
     });
 
     socket.on('chat:message', (msg: ChatMessage) => {
+      if (membershipStatusRef.current !== 'IN_ROOM') return;
       setMessages((prev) => [...prev, msg]);
       if (msg.type === 'correct') {
         sound.playCorrect();
@@ -355,6 +384,8 @@ export const App: React.FC = () => {
     setIsSpectatorMode(false);
     setStrokes([]);
     setMessages([]);
+    membershipStatusRef.current = 'IN_ROOM';
+    activeRoomCodeRef.current = null;
     if (!socketService.isConnected) {
       startOfflinePractice();
       return;
@@ -370,6 +401,8 @@ export const App: React.FC = () => {
     setIsSpectatorMode(false);
     setStrokes([]);
     setMessages([]);
+    membershipStatusRef.current = 'IN_ROOM';
+    activeRoomCodeRef.current = customCode ? customCode.toUpperCase().replace('#', '').trim() : null;
     socketService.createRoom(userName, userAvatar, settings, customCode);
   };
 
@@ -377,6 +410,8 @@ export const App: React.FC = () => {
     setIsSpectatorMode(false);
     setStrokes([]);
     setMessages([]);
+    membershipStatusRef.current = 'IN_ROOM';
+    activeRoomCodeRef.current = code.toUpperCase().replace('#', '').trim();
     socketService.joinRoom(code, userName, userAvatar);
   };
 
@@ -384,18 +419,28 @@ export const App: React.FC = () => {
     setIsSpectatorMode(true);
     setStrokes([]);
     setMessages([]);
+    membershipStatusRef.current = 'IN_ROOM';
+    activeRoomCodeRef.current = code.toUpperCase().replace('#', '').trim();
     socketService.joinSpectator(code);
     setCurrentView('spectator');
   };
 
-  const handleLeaveRoom = () => {
+  const handleLeaveRoom = async () => {
     sound.playClick();
+    const codeToLeave = activeRoomCodeRef.current || roomState?.code;
+    membershipStatusRef.current = 'LEAVING';
+    activeRoomCodeRef.current = null;
     voiceService.leave();
     setRoomState(null);
     setStrokes([]);
     setMessages([]);
     setIsSpectatorMode(false);
     setCurrentView('lobby');
+
+    if (codeToLeave) {
+      await socketService.leaveRoom(codeToLeave);
+    }
+    membershipStatusRef.current = 'IDLE';
   };
 
   const handleEmitStroke = (stroke: Stroke) => {
@@ -447,6 +492,11 @@ export const App: React.FC = () => {
         currentView={currentView}
         onNavigate={(view) => {
           sound.playClick();
+          if (roomState && (currentView === 'drawer' || currentView === 'guesser' || currentView === 'room_lobby' || currentView === 'spectator')) {
+            const confirmed = window.confirm('Are you sure you want to leave the active match?');
+            if (!confirmed) return;
+            handleLeaveRoom();
+          }
           setCurrentView(view);
         }}
         onlineCount={onlineCount}

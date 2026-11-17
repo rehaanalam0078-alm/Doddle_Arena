@@ -22,8 +22,13 @@ export class VoiceManager {
    * 3. Room must have voice chat enabled (room.settings.voiceChatEnabled === true).
    * 4. Socket must be an active registered player in the room.
    */
-  public handleJoin(socket: Socket, roomCode: string): { success: boolean; error?: string } {
-    const cleanCode = roomCode.toUpperCase().replace('#', '').trim();
+  public handleJoin(socket: Socket, roomCode: string): {
+    success: boolean;
+    error?: string;
+    iceServers?: any[];
+    participants?: VoiceParticipant[];
+  } {
+    const cleanCode = (roomCode || '').toUpperCase().replace('#', '').trim();
     const room = this.roomManager.getRoom(cleanCode);
 
     if (!room) {
@@ -41,6 +46,12 @@ export class VoiceManager {
     if (!room.settings.voiceChatEnabled) {
       socket.emit('voice:error', { message: 'Voice chat is disabled for this private room.' });
       return { success: false, error: 'Voice chat is disabled for this room.' };
+    }
+
+    // Spectator check
+    if (room.spectatorSocketIds.has(socket.id)) {
+      socket.emit('voice:error', { message: 'Spectators are not permitted in voice chat.' });
+      return { success: false, error: 'Spectators cannot access voice chat.' };
     }
 
     const playerId = room.socketToPlayerId.get(socket.id);
@@ -72,13 +83,14 @@ export class VoiceManager {
 
     // Get list of existing participants before adding the new one
     const existingParticipants = Array.from(voiceRoom.values());
+    const iceServers = this.getIceServers();
 
     voiceRoom.set(socket.id, participant);
 
     // Send existing users to the joining socket so it can initiate WebRTC offers
     socket.emit('voice:room-users', {
       participants: existingParticipants,
-      iceServers: this.getIceServers(),
+      iceServers,
     });
 
     // Notify other voice participants in room
@@ -93,7 +105,11 @@ export class VoiceManager {
     // Broadcast updated voice participants list to all players in the room for UI counter
     this.broadcastVoiceState(room);
 
-    return { success: true };
+    return {
+      success: true,
+      iceServers,
+      participants: existingParticipants,
+    };
   }
 
   public handleLeave(socket: Socket, roomCode?: string) {

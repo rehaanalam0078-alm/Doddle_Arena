@@ -50,6 +50,15 @@ export class CompetitiveService {
     this.queue = this.queue.filter((e) => e.socketId !== socketId);
   }
 
+  public static checkMatch(): { p1: RankedQueueEntry; p2: RankedQueueEntry } | null {
+    if (this.queue.length >= 2) {
+      const p1 = this.queue.shift()!;
+      const p2 = this.queue.shift()!;
+      return { p1, p2 };
+    }
+    return null;
+  }
+
   public static getRecentBattles(): RecentBattle[] {
     return [
       {
